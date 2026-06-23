@@ -87,11 +87,24 @@ class SpeedrunController(http.Controller):
         """Return the user's active game info, if any."""
         game = request.env['speedrun.game'].search([
             ('player_ids.user_id', '=', request.env.uid),
-            ('state', 'in', ['running', 'countdown', 'round_finished']),
-        ], limit=1)
+            ('state', 'in', ['waiting', 'running', 'countdown', 'round_finished', 'finished']),
+        ], limit=1, order='create_date desc')
         if not game:
             return {}
-        return game._get_game_info()
+        info = game._get_game_info()
+        # Include round results for the current round if available
+        if game.state == 'round_finished' and game.current_round:
+            rr = game.round_result_ids.filtered(
+                lambda r: r.round_number == game.current_round
+            ).sorted('rank')
+            info['round_results'] = [{
+                'user_id': r.user_id.id,
+                'user_name': r.user_id.name,
+                'rank': r.rank,
+                'duration_ms': r.duration_ms,
+                'points': r.points,
+            } for r in rr]
+        return info
 
     @http.route('/odoo_speedrun/leaderboard', type='jsonrpc', auth='user')
     def leaderboard(self, limit=20):

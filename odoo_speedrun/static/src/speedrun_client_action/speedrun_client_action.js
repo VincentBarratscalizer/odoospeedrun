@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState, onWillUnmount } from "@odoo/owl";
+import { Component, useState, onWillUnmount, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
@@ -32,10 +32,45 @@ export class SpeedrunClientAction extends Component {
         this._onBusNotification = this.onBusNotification.bind(this);
         this.busService.addEventListener("notification", this._onBusNotification);
 
+        // Restore active game on mount
+        onWillStart(async () => {
+            await this._restoreActiveGame();
+        });
+
         onWillUnmount(() => {
             this.busService.removeEventListener("notification", this._onBusNotification);
             if (this._countdownInterval) clearInterval(this._countdownInterval);
         });
+    }
+
+    async _restoreActiveGame() {
+        try {
+            const result = await rpc("/odoo_speedrun/my_active_game", {});
+            if (result && result.id) {
+                this.state.game = result;
+                this.busService.forceUpdateChannels();
+                // Determine the correct phase based on game state
+                switch (result.state) {
+                    case "waiting":
+                        this.state.phase = "lobby";
+                        break;
+                    case "countdown":
+                        this.state.phase = "countdown";
+                        break;
+                    case "running":
+                        this.state.phase = "playing";
+                        break;
+                    case "round_finished":
+                        this.state.phase = "round_results";
+                        break;
+                    case "finished":
+                        this.state.phase = "final_results";
+                        break;
+                }
+            }
+        } catch {
+            // No active game, stay in lobby
+        }
     }
 
     onBusNotification({ detail: notifications }) {

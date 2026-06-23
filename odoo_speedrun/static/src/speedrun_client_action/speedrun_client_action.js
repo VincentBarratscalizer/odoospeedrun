@@ -229,8 +229,11 @@ export class SpeedrunClientAction extends Component {
             this.state.phase = "playing";
             this.state.myFinished = false;
             this.state.checkResult = null;
+            // Notify systray directly (bus notifications don't reach the sender)
+            window.dispatchEvent(new CustomEvent("speedrun-update", {
+                detail: { type: "game_started", data: result },
+            }));
             // Navigate to Odoo home so user can work on the task
-            // The systray widget will show the timer
             this.actionService.doAction("menu");
         }
     }
@@ -247,11 +250,12 @@ export class SpeedrunClientAction extends Component {
                 for (const key of Object.keys(gameInfo)) {
                     this.state.game[key] = gameInfo[key];
                 }
-                if (this.state.game.state === "finished") {
-                    this.state.phase = "final_results";
-                } else {
-                    this.state.phase = "round_results";
-                }
+                const isFinal = this.state.game.state === "finished";
+                this.state.phase = isFinal ? "final_results" : "round_results";
+                // Notify systray
+                window.dispatchEvent(new CustomEvent("speedrun-update", {
+                    detail: { type: isFinal ? "game_over" : "round_over", data: gameInfo },
+                }));
             } else {
                 this.notification.add(
                     `+${result.points} point${result.points !== 1 ? 's' : ''}! Rank #${result.rank}`,

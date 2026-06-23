@@ -34,13 +34,17 @@ export class SpeedrunSystray extends Component {
         this._onBusNotification = this.onBusNotification.bind(this);
         this.busService.addEventListener("notification", this._onBusNotification);
 
+        // Listen for direct events from SpeedrunClientAction (same tab)
+        this._onSpeedrunUpdate = this.onSpeedrunUpdate.bind(this);
+        window.addEventListener("speedrun-update", this._onSpeedrunUpdate);
+
         onMounted(() => {
-            // Check if there's an active game on load
             this._checkActiveGame();
         });
 
         onWillUnmount(() => {
             this.busService.removeEventListener("notification", this._onBusNotification);
+            window.removeEventListener("speedrun-update", this._onSpeedrunUpdate);
             if (this._interval) clearInterval(this._interval);
         });
     }
@@ -61,6 +65,27 @@ export class SpeedrunSystray extends Component {
             }
         } catch {
             // Ignore errors silently
+        }
+    }
+
+    onSpeedrunUpdate(ev) {
+        const { type, data } = ev.detail;
+        switch (type) {
+            case "game_started":
+                this.state.gameId = data.id || this.state.gameId;
+                this._showPlaying(data);
+                break;
+            case "round_over":
+                if (this._interval) clearInterval(this._interval);
+                this.state.phase = "round_finished";
+                this.state.currentRound = data.current_round;
+                this.state.totalRounds = data.total_rounds;
+                break;
+            case "game_over":
+                if (this._interval) clearInterval(this._interval);
+                this.state.visible = false;
+                this.state.phase = null;
+                break;
         }
     }
 

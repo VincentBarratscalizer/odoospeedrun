@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.SpeedrunClientAction">
+        <div class="o_speedrun_container d-flex flex-column align-items-center min-vh-100 bg-dark text-white p-4">
+            <div class="o_speedrun_header text-center mb-4">
+                <h1 class="display-4 fw-bold">
+                    <span class="text-warning">ODOO</span> SPEEDRUN
+                </h1>
+                <p class="text-muted fs-5">Race to complete Odoo tasks!</p>
+            </div>
+
+            <!-- Countdown overlay -->
+            <t t-if="state.phase === 'countdown'">
+                <div class="o_speedrun_countdown position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-90" style="z-index: 9999;">
+                    <div class="text-center">
+                        <div class="display-1 fw-bold text-warning o_speedrun_countdown_number" style="font-size: 15rem;">
+                            <t t-if="state.countdown > 0"><t t-esc="state.countdown"/></t>
+                            <t t-else="">GO!</t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <!-- Main content -->
+            <div class="o_speedrun_content w-100" style="max-width: 900px;">
+                <t t-if="state.phase === 'lobby'">
+                    <GameLobby
+                        game="state.game"
+                        onCreateGame.bind="createGame"
+                        onJoinGame.bind="joinGame"
+                        onLeaveGame.bind="leaveGame"
+                        onStartGame.bind="startGame"
+                        userId="user.userId"
+                    />
+                </t>
+                <t t-if="state.phase === 'playing'">
+                    <GameTimer
+                        game="state.game"
+                        myFinished="state.myFinished"
+                        checkResult="state.checkResult"
+                        onCheckCompletion.bind="checkCompletion"
+                    />
+                </t>
+                <t t-if="state.phase === 'results'">
+                    <GameResults
+                        game="state.game"
+                        userId="user.userId"
+                        onPlayAgain.bind="playAgain"
+                    />
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

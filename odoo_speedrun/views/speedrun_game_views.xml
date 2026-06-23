@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="speedrun_game_view_tree" model="ir.ui.view">
+        <field name="name">speedrun.game.tree</field>
+        <field name="model">speedrun.game</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="host_id"/>
+                <field name="player_count"/>
+                <field name="state" widget="badge"
+                    decoration-info="state == 'waiting'"
+                    decoration-warning="state in ('countdown', 'running')"
+                    decoration-success="state == 'finished'"/>
+                <field name="task_id"/>
+                <field name="winner_id"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_game_view_form" model="ir.ui.view">
+        <field name="name">speedrun.game.form</field>
+        <field name="model">speedrun.game</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="waiting,running,finished"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="host_id"/>
+                            <field name="max_players"/>
+                        </group>
+                        <group>
+                            <field name="task_id"/>
+                            <field name="winner_id"/>
+                            <field name="start_time"/>
+                            <field name="end_time"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Players">
+                            <field name="player_ids">
+                                <list>
+                                    <field name="user_id"/>
+                                    <field name="state" widget="badge"
+                                        decoration-info="state == 'waiting'"
+                                        decoration-warning="state == 'playing'"
+                                        decoration-success="state == 'finished'"
+                                        decoration-danger="state == 'dnf'"/>
+                                    <field name="finish_time"/>
+                                    <field name="duration_ms"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="speedrun_game_action" model="ir.actions.act_window">
+        <field name="name">Game History</field>
+        <field name="res_model">speedrun.game</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Client action for the game UI -->
+    <record id="speedrun_client_action" model="ir.actions.client">
+        <field name="name">Speedrun Arena</field>
+        <field name="tag">odoo_speedrun.game_action</field>
+    </record>
+</odoo>

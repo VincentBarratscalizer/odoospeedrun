@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.GameLobby">
+        <div class="o_speedrun_lobby">
+            <!-- No game yet: show create/join -->
+            <t t-if="!props.game">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card bg-secondary bg-opacity-25 border-warning">
+                            <div class="card-body text-center p-4">
+                                <h3 class="card-title text-warning mb-3">Create a Game</h3>
+                                <div class="mb-3">
+                                    <input type="text"
+                                        class="form-control form-control-lg bg-dark text-white border-secondary"
+                                        placeholder="Game name (optional)"
+                                        t-model="formState.gameName"
+                                        t-on-keydown="(ev) => ev.key === 'Enter' and this.onClickCreate()"
+                                    />
+                                </div>
+                                <button class="btn btn-warning btn-lg w-100 fw-bold"
+                                    t-on-click="onClickCreate">
+                                    Create Game
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-secondary bg-opacity-25 border-info">
+                            <div class="card-body text-center p-4">
+                                <h3 class="card-title text-info mb-3">Join a Game</h3>
+                                <div class="mb-3">
+                                    <input type="text"
+                                        class="form-control form-control-lg bg-dark text-white border-secondary text-center text-uppercase"
+                                        placeholder="Enter join code"
+                                        maxlength="6"
+                                        t-model="formState.joinCode"
+                                        t-on-keydown="(ev) => ev.key === 'Enter' and this.onClickJoin()"
+                                    />
+                                </div>
+                                <button class="btn btn-info btn-lg w-100 fw-bold"
+                                    t-on-click="onClickJoin">
+                                    Join Game
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <!-- Game lobby: waiting for players -->
+            <t t-if="props.game">
+                <div class="card bg-secondary bg-opacity-25 border-light">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h2 class="mb-1"><t t-esc="props.game.name"/></h2>
+                                <p class="text-muted mb-0">
+                                    Host: <span class="text-info"><t t-esc="props.game.host_name"/></span>
+                                </p>
+                            </div>
+                            <div class="text-end">
+                                <div class="fs-6 text-muted mb-1">Join Code</div>
+                                <div class="fs-2 fw-bold text-warning font-monospace letter-spacing-2">
+                                    <t t-esc="props.game.code"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 class="mb-3">
+                            Players
+                            <span class="badge bg-secondary ms-2">
+                                <t t-esc="props.game.players.length"/> / <t t-esc="props.game.max_players"/>
+                            </span>
+                        </h4>
+
+                        <div class="list-group mb-4">
+                            <t t-foreach="props.game.players" t-as="player" t-key="player.user_id">
+                                <div class="list-group-item bg-dark bg-opacity-50 text-white d-flex align-items-center border-secondary">
+                                    <span class="fs-4 me-3">
+                                        <t t-if="player.user_id === props.game.host_id">&#x1F451;</t>
+                                        <t t-else="">&#x1F3AE;</t>
+                                    </span>
+                                    <span class="fw-bold"><t t-esc="player.user_name"/></span>
+                                    <t t-if="player.user_id === props.game.host_id">
+                                        <span class="badge bg-warning text-dark ms-2">Host</span>
+                                    </t>
+                                </div>
+                            </t>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <t t-if="canStart">
+                                <button class="btn btn-success btn-lg flex-grow-1 fw-bold"
+                                    t-on-click="onClickStart">
+                                    Start Game!
+                                </button>
+                            </t>
+                            <t t-if="!isHost">
+                                <div class="flex-grow-1 text-center">
+                                    <p class="text-muted mb-0 fs-5">Waiting for the host to start...</p>
+                                </div>
+                            </t>
+                            <button class="btn btn-outline-danger btn-lg"
+                                t-on-click="onClickLeave">
+                                Leave
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Top-level menu -->
+    <menuitem id="menu_speedrun_root"
+        name="Speedrun"
+        web_icon="odoo_speedrun,static/description/icon.png"
+        sequence="100"/>
+
+    <!-- Play menu - client action -->
+    <menuitem id="menu_speedrun_play"
+        name="Play!"
+        parent="menu_speedrun_root"
+        action="speedrun_client_action"
+        sequence="1"/>
+
+    <!-- Leaderboard -->
+    <menuitem id="menu_speedrun_leaderboard"
+        name="Leaderboard"
+        parent="menu_speedrun_root"
+        action="speedrun_leaderboard_action"
+        sequence="5"/>
+
+    <!-- History -->
+    <menuitem id="menu_speedrun_history"
+        name="Game History"
+        parent="menu_speedrun_root"
+        action="speedrun_game_action"
+        sequence="10"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_speedrun_config"
+        name="Configuration"
+        parent="menu_speedrun_root"
+        sequence="90"
+        groups="group_speedrun_manager"/>
+
+    <menuitem id="menu_speedrun_tasks"
+        name="Tasks"
+        parent="menu_speedrun_config"
+        action="speedrun_task_action"
+        sequence="1"/>
+</odoo>

@@ -1,6 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_speedrun_task_player,speedrun.task.player,model_speedrun_task,group_speedrun_player,1,0,0,0
+access_speedrun_task_user,speedrun.task.user,model_speedrun_task,base.group_user,1,0,0,0
 access_speedrun_task_manager,speedrun.task.manager,model_speedrun_task,group_speedrun_manager,1,1,1,1
-access_speedrun_game_player,speedrun.game.player,model_speedrun_game,group_speedrun_player,1,1,1,0
-access_speedrun_player_player,speedrun.player.player,model_speedrun_player,group_speedrun_player,1,1,1,1
-access_speedrun_leaderboard_player,speedrun.leaderboard.player,model_speedrun_leaderboard,group_speedrun_player,1,0,0,0
+access_speedrun_game_user,speedrun.game.user,model_speedrun_game,base.group_user,1,1,1,0
+access_speedrun_player_user,speedrun.player.user,model_speedrun_player,base.group_user,1,1,1,1
+access_speedrun_round_result_user,speedrun.round.result.user,model_speedrun_round_result,base.group_user,1,1,1,0
+access_speedrun_leaderboard_user,speedrun.leaderboard.user,model_speedrun_leaderboard,base.group_user,1,0,0,0

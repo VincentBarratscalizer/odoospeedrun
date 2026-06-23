@@ -8,7 +8,8 @@ class IrWebsocket(models.AbstractModel):
         channels = super()._build_bus_channel_list(channels)
         if self.env.uid:
             # Subscribe user to all their active game rooms
-            active_games = self.env['speedrun.game'].search([
+            # sudo: speedrun.game - need to read games regardless of ACLs for bus channels
+            active_games = self.env['speedrun.game'].sudo().search([
                 ('player_ids.user_id', '=', self.env.uid),
                 ('state', 'in', ['waiting', 'countdown', 'running']),
             ])

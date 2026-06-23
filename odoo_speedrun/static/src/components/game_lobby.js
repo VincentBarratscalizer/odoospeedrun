@@ -17,11 +17,15 @@ export class GameLobby extends Component {
         this.formState = useState({
             gameName: "",
             joinCode: "",
+            totalRounds: 3,
         });
     }
 
     onClickCreate() {
-        this.props.onCreateGame(this.formState.gameName || null);
+        this.props.onCreateGame(
+            this.formState.gameName || null,
+            this.formState.totalRounds,
+        );
     }
 
     onClickJoin() {

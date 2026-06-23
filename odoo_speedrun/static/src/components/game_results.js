@@ -7,6 +7,8 @@ export class GameResults extends Component {
     static props = {
         game: Object,
         userId: Number,
+        mode: String, // "round" or "final"
+        onNextRound: Function,
         onPlayAgain: Function,
     };
 
@@ -19,13 +21,24 @@ export class GameResults extends Component {
         return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(millis).padStart(3, "0")}`;
     }
 
-    get results() {
-        if (!this.props.game || !this.props.game.results) return [];
-        return this.props.game.results;
+    get standings() {
+        return this.props.game?.standings || [];
+    }
+
+    get roundResults() {
+        return this.props.game?.round_results || [];
     }
 
     get isWinner() {
         return this.props.game && this.props.game.winner_id === this.props.userId;
+    }
+
+    get isFinal() {
+        return this.props.mode === "final";
+    }
+
+    get isHost() {
+        return this.props.game && this.props.game.host_id === this.props.userId;
     }
 
     getRankEmoji(index) {

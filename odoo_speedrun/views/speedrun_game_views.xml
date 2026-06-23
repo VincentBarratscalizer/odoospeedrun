@@ -11,9 +11,10 @@
                 <field name="player_count"/>
                 <field name="state" widget="badge"
                     decoration-info="state == 'waiting'"
-                    decoration-warning="state in ('countdown', 'running')"
+                    decoration-warning="state in ('countdown', 'running', 'round_finished')"
                     decoration-success="state == 'finished'"/>
-                <field name="task_id"/>
+                <field name="total_rounds"/>
+                <field name="current_round"/>
                 <field name="winner_id"/>
                 <field name="create_date"/>
             </list>
@@ -26,7 +27,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <field name="state" widget="statusbar" statusbar_visible="waiting,running,finished"/>
+                    <field name="state" widget="statusbar" statusbar_visible="waiting,running,round_finished,finished"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -37,6 +38,8 @@
                             <field name="code"/>
                             <field name="host_id"/>
                             <field name="max_players"/>
+                            <field name="total_rounds"/>
+                            <field name="current_round"/>
                         </group>
                         <group>
                             <field name="task_id"/>
@@ -55,6 +58,7 @@
                                         decoration-warning="state == 'playing'"
                                         decoration-success="state == 'finished'"
                                         decoration-danger="state == 'dnf'"/>
+                                    <field name="score"/>
                                     <field name="finish_time"/>
                                     <field name="duration_ms"/>
                                 </list>

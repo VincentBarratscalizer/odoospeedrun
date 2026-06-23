@@ -11,6 +11,7 @@
         <field name="sequence">100</field>
     </record>
 
+    <!-- Keep player group for backward compat, all internal users are players -->
     <record id="group_speedrun_player" model="res.groups">
         <field name="name">Player</field>
         <field name="privilege_id" ref="privilege_speedrun"/>
@@ -20,10 +21,10 @@
     <record id="group_speedrun_manager" model="res.groups">
         <field name="name">Manager</field>
         <field name="privilege_id" ref="privilege_speedrun"/>
-        <field name="implied_ids" eval="[(4, ref('odoo_speedrun.group_speedrun_player'))]"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
-    <!-- Record rules -->
+    <!-- Record rules: all internal users can read games, write their own -->
     <record id="speedrun_game_rule_read" model="ir.rule">
         <field name="name">Speedrun Game: read all</field>
         <field name="model_id" ref="model_speedrun_game"/>
@@ -32,7 +33,7 @@
         <field name="perm_write" eval="False"/>
         <field name="perm_create" eval="False"/>
         <field name="perm_unlink" eval="False"/>
-        <field name="groups" eval="[(4, ref('group_speedrun_player'))]"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
     <record id="speedrun_game_rule_write" model="ir.rule">
@@ -43,6 +44,6 @@
         <field name="perm_write" eval="True"/>
         <field name="perm_create" eval="True"/>
         <field name="perm_unlink" eval="False"/>
-        <field name="groups" eval="[(4, ref('group_speedrun_player'))]"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
     </record>
 </odoo>

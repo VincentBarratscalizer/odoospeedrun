@@ -4,6 +4,8 @@ import string
 from odoo import api, fields, models
 from odoo.exceptions import UserError, AccessError
 
+POINTS_BY_RANK = {1: 3, 2: 2, 3: 1}  # Points awarded by finishing position
+
 
 class SpeedrunGame(models.Model):
     _name = 'speedrun.game'
@@ -17,15 +19,23 @@ class SpeedrunGame(models.Model):
         ('waiting', 'Waiting'),
         ('countdown', 'Countdown'),
         ('running', 'Running'),
+        ('round_finished', 'Round Finished'),
         ('finished', 'Finished'),
     ], default='waiting', required=True, readonly=True)
     host_id = fields.Many2one('res.users', string='Host', required=True, default=lambda self: self.env.uid)
     player_ids = fields.One2many('speedrun.player', 'game_id', string='Players')
     player_count = fields.Integer(compute='_compute_player_count', store=True)
-    task_id = fields.Many2one('speedrun.task', string='Task', readonly=True)
-    start_time = fields.Datetime(readonly=True)
+    round_result_ids = fields.One2many('speedrun.round.result', 'game_id', string='Round Results')
+
+    # Current round fields
+    task_id = fields.Many2one('speedrun.task', string='Current Task', readonly=True)
+    start_time = fields.Datetime(readonly=True, help="Start time of the current round")
     end_time = fields.Datetime(readonly=True)
-    winner_id = fields.Many2one('res.users', string='Winner', readonly=True)
+    winner_id = fields.Many2one('res.users', string='Overall Winner', readonly=True)
+
+    # Multi-round fields
+    total_rounds = fields.Integer(default=3, string='Number of Rounds')
+    current_round = fields.Integer(default=0, string='Current Round', readonly=True)
     max_players = fields.Integer(default=8)
 
     @api.depends('player_ids')
@@ -39,7 +49,6 @@ class SpeedrunGame(models.Model):
             if not vals.get('code'):
                 vals['code'] = self._generate_code()
         games = super().create(vals_list)
-        # Auto-join the host as first player
         for game in games:
             self.env['speedrun.player'].create({
                 'game_id': game.id,
@@ -50,11 +59,9 @@ class SpeedrunGame(models.Model):
 
     @staticmethod
     def _generate_code():
-        """Generate a random 6-character uppercase join code."""
         return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
     def action_join(self, user_id=None):
-        """Add a player to this game."""
         self.ensure_one()
         user_id = user_id or self.env.uid
         if self.state != 'waiting':
@@ -77,7 +84,6 @@ class SpeedrunGame(models.Model):
         return player
 
     def action_leave(self, user_id=None):
-        """Remove a player from this game."""
         self.ensure_one()
         user_id = user_id or self.env.uid
         if self.state not in ('waiting', 'finished'):
@@ -93,8 +99,19 @@ class SpeedrunGame(models.Model):
             'player_count': len(self.player_ids),
         })
 
+    def _pick_random_task(self, exclude_ids=None):
+        """Pick a random task, avoiding recently used ones."""
+        available_tasks = self.env['speedrun.task']._get_available_tasks()
+        if exclude_ids:
+            preferred = available_tasks.filtered(lambda t: t.id not in exclude_ids)
+            if preferred:
+                available_tasks = preferred
+        if not available_tasks:
+            raise UserError("No tasks available. Please contact an administrator.")
+        return self.env['speedrun.task'].browse(random.choice(available_tasks.ids))
+
     def action_start(self):
-        """Start the game (host only). Picks a random task and begins countdown."""
+        """Start the first round (host only)."""
         self.ensure_one()
         if self.env.uid != self.host_id.id:
             raise AccessError("Only the host can start the game.")
@@ -102,28 +119,49 @@ class SpeedrunGame(models.Model):
             raise UserError("Game has already started.")
         if len(self.player_ids) < 1:
             raise UserError("Need at least 1 player to start.")
+        return self._start_round()
 
-        # Pick a random task
-        available_tasks = self.env['speedrun.task']._get_available_tasks()
-        if not available_tasks:
-            raise UserError("No tasks available. Please contact an administrator.")
-        task = random.choice(available_tasks.ids)
-        task = self.env['speedrun.task'].browse(task)
+    def action_next_round(self):
+        """Start the next round (host only)."""
+        self.ensure_one()
+        if self.env.uid != self.host_id.id:
+            raise AccessError("Only the host can start the next round.")
+        if self.state != 'round_finished':
+            raise UserError("Current round is not finished yet.")
+        if self.current_round >= self.total_rounds:
+            raise UserError("All rounds are already completed.")
+        return self._start_round()
+
+    def _start_round(self):
+        """Start a new round: pick task, increment round, countdown."""
+        # Pick a task different from previous rounds if possible
+        used_task_ids = self.round_result_ids.mapped('task_id').ids
+        task = self._pick_random_task(exclude_ids=used_task_ids)
 
         self.write({
             'task_id': task.id,
             'state': 'countdown',
+            'current_round': self.current_round + 1,
+            'start_time': False,
+            'end_time': False,
         })
-        self.player_ids.write({'state': 'playing'})
+        # Reset player states for the new round
+        self.player_ids.write({
+            'state': 'playing',
+            'finish_time': False,
+            'duration_ms': 0,
+        })
 
         self._bus_send('speedrun/countdown_start', {
             'countdown_seconds': 3,
             'game_id': self.id,
+            'current_round': self.current_round,
+            'total_rounds': self.total_rounds,
         })
         return True
 
     def action_begin(self):
-        """Called after countdown. Officially starts the game timer."""
+        """Called after countdown. Officially starts the round timer."""
         self.ensure_one()
         if self.state != 'countdown':
             raise UserError("Game is not in countdown state.")
@@ -137,14 +175,13 @@ class SpeedrunGame(models.Model):
             'task_name': self.task_id.name,
             'task_description': self.task_id.description or '',
             'start_time': fields.Datetime.to_string(now),
+            'current_round': self.current_round,
+            'total_rounds': self.total_rounds,
         })
         return True
 
     def action_check_completion(self, user_id=None):
-        """Check if a user has completed the current task.
-
-        :return: dict with 'success' (bool) and optionally 'is_winner' (bool)
-        """
+        """Check if a user has completed the current round's task."""
         self.ensure_one()
         user_id = user_id or self.env.uid
         if self.state != 'running':
@@ -154,10 +191,9 @@ class SpeedrunGame(models.Model):
         if not player:
             return {'success': False, 'error': 'You are not in this game.'}
         if player.state == 'finished':
-            return {'success': False, 'error': 'You have already finished.'}
+            return {'success': False, 'error': 'You have already finished this round.'}
 
         # Verify the task
-        # sudo: speedrun.task - verification needs to read any model
         completed = self.sudo().task_id._verify_completion(user_id, self.start_time)
         if not completed:
             return {'success': False, 'error': 'Task not completed yet. Keep going!'}
@@ -168,58 +204,141 @@ class SpeedrunGame(models.Model):
             'state': 'finished',
             'finish_time': now,
         })
-
-        # Calculate duration
         duration_ms = int((now - self.start_time).total_seconds() * 1000)
 
-        # Check if this is the first finisher (winner)
-        is_winner = not self.winner_id
-        if is_winner:
-            self.write({
-                'winner_id': user_id,
-                'end_time': now,
-                'state': 'finished',
-            })
-            # Mark remaining players as DNF
-            self.player_ids.filtered(lambda p: p.state == 'playing').write({'state': 'dnf'})
+        # Determine rank for this player in this round
+        finished_count = len(self.player_ids.filtered(lambda p: p.state == 'finished'))
+        rank = finished_count  # 1st finisher = rank 1, etc.
+        points = POINTS_BY_RANK.get(rank, 0)
+
+        # Save round result
+        self.env['speedrun.round.result'].create({
+            'game_id': self.id,
+            'round_number': self.current_round,
+            'task_id': self.task_id.id,
+            'user_id': user_id,
+            'rank': rank,
+            'duration_ms': duration_ms,
+            'points': points,
+        })
+
+        # Update player total score
+        player.score += points
 
         user = self.env['res.users'].browse(user_id)
         self._bus_send('speedrun/player_finished', {
             'user_id': user_id,
             'user_name': user.name,
             'duration_ms': duration_ms,
-            'is_winner': is_winner,
+            'rank': rank,
+            'points': points,
         })
 
-        if is_winner:
-            # Build results
-            results = []
-            for p in self.player_ids.sorted(lambda p: (p.state != 'finished', p.finish_time or now)):
-                results.append({
-                    'user_id': p.user_id.id,
-                    'user_name': p.user_id.name,
-                    'state': p.state,
-                    'duration_ms': p.duration_ms if p.state == 'finished' else None,
-                })
-            self._bus_send('speedrun/game_over', {
-                'winner_id': user_id,
-                'winner_name': user.name,
-                'results': results,
+        # Check if all players are done (or first finisher ends the round)
+        is_round_winner = (rank == 1)
+        if is_round_winner:
+            self._end_round(now)
+
+        response = {'success': True, 'is_round_winner': is_round_winner, 'duration_ms': duration_ms, 'rank': rank, 'points': points}
+        if is_round_winner:
+            response['game_info'] = self._get_game_info()
+        return response
+
+    def _end_round(self, now):
+        """End the current round and determine if game is over."""
+        # Mark remaining players as DNF with 0 points
+        dnf_players = self.player_ids.filtered(lambda p: p.state == 'playing')
+        for p in dnf_players:
+            p.write({'state': 'dnf'})
+            self.env['speedrun.round.result'].create({
+                'game_id': self.id,
+                'round_number': self.current_round,
+                'task_id': self.task_id.id,
+                'user_id': p.user_id.id,
+                'rank': 0,
+                'duration_ms': 0,
+                'points': 0,
             })
 
-        return {'success': True, 'is_winner': is_winner, 'duration_ms': duration_ms}
+        self.write({'end_time': now})
+
+        is_last_round = self.current_round >= self.total_rounds
+        if is_last_round:
+            # Game over — determine overall winner by score
+            best_player = max(self.player_ids, key=lambda p: p.score)
+            self.write({
+                'state': 'finished',
+                'winner_id': best_player.user_id.id,
+            })
+            self._bus_send('speedrun/game_over', self._build_game_over_payload())
+        else:
+            self.write({'state': 'round_finished'})
+            self._bus_send('speedrun/round_over', self._build_round_over_payload())
+
+    def _build_round_over_payload(self):
+        """Build payload for round_over bus notification."""
+        round_results = self.round_result_ids.filtered(
+            lambda r: r.round_number == self.current_round
+        ).sorted('rank')
+        return {
+            'current_round': self.current_round,
+            'total_rounds': self.total_rounds,
+            'round_results': [{
+                'user_id': r.user_id.id,
+                'user_name': r.user_id.name,
+                'rank': r.rank,
+                'duration_ms': r.duration_ms,
+                'points': r.points,
+            } for r in round_results],
+            'standings': self._build_standings(),
+        }
+
+    def _build_game_over_payload(self):
+        """Build payload for game_over bus notification."""
+        return {
+            'winner_id': self.winner_id.id,
+            'winner_name': self.winner_id.name,
+            'standings': self._build_standings(),
+            'total_rounds': self.total_rounds,
+        }
+
+    def _build_standings(self):
+        """Build current standings sorted by score."""
+        return [{
+            'user_id': p.user_id.id,
+            'user_name': p.user_id.name,
+            'score': p.score,
+        } for p in self.player_ids.sorted(lambda p: -p.score)]
 
     def _get_game_info(self):
         """Return game info dict for the frontend."""
         self.ensure_one()
         players = []
-        for p in self.player_ids:
+        for p in self.player_ids.sorted(lambda p: -p.score):
             players.append({
                 'user_id': p.user_id.id,
                 'user_name': p.user_id.name,
                 'state': p.state,
+                'score': p.score,
                 'duration_ms': p.duration_ms if p.state == 'finished' else None,
             })
+
+        # Round history
+        rounds = []
+        for rnd in range(1, self.current_round + 1):
+            rnd_results = self.round_result_ids.filtered(lambda r: r.round_number == rnd).sorted('rank')
+            rounds.append({
+                'round_number': rnd,
+                'task_name': rnd_results[0].task_id.name if rnd_results else '',
+                'results': [{
+                    'user_id': r.user_id.id,
+                    'user_name': r.user_id.name,
+                    'rank': r.rank,
+                    'duration_ms': r.duration_ms,
+                    'points': r.points,
+                } for r in rnd_results],
+            })
+
         return {
             'id': self.id,
             'name': self.name,
@@ -230,10 +349,14 @@ class SpeedrunGame(models.Model):
             'players': players,
             'player_count': len(self.player_ids),
             'max_players': self.max_players,
+            'total_rounds': self.total_rounds,
+            'current_round': self.current_round,
             'task_name': self.task_id.name if self.task_id else None,
             'task_description': self.task_id.description if self.task_id else None,
             'start_time': fields.Datetime.to_string(self.start_time) if self.start_time else None,
             'end_time': fields.Datetime.to_string(self.end_time) if self.end_time else None,
             'winner_id': self.winner_id.id if self.winner_id else None,
             'winner_name': self.winner_id.name if self.winner_id else None,
+            'standings': self._build_standings(),
+            'rounds': rounds,
         }

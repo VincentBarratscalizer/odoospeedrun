@@ -9,10 +9,24 @@
                 <p class="text-muted fs-5">Race to complete Odoo tasks!</p>
             </div>
 
+            <!-- Round indicator -->
+            <t t-if="state.game and state.game.current_round > 0 and state.phase !== 'lobby'">
+                <div class="mb-3">
+                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                        Round <t t-esc="state.game.current_round"/> / <t t-esc="state.game.total_rounds"/>
+                    </span>
+                </div>
+            </t>
+
             <!-- Countdown overlay -->
             <t t-if="state.phase === 'countdown'">
                 <div class="o_speedrun_countdown position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-90" style="z-index: 9999;">
                     <div class="text-center">
+                        <t t-if="state.game and state.game.current_round > 0">
+                            <div class="fs-3 text-muted mb-3">
+                                Round <t t-esc="state.game.current_round"/> / <t t-esc="state.game.total_rounds"/>
+                            </div>
+                        </t>
                         <div class="display-1 fw-bold text-warning o_speedrun_countdown_number" style="font-size: 15rem;">
                             <t t-if="state.countdown > 0"><t t-esc="state.countdown"/></t>
                             <t t-else="">GO!</t>
@@ -41,10 +55,21 @@
                         onCheckCompletion.bind="checkCompletion"
                     />
                 </t>
-                <t t-if="state.phase === 'results'">
+                <t t-if="state.phase === 'round_results'">
                     <GameResults
                         game="state.game"
                         userId="user.userId"
+                        mode="'round'"
+                        onNextRound.bind="nextRound"
+                        onPlayAgain.bind="playAgain"
+                    />
+                </t>
+                <t t-if="state.phase === 'final_results'">
+                    <GameResults
+                        game="state.game"
+                        userId="user.userId"
+                        mode="'final'"
+                        onNextRound.bind="nextRound"
                         onPlayAgain.bind="playAgain"
                     />
                 </t>

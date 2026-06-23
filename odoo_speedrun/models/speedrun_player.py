@@ -4,7 +4,7 @@ from odoo import api, fields, models
 class SpeedrunPlayer(models.Model):
     _name = 'speedrun.player'
     _description = 'Speedrun Player'
-    _order = 'finish_time asc nulls last'
+    _order = 'score desc, finish_time asc nulls last'
 
     game_id = fields.Many2one('speedrun.game', required=True, ondelete='cascade', index=True)
     user_id = fields.Many2one('res.users', required=True, index=True)
@@ -16,6 +16,7 @@ class SpeedrunPlayer(models.Model):
     ], default='waiting', required=True)
     finish_time = fields.Datetime()
     duration_ms = fields.Integer(string='Duration (ms)', compute='_compute_duration_ms', store=True)
+    score = fields.Integer(string='Score', default=0)
 
     _unique_player_per_game = models.Constraint(
         'UNIQUE(game_id, user_id)',

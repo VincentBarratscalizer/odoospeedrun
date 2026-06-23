@@ -5,8 +5,8 @@ from odoo.http import request
 class SpeedrunController(http.Controller):
 
     @http.route('/odoo_speedrun/create_game', type='jsonrpc', auth='user')
-    def create_game(self, name=None, max_players=8):
-        vals = {'max_players': max_players}
+    def create_game(self, name=None, max_players=8, total_rounds=3):
+        vals = {'max_players': max_players, 'total_rounds': int(total_rounds)}
         if name:
             vals['name'] = name
         game = request.env['speedrun.game'].create(vals)
@@ -56,6 +56,17 @@ class SpeedrunController(http.Controller):
         except Exception as e:
             return {'error': str(e)}
         return game._get_game_info()
+
+    @http.route('/odoo_speedrun/next_round', type='jsonrpc', auth='user')
+    def next_round(self, game_id):
+        game = request.env['speedrun.game'].browse(int(game_id))
+        if not game.exists():
+            return {'error': 'Game not found.'}
+        try:
+            game.action_next_round()
+        except Exception as e:
+            return {'error': str(e)}
+        return {'success': True}
 
     @http.route('/odoo_speedrun/check_completion', type='jsonrpc', auth='user')
     def check_completion(self, game_id):

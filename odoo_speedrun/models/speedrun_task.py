@@ -1,4 +1,4 @@
-import ast
+import json
 import logging
 
 from odoo import api, fields, models
@@ -82,8 +82,8 @@ class SpeedrunTask(models.Model):
             '"%s"' % fields.Datetime.to_string(start_time),
         )
         try:
-            domain = ast.literal_eval(domain_str)
-        except (ValueError, SyntaxError):
+            domain = json.loads(domain_str)
+        except (ValueError, json.JSONDecodeError):
             _logger.error("Invalid verification domain for task %s: %s", self.name, domain_str)
             return False
         try:
@@ -106,7 +106,7 @@ class SpeedrunTask(models.Model):
             'datetime': __import__('datetime'),
         }
         try:
-            safe_eval(self.verification_code, local_vars, mode='exec', nocopy=True)
+            safe_eval(self.verification_code, local_vars, mode='exec')
         except Exception:
             _logger.exception("Error in Python verification for task %s", self.name)
             return False

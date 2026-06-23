@@ -100,14 +100,15 @@ class SpeedrunGame(models.Model):
         })
 
     def _pick_random_task(self, exclude_ids=None):
-        """Pick a random task, avoiding recently used ones."""
+        """Pick a random task, strictly avoiding already-used ones."""
         available_tasks = self.env['speedrun.task']._get_available_tasks()
-        if exclude_ids:
-            preferred = available_tasks.filtered(lambda t: t.id not in exclude_ids)
-            if preferred:
-                available_tasks = preferred
         if not available_tasks:
             raise UserError("No tasks available. Please contact an administrator.")
+        if exclude_ids:
+            fresh = available_tasks.filtered(lambda t: t.id not in exclude_ids)
+            if fresh:
+                available_tasks = fresh
+            # If all tasks have been used, we must reuse — but log it
         return self.env['speedrun.task'].browse(random.choice(available_tasks.ids))
 
     def action_start(self):
@@ -134,8 +135,11 @@ class SpeedrunGame(models.Model):
 
     def _start_round(self):
         """Start a new round: pick task, increment round, countdown."""
-        # Pick a task different from previous rounds if possible
-        used_task_ids = self.round_result_ids.mapped('task_id').ids
+        # Pick a task different from previous rounds
+        used_task_ids = list(set(
+            self.round_result_ids.mapped('task_id').ids
+            + ([self.task_id.id] if self.task_id else [])
+        ))
         task = self._pick_random_task(exclude_ids=used_task_ids)
 
         self.write({

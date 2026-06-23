@@ -54,3 +54,21 @@
 .letter-spacing-2 {
     letter-spacing: 4px;
 }
+
+// Systray widget
+.o_speedrun_systray {
+    height: 100%;
+    border-left: 1px solid rgba(255, 193, 7, 0.3);
+    border-right: 1px solid rgba(255, 193, 7, 0.3);
+    background: rgba(255, 193, 7, 0.08);
+    transition: background 0.2s ease;
+
+    &:hover {
+        background: rgba(255, 193, 7, 0.15);
+    }
+
+    .btn-success {
+        font-size: 0.75rem;
+        line-height: 1.2;
+    }
+}

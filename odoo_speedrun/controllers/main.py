@@ -82,6 +82,17 @@ class SpeedrunController(http.Controller):
             return {'error': 'Game not found.'}
         return game._get_game_info()
 
+    @http.route('/odoo_speedrun/my_active_game', type='jsonrpc', auth='user')
+    def my_active_game(self):
+        """Return the user's active game info, if any."""
+        game = request.env['speedrun.game'].search([
+            ('player_ids.user_id', '=', request.env.uid),
+            ('state', 'in', ['running', 'countdown', 'round_finished']),
+        ], limit=1)
+        if not game:
+            return {}
+        return game._get_game_info()
+
     @http.route('/odoo_speedrun/leaderboard', type='jsonrpc', auth='user')
     def leaderboard(self, limit=20):
         records = request.env['speedrun.leaderboard'].search([], limit=int(limit))

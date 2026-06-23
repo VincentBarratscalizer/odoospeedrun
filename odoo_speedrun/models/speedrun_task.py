@@ -103,7 +103,6 @@ class SpeedrunTask(models.Model):
             'uid': user_id,
             'start_time': start_time,
             'result': False,
-            'datetime': __import__('datetime'),
         }
         try:
             safe_eval(self.verification_code, local_vars, mode='exec')

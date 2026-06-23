@@ -17,6 +17,7 @@ export class SpeedrunClientAction extends Component {
     setup() {
         this.busService = useService("bus_service");
         this.notification = useService("notification");
+        this.actionService = useService("action");
         this.user = user;
 
         this.state = useState({
@@ -96,6 +97,8 @@ export class SpeedrunClientAction extends Component {
         this.state.phase = "playing";
         this.state.myFinished = false;
         this.state.checkResult = null;
+        // Navigate to Odoo home so user can work on the task
+        this.actionService.doAction("menu");
     }
 
     onPlayerFinished(payload) {
@@ -191,6 +194,9 @@ export class SpeedrunClientAction extends Component {
             this.state.phase = "playing";
             this.state.myFinished = false;
             this.state.checkResult = null;
+            // Navigate to Odoo home so user can work on the task
+            // The systray widget will show the timer
+            this.actionService.doAction("menu");
         }
     }
 

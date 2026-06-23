@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.SpeedrunSystray">
+        <t t-if="state.visible">
+            <div class="o_speedrun_systray d-flex align-items-center gap-2 px-2 cursor-pointer"
+                 t-on-click="onClickGoToGame">
+
+                <!-- Round indicator -->
+                <span class="badge bg-dark text-warning border border-warning" style="font-size: 0.7rem;">
+                    R<t t-esc="state.currentRound"/>/<t t-esc="state.totalRounds"/>
+                </span>
+
+                <!-- Playing state: timer + task + check button -->
+                <t t-if="state.phase === 'playing'">
+                    <!-- Timer -->
+                    <span class="badge bg-warning text-dark fw-bold font-monospace" style="font-size: 0.85rem;">
+                        <i class="fa fa-clock-o me-1"/><t t-esc="state.elapsed"/>
+                    </span>
+
+                    <!-- Task name (truncated) -->
+                    <span class="text-truncate d-none d-lg-inline" style="max-width: 200px; font-size: 0.8rem;"
+                        t-att-title="state.taskName">
+                        <t t-esc="state.taskName"/>
+                    </span>
+
+                    <!-- Check button -->
+                    <t t-if="!state.myFinished">
+                        <button class="btn btn-sm btn-success fw-bold py-0 px-2"
+                            t-att-disabled="state.checking"
+                            t-on-click.stop="onClickCheck">
+                            <t t-if="state.checking">
+                                <i class="fa fa-spinner fa-spin"/>
+                            </t>
+                            <t t-else="">
+                                Done!
+                            </t>
+                        </button>
+                    </t>
+                    <t t-else="">
+                        <span class="badge bg-success" style="font-size: 0.7rem;">
+                            <i class="fa fa-check me-1"/>Done
+                        </span>
+                    </t>
+                </t>
+
+                <!-- Round finished state -->
+                <t t-if="state.phase === 'round_finished'">
+                    <span class="badge bg-info" style="font-size: 0.8rem;">
+                        Round complete - click to view
+                    </span>
+                </t>
+            </div>
+        </t>
+    </t>
+</templates>

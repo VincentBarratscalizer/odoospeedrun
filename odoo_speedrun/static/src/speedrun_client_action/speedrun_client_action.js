@@ -163,10 +163,44 @@ export class SpeedrunClientAction extends Component {
                 clearInterval(this._countdownInterval);
                 this._countdownInterval = null;
                 if (this.state.game && this.state.game.host_id === this.user.userId) {
+                    // Host: trigger game start on server
                     this.beginGame();
+                } else {
+                    // Non-host: poll until game is running, then redirect
+                    this._waitForGameStart();
                 }
             }
         }, 1000);
+    }
+
+    async _waitForGameStart() {
+        // Poll until game transitions to "running" state
+        const gameId = this.state.game.id;
+        const poll = async () => {
+            if (this.state.phase !== "countdown") return; // Already transitioned
+            try {
+                const result = await rpc("/odoo_speedrun/game_info", { game_id: gameId });
+                if (result && !result.error && result.state === "running") {
+                    // Game started! Update state and redirect
+                    for (const key of Object.keys(result)) {
+                        this.state.game[key] = result[key];
+                    }
+                    this.state.phase = "playing";
+                    this.state.myFinished = false;
+                    this.state.checkResult = null;
+                    window.dispatchEvent(new CustomEvent("speedrun-update", {
+                        detail: { type: "game_started", data: result },
+                    }));
+                    this.actionService.doAction("menu");
+                } else {
+                    // Not yet running, try again in 500ms
+                    setTimeout(poll, 500);
+                }
+            } catch {
+                setTimeout(poll, 500);
+            }
+        };
+        poll();
     }
 
     onGameStarted(payload) {

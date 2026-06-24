@@ -48,6 +48,7 @@ export class SpeedrunSystray extends Component {
             window.removeEventListener("speedrun-update", this._onSpeedrunUpdate);
             if (this._interval) clearInterval(this._interval);
             if (this._countdownSoundInterval) clearInterval(this._countdownSoundInterval);
+            if (this._systrayPoll) clearInterval(this._systrayPoll);
         });
     }
 
@@ -58,11 +59,25 @@ export class SpeedrunSystray extends Component {
                 this.state.gameId = result.id;
                 if (result.state === "running") {
                     this._showPlaying(result);
+                } else if (result.state === "countdown") {
+                    this.state.visible = true;
+                    this.state.phase = "countdown";
+                    this.state.taskName = result.task_name || "";
+                    this.state.currentRound = result.current_round;
+                    this.state.totalRounds = result.total_rounds;
+                    // Navigate to game screen if not already there
+                    if (!document.querySelector(".o_speedrun_container")) {
+                        this._goToGame();
+                    }
+                    this._runCountdownSounds(result.countdown_remaining || 5);
                 } else if (result.state === "round_finished") {
                     this.state.visible = true;
                     this.state.phase = "round_finished";
                     this.state.currentRound = result.current_round;
                     this.state.totalRounds = result.total_rounds;
+                } else if (result.state === "waiting") {
+                    // Start polling for state changes
+                    this._startSystrayPoll(result.id);
                 }
             }
         } catch {
@@ -172,6 +187,37 @@ export class SpeedrunSystray extends Component {
                     break;
             }
         }
+    }
+
+    _startSystrayPoll(gameId) {
+        if (this._systrayPoll) clearInterval(this._systrayPoll);
+        this._systrayPoll = setInterval(async () => {
+            try {
+                const result = await rpc("/odoo_speedrun/game_info", { game_id: gameId });
+                if (result && !result.error && result.state !== "waiting") {
+                    clearInterval(this._systrayPoll);
+                    this._systrayPoll = null;
+                    if (result.state === "countdown") {
+                        this.state.visible = true;
+                        this.state.phase = "countdown";
+                        this.state.taskName = result.task_name || "";
+                        this.state.currentRound = result.current_round;
+                        this.state.totalRounds = result.total_rounds;
+                        this.state.gameId = gameId;
+                        if (!document.querySelector(".o_speedrun_container")) {
+                            this._goToGame();
+                        }
+                        this._runCountdownSounds(result.countdown_remaining || 5);
+                    } else if (result.state === "running") {
+                        this.state.gameId = gameId;
+                        this._showPlaying(result);
+                        this.actionService.doAction("menu");
+                    }
+                }
+            } catch {
+                // Ignore
+            }
+        }, 2000);
     }
 
     _runCountdownSounds(seconds) {

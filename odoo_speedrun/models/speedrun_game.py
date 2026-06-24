@@ -345,7 +345,7 @@ class SpeedrunGame(models.Model):
                 } for r in rnd_results],
             })
 
-        return {
+        info = {
             'id': self.id,
             'name': self.name,
             'code': self.code,
@@ -366,3 +366,7 @@ class SpeedrunGame(models.Model):
             'standings': self._build_standings(),
             'rounds': rounds,
         }
+        if self.state == 'countdown':
+            elapsed = (fields.Datetime.now() - self.write_date).total_seconds()
+            info['countdown_remaining'] = max(1, int(5 - elapsed))
+        return info

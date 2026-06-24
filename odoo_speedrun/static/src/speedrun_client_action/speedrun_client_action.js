@@ -41,6 +41,7 @@ export class SpeedrunClientAction extends Component {
         onWillUnmount(() => {
             this.busService.removeEventListener("notification", this._onBusNotification);
             if (this._countdownInterval) clearInterval(this._countdownInterval);
+            if (this._lobbyPoll) clearInterval(this._lobbyPoll);
         });
     }
 
@@ -50,30 +51,63 @@ export class SpeedrunClientAction extends Component {
             if (result && result.id) {
                 this.state.game = result;
                 this.busService.forceUpdateChannels();
-                // Determine the correct phase based on game state
-                switch (result.state) {
-                    case "waiting":
-                        this.state.phase = "lobby";
-                        break;
-                    case "countdown":
-                        // Calculate remaining countdown time
-                        // The game write_date is when countdown started
-                        this._startCountdown(result.countdown_remaining || 5);
-                        break;
-                    case "running":
-                        this.state.phase = "playing";
-                        break;
-                    case "round_finished":
-                        this.state.phase = "round_results";
-                        break;
-                    case "finished":
-                        this.state.phase = "final_results";
-                        break;
-                }
+                this._applyGameState(result);
             }
         } catch {
             // No active game, stay in lobby
         }
+    }
+
+    _applyGameState(result) {
+        switch (result.state) {
+            case "waiting":
+                this.state.phase = "lobby";
+                // Poll for game state changes (backup for bus)
+                this._startLobbyPoll();
+                break;
+            case "countdown":
+                this._startCountdown(result.countdown_remaining || 5);
+                break;
+            case "running":
+                this.state.phase = "playing";
+                break;
+            case "round_finished":
+                this.state.phase = "round_results";
+                break;
+            case "finished":
+                this.state.phase = "final_results";
+                break;
+        }
+    }
+
+    _startLobbyPoll() {
+        if (this._lobbyPoll) clearInterval(this._lobbyPoll);
+        this._lobbyPoll = setInterval(async () => {
+            if (this.state.phase !== "lobby" || !this.state.game) {
+                clearInterval(this._lobbyPoll);
+                this._lobbyPoll = null;
+                return;
+            }
+            try {
+                const result = await rpc("/odoo_speedrun/game_info", { game_id: this.state.game.id });
+                if (result && !result.error) {
+                    // Update players list
+                    this.state.game.players = result.players;
+                    this.state.game.player_count = result.player_count;
+                    // Detect state change
+                    if (result.state !== "waiting") {
+                        clearInterval(this._lobbyPoll);
+                        this._lobbyPoll = null;
+                        for (const key of Object.keys(result)) {
+                            this.state.game[key] = result[key];
+                        }
+                        this._applyGameState(result);
+                    }
+                }
+            } catch {
+                // Ignore polling errors
+            }
+        }, 2000);
     }
 
     onBusNotification({ detail: notifications }) {
@@ -196,6 +230,7 @@ export class SpeedrunClientAction extends Component {
         this.state.game = result;
         this.state.phase = "lobby";
         this.busService.forceUpdateChannels();
+        this._startLobbyPoll();
     }
 
     async joinGame(code) {
@@ -207,6 +242,7 @@ export class SpeedrunClientAction extends Component {
         this.state.game = result;
         this.state.phase = "lobby";
         this.busService.forceUpdateChannels();
+        this._startLobbyPoll();
     }
 
     async leaveGame() {

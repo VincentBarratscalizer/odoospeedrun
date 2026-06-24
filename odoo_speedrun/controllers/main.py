@@ -45,7 +45,7 @@ class SpeedrunController(http.Controller):
             return {'error': str(e)}
         return {
             'success': True,
-            'countdown_seconds': 10,
+            'countdown_seconds': 5,
             'task_name': game.task_id.name,
             'task_description': game.task_id.description or '',
             'current_round': game.current_round,
@@ -75,7 +75,7 @@ class SpeedrunController(http.Controller):
             return {'error': str(e)}
         return {
             'success': True,
-            'countdown_seconds': 10,
+            'countdown_seconds': 5,
             'task_name': game.task_id.name,
             'task_description': game.task_id.description or '',
             'current_round': game.current_round,

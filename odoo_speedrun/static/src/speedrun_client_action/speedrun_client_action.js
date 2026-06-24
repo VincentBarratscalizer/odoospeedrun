@@ -112,7 +112,7 @@ export class SpeedrunClientAction extends Component {
             this.state.game.current_round = payload.current_round;
             this.state.game.total_rounds = payload.total_rounds;
         }
-        this._startCountdown(payload.countdown_seconds || 10);
+        this._startCountdown(payload.countdown_seconds || 5);
     }
 
     _startCountdown(seconds) {
@@ -230,7 +230,7 @@ export class SpeedrunClientAction extends Component {
         window.dispatchEvent(new CustomEvent("speedrun-update", {
             detail: { type: "countdown", data: result },
         }));
-        this._startCountdown(result.countdown_seconds || 10);
+        this._startCountdown(result.countdown_seconds || 5);
     }
 
     async nextRound() {
@@ -249,7 +249,7 @@ export class SpeedrunClientAction extends Component {
         window.dispatchEvent(new CustomEvent("speedrun-update", {
             detail: { type: "countdown", data: result },
         }));
-        this._startCountdown(result.countdown_seconds || 10);
+        this._startCountdown(result.countdown_seconds || 5);
     }
 
     async beginGame() {

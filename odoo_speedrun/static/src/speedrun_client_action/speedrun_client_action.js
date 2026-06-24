@@ -45,6 +45,7 @@ export class SpeedrunClientAction extends Component {
             this.busService.removeEventListener("notification", this._onBusNotification);
             if (this._countdownInterval) clearInterval(this._countdownInterval);
             if (this._lobbyPoll) clearInterval(this._lobbyPoll);
+            if (this._roundResultsPoll) clearInterval(this._roundResultsPoll);
             if (this._roundEndPoll) clearInterval(this._roundEndPoll);
         });
     }
@@ -99,11 +100,37 @@ export class SpeedrunClientAction extends Component {
             }
             case "round_finished":
                 this.state.phase = "round_results";
+                this._startRoundResultsPoll();
                 break;
             case "finished":
                 this.state.phase = "final_results";
                 break;
         }
+    }
+
+    _startRoundResultsPoll() {
+        if (this._roundResultsPoll) clearInterval(this._roundResultsPoll);
+        this._roundResultsPoll = setInterval(async () => {
+            if (this.state.phase !== "round_results" || !this.state.game) {
+                clearInterval(this._roundResultsPoll);
+                this._roundResultsPoll = null;
+                return;
+            }
+            try {
+                const result = await rpc("/odoo_speedrun/game_info", { game_id: this.state.game.id });
+                if (result && !result.error && result.state !== "round_finished") {
+                    clearInterval(this._roundResultsPoll);
+                    this._roundResultsPoll = null;
+                    for (const key of Object.keys(result)) {
+                        this.state.game[key] = result[key];
+                    }
+                    this._redirectToHome = true;
+                    this._applyGameState(result);
+                }
+            } catch {
+                // Ignore
+            }
+        }, 2000);
     }
 
     _startLobbyPoll() {

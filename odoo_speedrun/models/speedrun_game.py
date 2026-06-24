@@ -157,7 +157,7 @@ class SpeedrunGame(models.Model):
         })
 
         self._bus_send('speedrun/countdown_start', {
-            'countdown_seconds': 3,
+            'countdown_seconds': 10,
             'game_id': self.id,
             'current_round': self.current_round,
             'total_rounds': self.total_rounds,

@@ -56,7 +56,9 @@ export class SpeedrunClientAction extends Component {
                         this.state.phase = "lobby";
                         break;
                     case "countdown":
-                        this.state.phase = "countdown";
+                        // Calculate remaining countdown time
+                        // The game write_date is when countdown started
+                        this._startCountdown(result.countdown_remaining || 5);
                         break;
                     case "running":
                         this.state.phase = "playing";

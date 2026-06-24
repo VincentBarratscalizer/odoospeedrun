@@ -106,6 +106,11 @@ class SpeedrunController(http.Controller):
         if not game:
             return {}
         info = game._get_game_info()
+        # Include countdown remaining seconds if in countdown state
+        if game.state == 'countdown':
+            from odoo import fields
+            elapsed = (fields.Datetime.now() - game.write_date).total_seconds()
+            info['countdown_remaining'] = max(1, int(5 - elapsed))
         # Include round results for the current round if available
         if game.state == 'round_finished' and game.current_round:
             rr = game.round_result_ids.filtered(

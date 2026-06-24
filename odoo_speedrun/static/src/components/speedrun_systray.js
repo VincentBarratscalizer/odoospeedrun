@@ -72,6 +72,15 @@ export class SpeedrunSystray extends Component {
     onSpeedrunUpdate(ev) {
         const { type, data } = ev.detail;
         switch (type) {
+            case "countdown":
+                this.state.visible = true;
+                this.state.phase = "countdown";
+                this.state.taskName = data.task_name || "";
+                this.state.taskDescription = data.task_description || "";
+                this.state.currentRound = data.current_round;
+                this.state.totalRounds = data.total_rounds;
+                this.state.gameId = data.game_id || this.state.gameId;
+                break;
             case "game_started":
                 this.state.gameId = data.id || this.state.gameId;
                 this._showPlaying(data);
@@ -119,10 +128,18 @@ export class SpeedrunSystray extends Component {
     onBusNotification({ detail: notifications }) {
         for (const { type, payload } of notifications) {
             switch (type) {
+                case "speedrun/countdown_start":
+                    this.state.visible = true;
+                    this.state.phase = "countdown";
+                    this.state.taskName = payload.task_name || "";
+                    this.state.taskDescription = payload.task_description || "";
+                    this.state.currentRound = payload.current_round;
+                    this.state.totalRounds = payload.total_rounds;
+                    this.state.gameId = payload.game_id || this.state.gameId;
+                    break;
                 case "speedrun/game_started":
                     this.state.gameId = payload.game_id;
                     this._showPlaying(payload);
-                    // Navigate to home so user can do the task
                     this.actionService.doAction("menu");
                     break;
                 case "speedrun/player_finished":

@@ -21,13 +21,27 @@
             <!-- Countdown overlay -->
             <t t-if="state.phase === 'countdown'">
                 <div class="o_speedrun_countdown position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-90" style="z-index: 9999;">
-                    <div class="text-center">
+                    <div class="text-center" style="max-width: 800px;">
                         <t t-if="state.game and state.game.current_round > 0">
-                            <div class="fs-3 text-muted mb-3">
+                            <div class="fs-4 text-muted mb-2">
                                 Round <t t-esc="state.game.current_round"/> / <t t-esc="state.game.total_rounds"/>
                             </div>
                         </t>
-                        <div class="display-1 fw-bold text-warning o_speedrun_countdown_number" style="font-size: 15rem;">
+
+                        <!-- Task preview during countdown -->
+                        <t t-if="state.game and state.game.task_name">
+                            <div class="mb-4 px-4">
+                                <div class="fs-6 text-uppercase text-muted mb-2">Your mission</div>
+                                <h2 class="text-info fw-bold mb-2">
+                                    <t t-esc="state.game.task_name"/>
+                                </h2>
+                                <p class="text-light fs-5 mb-0" t-if="state.game.task_description" style="opacity: 0.8;">
+                                    <t t-esc="state.game.task_description"/>
+                                </p>
+                            </div>
+                        </t>
+
+                        <div class="display-1 fw-bold text-warning o_speedrun_countdown_number" style="font-size: 12rem;">
                             <t t-if="state.countdown > 0"><t t-esc="state.countdown"/></t>
                             <t t-else="">GO!</t>
                         </div>

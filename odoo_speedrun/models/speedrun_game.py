@@ -161,6 +161,8 @@ class SpeedrunGame(models.Model):
             'game_id': self.id,
             'current_round': self.current_round,
             'total_rounds': self.total_rounds,
+            'task_name': task.name,
+            'task_description': task.description or '',
         })
         return True
 

@@ -105,14 +105,21 @@ export class SpeedrunClientAction extends Component {
 
     onCountdownStart(payload) {
         if (this.state.phase === "countdown" || this.state.phase === "playing") return;
-        this._startCountdown(payload.countdown_seconds);
+        // Update task info from bus payload
+        if (this.state.game && payload.task_name) {
+            this.state.game.task_name = payload.task_name;
+            this.state.game.task_description = payload.task_description || "";
+            this.state.game.current_round = payload.current_round;
+            this.state.game.total_rounds = payload.total_rounds;
+        }
+        this._startCountdown(3);
     }
 
     _startCountdown(seconds) {
         if (this._countdownInterval) clearInterval(this._countdownInterval);
         this.state.phase = "countdown";
         this.state.countdown = seconds;
-        playCountdownBeep(seconds); // Initial beep
+        playCountdownBeep(seconds);
         this._countdownInterval = setInterval(() => {
             this.state.countdown--;
             playCountdownBeep(this.state.countdown);
@@ -214,6 +221,15 @@ export class SpeedrunClientAction extends Component {
             this.notification.add(result.error, { type: "danger" });
             return;
         }
+        // Store task info before countdown
+        this.state.game.task_name = result.task_name;
+        this.state.game.task_description = result.task_description;
+        this.state.game.current_round = result.current_round;
+        this.state.game.total_rounds = result.total_rounds;
+        // Notify systray of countdown with task info
+        window.dispatchEvent(new CustomEvent("speedrun-update", {
+            detail: { type: "countdown", data: result },
+        }));
         this._startCountdown(3);
     }
 
@@ -224,6 +240,15 @@ export class SpeedrunClientAction extends Component {
             this.notification.add(result.error, { type: "danger" });
             return;
         }
+        // Store task info before countdown
+        this.state.game.task_name = result.task_name;
+        this.state.game.task_description = result.task_description;
+        this.state.game.current_round = result.current_round;
+        this.state.game.total_rounds = result.total_rounds;
+        // Notify systray of countdown with task info
+        window.dispatchEvent(new CustomEvent("speedrun-update", {
+            detail: { type: "countdown", data: result },
+        }));
         this._startCountdown(3);
     }
 

@@ -10,6 +10,17 @@
                     R<t t-esc="state.currentRound"/>/<t t-esc="state.totalRounds"/>
                 </span>
 
+                <!-- Countdown state: show task name -->
+                <t t-if="state.phase === 'countdown'">
+                    <span class="badge bg-info text-dark fw-bold" style="font-size: 0.8rem;">
+                        GET READY
+                    </span>
+                    <span class="text-truncate d-none d-lg-inline" style="max-width: 250px; font-size: 0.8rem;"
+                        t-att-title="state.taskName">
+                        <t t-esc="state.taskName"/>
+                    </span>
+                </t>
+
                 <!-- Playing state: timer + task + check button -->
                 <t t-if="state.phase === 'playing'">
                     <!-- Timer -->

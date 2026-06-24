@@ -43,7 +43,13 @@ class SpeedrunController(http.Controller):
             game.action_start()
         except Exception as e:
             return {'error': str(e)}
-        return {'success': True}
+        return {
+            'success': True,
+            'task_name': game.task_id.name,
+            'task_description': game.task_id.description or '',
+            'current_round': game.current_round,
+            'total_rounds': game.total_rounds,
+        }
 
     @http.route('/odoo_speedrun/begin_game', type='jsonrpc', auth='user')
     def begin_game(self, game_id):
@@ -66,7 +72,13 @@ class SpeedrunController(http.Controller):
             game.action_next_round()
         except Exception as e:
             return {'error': str(e)}
-        return {'success': True}
+        return {
+            'success': True,
+            'task_name': game.task_id.name,
+            'task_description': game.task_id.description or '',
+            'current_round': game.current_round,
+            'total_rounds': game.total_rounds,
+        }
 
     @http.route('/odoo_speedrun/check_completion', type='jsonrpc', auth='user')
     def check_completion(self, game_id):

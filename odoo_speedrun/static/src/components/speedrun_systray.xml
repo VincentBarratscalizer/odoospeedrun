@@ -2,8 +2,9 @@
 <templates xml:space="preserve">
     <t t-name="odoo_speedrun.SpeedrunSystray">
         <t t-if="state.visible">
-            <div class="o_speedrun_systray d-flex align-items-center gap-2 px-2 cursor-pointer"
-                 t-on-click="onClickGoToGame">
+            <div class="o_speedrun_systray d-flex align-items-center gap-2 px-2"
+                 t-att-class="state.phase !== 'playing' ? 'cursor-pointer' : ''"
+                 t-on-click="onClickSystray">
 
                 <!-- Round indicator -->
                 <span class="badge bg-dark text-warning border border-warning" style="font-size: 0.7rem;">

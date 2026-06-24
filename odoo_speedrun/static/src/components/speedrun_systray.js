@@ -263,7 +263,11 @@ export class SpeedrunSystray extends Component {
         });
     }
 
-    onClickGoToGame() {
+    onClickSystray() {
+        // Don't navigate away during playing phase — player needs to stay in Odoo to work
+        if (this.state.phase === "playing" && !this.state.myFinished) {
+            return;
+        }
         this._goToGame();
     }
 }

@@ -137,9 +137,11 @@ export class SpeedrunSystray extends Component {
                     this.state.currentRound = payload.current_round;
                     this.state.totalRounds = payload.total_rounds;
                     this.state.gameId = payload.game_id || this.state.gameId;
-                    // Navigate to game screen so non-hosts see the countdown overlay
-                    this._goToGame();
-                    // Start countdown sounds for non-hosts
+                    // Only navigate if game screen is NOT already open
+                    // (to avoid destroying an active countdown)
+                    if (!document.querySelector(".o_speedrun_container")) {
+                        this._goToGame();
+                    }
                     this._runCountdownSounds(payload.countdown_seconds || 5);
                     break;
                 case "speedrun/game_started":

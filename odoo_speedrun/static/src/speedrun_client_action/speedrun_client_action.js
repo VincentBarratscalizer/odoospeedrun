@@ -82,6 +82,13 @@ export class SpeedrunClientAction extends Component {
                     this._waitForRoundEnd();
                 } else {
                     this.state.phase = "playing";
+                    this.state.myFinished = false;
+                    this.state.checkResult = null;
+                    // Notify systray and redirect to home
+                    window.dispatchEvent(new CustomEvent("speedrun-update", {
+                        detail: { type: "game_started", data: result },
+                    }));
+                    this.actionService.doAction("menu");
                 }
                 break;
             }

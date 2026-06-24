@@ -69,6 +69,55 @@
                         onCheckCompletion.bind="checkCompletion"
                     />
                 </t>
+                <t t-if="state.phase === 'waiting_others'">
+                    <div class="text-center">
+                        <!-- My result -->
+                        <div class="mb-4">
+                            <h2 class="text-success fw-bold mb-2">Task Complete!</h2>
+                            <div class="fs-1 fw-bold text-warning font-monospace mb-2" t-esc="formatTime(state.myDurationMs)"/>
+                            <div class="d-flex justify-content-center gap-3">
+                                <t t-if="state.myRank">
+                                    <span class="badge bg-info fs-5 px-3 py-2">
+                                        Rank #<t t-esc="state.myRank"/>
+                                    </span>
+                                </t>
+                                <t t-if="state.myPoints">
+                                    <span class="badge bg-warning text-dark fs-5 px-3 py-2">
+                                        +<t t-esc="state.myPoints"/> pts
+                                    </span>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- Other players status -->
+                        <div class="card bg-secondary bg-opacity-25 border-light mb-4" style="max-width: 500px; margin: 0 auto;">
+                            <div class="card-header bg-dark text-muted">
+                                Waiting for other players...
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="list-group list-group-flush">
+                                    <t t-foreach="state.game.players" t-as="player" t-key="player.user_id">
+                                        <div class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center border-secondary">
+                                            <span class="fw-bold"><t t-esc="player.user_name"/></span>
+                                            <t t-if="player.state === 'finished'">
+                                                <span class="badge bg-success">
+                                                    <i class="fa fa-check me-1"/>
+                                                    <t t-esc="formatTime(player.duration_ms)"/>
+                                                </span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="badge bg-secondary">
+                                                    <i class="fa fa-spinner fa-spin me-1"/>Playing...
+                                                </span>
+                                            </t>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
                 <t t-if="state.phase === 'round_results'">
                     <GameResults
                         game="state.game"

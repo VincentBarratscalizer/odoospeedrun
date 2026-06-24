@@ -245,16 +245,9 @@ export class SpeedrunSystray extends Component {
             if (result.success) {
                 playSound("taskComplete");
                 this.state.myFinished = true;
-                if (result.all_done) {
-                    if (this._interval) clearInterval(this._interval);
-                    playSound("roundOver");
-                    this._goToGame();
-                } else {
-                    this.notification.add(
-                        `+${result.points} pts! Rank #${result.rank} - Waiting for others...`,
-                        { type: "success" }
-                    );
-                }
+                if (this._interval) clearInterval(this._interval);
+                // Always redirect to game screen to see time + waiting screen
+                this._goToGame();
             } else if (result.error) {
                 playSound("error");
                 this.notification.add(result.error, { type: "warning" });

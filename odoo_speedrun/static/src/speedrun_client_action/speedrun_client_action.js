@@ -22,11 +22,14 @@ export class SpeedrunClientAction extends Component {
         this.user = user;
 
         this.state = useState({
-            // lobby | countdown | playing | round_results | final_results
+            // lobby | countdown | playing | waiting_others | round_results | final_results
             phase: "lobby",
             game: null,
             countdown: 0,
             myFinished: false,
+            myDurationMs: 0,
+            myRank: 0,
+            myPoints: 0,
             checkResult: null,
         });
 
@@ -69,9 +72,19 @@ export class SpeedrunClientAction extends Component {
             case "countdown":
                 this._startCountdown(result.countdown_remaining || 5);
                 break;
-            case "running":
-                this.state.phase = "playing";
+            case "running": {
+                // Check if current user already finished this round
+                const me = result.players?.find(p => p.user_id === this.user.userId);
+                if (me && me.state === "finished") {
+                    this.state.myFinished = true;
+                    this.state.myDurationMs = me.duration_ms;
+                    this.state.phase = "waiting_others";
+                    this._waitForRoundEnd();
+                } else {
+                    this.state.phase = "playing";
+                }
                 break;
+            }
             case "round_finished":
                 this.state.phase = "round_results";
                 break;
@@ -350,29 +363,20 @@ export class SpeedrunClientAction extends Component {
         this.state.checkResult = result;
         if (result.success) {
             this.state.myFinished = true;
+            this.state.myDurationMs = result.duration_ms;
+            this.state.myRank = result.rank;
+            this.state.myPoints = result.points;
             playSound("taskComplete");
             if (result.all_done && result.game_info) {
-                // All players finished — go to results
-                const gameInfo = result.game_info;
-                for (const key of Object.keys(gameInfo)) {
-                    this.state.game[key] = gameInfo[key];
-                }
-                const isFinal = this.state.game.state === "finished";
-                this.state.phase = isFinal ? "final_results" : "round_results";
-                if (isFinal) playSound("gameOver");
-                else playSound("roundOver");
-                window.dispatchEvent(new CustomEvent("speedrun-update", {
-                    detail: { type: isFinal ? "game_over" : "round_over", data: gameInfo },
-                }));
+                // All players finished — go straight to results
+                this._showRoundResults(result.game_info);
             } else {
-                this.notification.add(
-                    `+${result.points} point${result.points !== 1 ? 's' : ''}! Rank #${result.rank}`,
-                    { type: "success" }
-                );
-                if (!result.all_done) {
-                    // Not everyone is done yet — poll for round end
-                    this._waitForRoundEnd();
-                }
+                // Show waiting screen with my time, poll for round end
+                this.state.phase = "waiting_others";
+                window.dispatchEvent(new CustomEvent("speedrun-update", {
+                    detail: { type: "player_done" },
+                }));
+                this._waitForRoundEnd();
             }
         } else if (result.error) {
             playSound("error");
@@ -380,11 +384,23 @@ export class SpeedrunClientAction extends Component {
         }
     }
 
+    _showRoundResults(gameInfo) {
+        for (const key of Object.keys(gameInfo)) {
+            this.state.game[key] = gameInfo[key];
+        }
+        const isFinal = this.state.game.state === "finished";
+        this.state.phase = isFinal ? "final_results" : "round_results";
+        if (isFinal) playSound("gameOver");
+        else playSound("roundOver");
+        window.dispatchEvent(new CustomEvent("speedrun-update", {
+            detail: { type: isFinal ? "game_over" : "round_over", data: gameInfo },
+        }));
+    }
+
     async _waitForRoundEnd() {
-        // Poll until the round ends (all players finished or round_finished/finished state)
         if (this._roundEndPoll) clearInterval(this._roundEndPoll);
         this._roundEndPoll = setInterval(async () => {
-            if (!this.state.game || this.state.phase !== "playing") {
+            if (!this.state.game || (this.state.phase !== "playing" && this.state.phase !== "waiting_others")) {
                 clearInterval(this._roundEndPoll);
                 this._roundEndPoll = null;
                 return;
@@ -392,19 +408,14 @@ export class SpeedrunClientAction extends Component {
             try {
                 const result = await rpc("/odoo_speedrun/game_info", { game_id: this.state.game.id });
                 if (result && !result.error) {
+                    // Update players list in waiting_others phase
+                    if (this.state.phase === "waiting_others") {
+                        this.state.game.players = result.players;
+                    }
                     if (result.state === "round_finished" || result.state === "finished") {
                         clearInterval(this._roundEndPoll);
                         this._roundEndPoll = null;
-                        for (const key of Object.keys(result)) {
-                            this.state.game[key] = result[key];
-                        }
-                        const isFinal = result.state === "finished";
-                        this.state.phase = isFinal ? "final_results" : "round_results";
-                        if (isFinal) playSound("gameOver");
-                        else playSound("roundOver");
-                        window.dispatchEvent(new CustomEvent("speedrun-update", {
-                            detail: { type: isFinal ? "game_over" : "round_over", data: result },
-                        }));
+                        this._showRoundResults(result);
                     }
                 }
             } catch {
@@ -421,6 +432,15 @@ export class SpeedrunClientAction extends Component {
                 this.state.game[key] = result[key];
             }
         }
+    }
+
+    formatTime(ms) {
+        if (!ms) return "DNF";
+        const totalSeconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        const millis = ms % 1000;
+        return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(millis).padStart(3, "0")}`;
     }
 
     playAgain() {

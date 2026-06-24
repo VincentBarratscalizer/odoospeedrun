@@ -240,13 +240,19 @@ class SpeedrunGame(models.Model):
             'points': points,
         })
 
-        # Check if all players are done (or first finisher ends the round)
-        is_round_winner = (rank == 1)
-        if is_round_winner:
+        # Check if all players have finished
+        all_done = all(p.state == 'finished' for p in self.player_ids)
+        if all_done:
             self._end_round(now)
 
-        response = {'success': True, 'is_round_winner': is_round_winner, 'duration_ms': duration_ms, 'rank': rank, 'points': points}
-        if is_round_winner:
+        response = {
+            'success': True,
+            'all_done': all_done,
+            'duration_ms': duration_ms,
+            'rank': rank,
+            'points': points,
+        }
+        if all_done:
             response['game_info'] = self._get_game_info()
         return response
 

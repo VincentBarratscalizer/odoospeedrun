@@ -42,6 +42,7 @@ export class SpeedrunClientAction extends Component {
             this.busService.removeEventListener("notification", this._onBusNotification);
             if (this._countdownInterval) clearInterval(this._countdownInterval);
             if (this._lobbyPoll) clearInterval(this._lobbyPoll);
+            if (this._roundEndPoll) clearInterval(this._roundEndPoll);
         });
     }
 
@@ -350,8 +351,8 @@ export class SpeedrunClientAction extends Component {
         if (result.success) {
             this.state.myFinished = true;
             playSound("taskComplete");
-            if (result.is_round_winner && result.game_info) {
-                // Round winner — update game info and go to results
+            if (result.all_done && result.game_info) {
+                // All players finished — go to results
                 const gameInfo = result.game_info;
                 for (const key of Object.keys(gameInfo)) {
                     this.state.game[key] = gameInfo[key];
@@ -360,7 +361,6 @@ export class SpeedrunClientAction extends Component {
                 this.state.phase = isFinal ? "final_results" : "round_results";
                 if (isFinal) playSound("gameOver");
                 else playSound("roundOver");
-                // Notify systray
                 window.dispatchEvent(new CustomEvent("speedrun-update", {
                     detail: { type: isFinal ? "game_over" : "round_over", data: gameInfo },
                 }));
@@ -369,11 +369,48 @@ export class SpeedrunClientAction extends Component {
                     `+${result.points} point${result.points !== 1 ? 's' : ''}! Rank #${result.rank}`,
                     { type: "success" }
                 );
+                if (!result.all_done) {
+                    // Not everyone is done yet — poll for round end
+                    this._waitForRoundEnd();
+                }
             }
         } else if (result.error) {
             playSound("error");
             this.notification.add(result.error, { type: "warning" });
         }
+    }
+
+    async _waitForRoundEnd() {
+        // Poll until the round ends (all players finished or round_finished/finished state)
+        if (this._roundEndPoll) clearInterval(this._roundEndPoll);
+        this._roundEndPoll = setInterval(async () => {
+            if (!this.state.game || this.state.phase !== "playing") {
+                clearInterval(this._roundEndPoll);
+                this._roundEndPoll = null;
+                return;
+            }
+            try {
+                const result = await rpc("/odoo_speedrun/game_info", { game_id: this.state.game.id });
+                if (result && !result.error) {
+                    if (result.state === "round_finished" || result.state === "finished") {
+                        clearInterval(this._roundEndPoll);
+                        this._roundEndPoll = null;
+                        for (const key of Object.keys(result)) {
+                            this.state.game[key] = result[key];
+                        }
+                        const isFinal = result.state === "finished";
+                        this.state.phase = isFinal ? "final_results" : "round_results";
+                        if (isFinal) playSound("gameOver");
+                        else playSound("roundOver");
+                        window.dispatchEvent(new CustomEvent("speedrun-update", {
+                            detail: { type: isFinal ? "game_over" : "round_over", data: result },
+                        }));
+                    }
+                }
+            } catch {
+                // Ignore
+            }
+        }, 2000);
     }
 
     async refreshGame() {

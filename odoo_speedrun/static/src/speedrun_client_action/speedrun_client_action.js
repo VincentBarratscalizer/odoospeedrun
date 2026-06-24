@@ -84,11 +84,16 @@ export class SpeedrunClientAction extends Component {
                     this.state.phase = "playing";
                     this.state.myFinished = false;
                     this.state.checkResult = null;
-                    // Notify systray and redirect to home
+                    // Notify systray
                     window.dispatchEvent(new CustomEvent("speedrun-update", {
                         detail: { type: "game_started", data: result },
                     }));
-                    this.actionService.doAction("menu");
+                    // Only redirect to home if coming from lobby/countdown (first time)
+                    // If user clicked systray, they want to see the task — don't redirect
+                    if (this._redirectToHome) {
+                        this._redirectToHome = false;
+                        this.actionService.doAction("menu");
+                    }
                 }
                 break;
             }
@@ -122,6 +127,8 @@ export class SpeedrunClientAction extends Component {
                         for (const key of Object.keys(result)) {
                             this.state.game[key] = result[key];
                         }
+                        // First transition from lobby — redirect to home after countdown
+                        this._redirectToHome = true;
                         this._applyGameState(result);
                     }
                 }

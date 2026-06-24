@@ -47,6 +47,7 @@ export class SpeedrunSystray extends Component {
             this.busService.removeEventListener("notification", this._onBusNotification);
             window.removeEventListener("speedrun-update", this._onSpeedrunUpdate);
             if (this._interval) clearInterval(this._interval);
+            if (this._countdownSoundInterval) clearInterval(this._countdownSoundInterval);
         });
     }
 
@@ -136,10 +137,15 @@ export class SpeedrunSystray extends Component {
                     this.state.currentRound = payload.current_round;
                     this.state.totalRounds = payload.total_rounds;
                     this.state.gameId = payload.game_id || this.state.gameId;
+                    // Navigate to game screen so non-hosts see the countdown overlay
+                    this._goToGame();
+                    // Start countdown sounds for non-hosts
+                    this._runCountdownSounds(payload.countdown_seconds || 5);
                     break;
                 case "speedrun/game_started":
                     this.state.gameId = payload.game_id;
                     this._showPlaying(payload);
+                    // Navigate to home so user can do the task
                     this.actionService.doAction("menu");
                     break;
                 case "speedrun/player_finished":
@@ -164,6 +170,21 @@ export class SpeedrunSystray extends Component {
                     break;
             }
         }
+    }
+
+    _runCountdownSounds(seconds) {
+        // Play countdown beeps in sync (for non-host players)
+        if (this._countdownSoundInterval) clearInterval(this._countdownSoundInterval);
+        let remaining = seconds;
+        playCountdownBeep(remaining);
+        this._countdownSoundInterval = setInterval(() => {
+            remaining--;
+            playCountdownBeep(remaining);
+            if (remaining <= 0) {
+                clearInterval(this._countdownSoundInterval);
+                this._countdownSoundInterval = null;
+            }
+        }, 1000);
     }
 
     async onClickCheck() {

@@ -8,6 +8,7 @@ import { user } from "@web/core/user";
 import { GameLobby } from "../components/game_lobby";
 import { GameTimer } from "../components/game_timer";
 import { GameResults } from "../components/game_results";
+import { playSound, playCountdownBeep } from "../services/sound_service";
 
 export class SpeedrunClientAction extends Component {
     static template = "odoo_speedrun.SpeedrunClientAction";
@@ -77,6 +78,9 @@ export class SpeedrunClientAction extends Component {
         for (const { type, payload } of notifications) {
             switch (type) {
                 case "speedrun/player_joined":
+                    playSound("playerJoined");
+                    if (this.state.game) this.refreshGame();
+                    break;
                 case "speedrun/player_left":
                     if (this.state.game) this.refreshGame();
                     break;
@@ -108,8 +112,10 @@ export class SpeedrunClientAction extends Component {
         if (this._countdownInterval) clearInterval(this._countdownInterval);
         this.state.phase = "countdown";
         this.state.countdown = seconds;
+        playCountdownBeep(seconds); // Initial beep
         this._countdownInterval = setInterval(() => {
             this.state.countdown--;
+            playCountdownBeep(this.state.countdown);
             if (this.state.countdown <= 0) {
                 clearInterval(this._countdownInterval);
                 this._countdownInterval = null;
@@ -147,6 +153,7 @@ export class SpeedrunClientAction extends Component {
 
     onRoundOver(payload) {
         if (this.state.phase === "round_results" || this.state.phase === "final_results") return;
+        playSound("roundOver");
         if (this.state.game) {
             this.state.game.standings = payload.standings;
             this.state.game.round_results = payload.round_results;
@@ -158,6 +165,7 @@ export class SpeedrunClientAction extends Component {
 
     onGameOver(payload) {
         if (this.state.phase === "final_results") return;
+        playSound("gameOver");
         if (this.state.game) {
             this.state.game.state = "finished";
             this.state.game.winner_id = payload.winner_id;
@@ -244,6 +252,7 @@ export class SpeedrunClientAction extends Component {
         this.state.checkResult = result;
         if (result.success) {
             this.state.myFinished = true;
+            playSound("taskComplete");
             if (result.is_round_winner && result.game_info) {
                 // Round winner — update game info and go to results
                 const gameInfo = result.game_info;
@@ -252,6 +261,8 @@ export class SpeedrunClientAction extends Component {
                 }
                 const isFinal = this.state.game.state === "finished";
                 this.state.phase = isFinal ? "final_results" : "round_results";
+                if (isFinal) playSound("gameOver");
+                else playSound("roundOver");
                 // Notify systray
                 window.dispatchEvent(new CustomEvent("speedrun-update", {
                     detail: { type: isFinal ? "game_over" : "round_over", data: gameInfo },
@@ -263,6 +274,7 @@ export class SpeedrunClientAction extends Component {
                 );
             }
         } else if (result.error) {
+            playSound("error");
             this.notification.add(result.error, { type: "warning" });
         }
     }

@@ -5,6 +5,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
 import { user } from "@web/core/user";
+import { playSound, playCountdownBeep } from "../services/sound_service";
 
 export class SpeedrunSystray extends Component {
     static template = "odoo_speedrun.SpeedrunSystray";
@@ -131,17 +132,17 @@ export class SpeedrunSystray extends Component {
                     break;
                 case "speedrun/round_over":
                     if (this._interval) clearInterval(this._interval);
+                    playSound("roundOver");
                     this.state.phase = "round_finished";
                     this.state.currentRound = payload.current_round;
                     this.state.totalRounds = payload.total_rounds;
-                    // Navigate back to game screen
                     this._goToGame();
                     break;
                 case "speedrun/game_over":
                     if (this._interval) clearInterval(this._interval);
+                    playSound("gameOver");
                     this.state.visible = false;
                     this.state.phase = null;
-                    // Navigate back to game screen for final results
                     this._goToGame();
                     break;
             }
@@ -156,10 +157,11 @@ export class SpeedrunSystray extends Component {
                 game_id: this.state.gameId,
             });
             if (result.success) {
+                playSound("taskComplete");
                 this.state.myFinished = true;
                 if (result.is_round_winner) {
-                    // Round/game ended — go back to game screen
                     if (this._interval) clearInterval(this._interval);
+                    playSound("roundOver");
                     this._goToGame();
                 } else {
                     this.notification.add(
@@ -168,6 +170,7 @@ export class SpeedrunSystray extends Component {
                     );
                 }
             } else if (result.error) {
+                playSound("error");
                 this.notification.add(result.error, { type: "warning" });
             }
         } finally {

@@ -1,45 +1,10 @@
-.o_speedrun_container {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
-    min-height: 100vh;
+// Speedrun — minimal custom styling, everything else uses Odoo standard classes.
 
-    .o_speedrun_header {
-        h1 {
-            text-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
-            letter-spacing: 3px;
-        }
-    }
+.o_speedrun_countdown_number {
+    animation: o-speedrun-pulse 0.8s ease-in-out infinite;
 }
 
-.o_speedrun_countdown {
-    .o_speedrun_countdown_number {
-        animation: pulse 0.8s ease-in-out infinite;
-        text-shadow: 0 0 60px rgba(255, 193, 7, 0.8);
-    }
-}
-
-.o_speedrun_timer_display {
-    text-shadow: 0 0 30px rgba(255, 193, 7, 0.4);
-}
-
-.o_speedrun_lobby {
-    .card {
-        transition: transform 0.2s ease;
-
-        &:hover {
-            transform: translateY(-2px);
-        }
-    }
-}
-
-.o_speedrun_results {
-    table {
-        th, td {
-            vertical-align: middle;
-        }
-    }
-}
-
-@keyframes pulse {
+@keyframes o-speedrun-pulse {
     0%, 100% {
         transform: scale(1);
         opacity: 1;
@@ -50,25 +15,7 @@
     }
 }
 
-// Letter spacing utility
+// Join code readability
 .letter-spacing-2 {
     letter-spacing: 4px;
-}
-
-// Systray widget
-.o_speedrun_systray {
-    height: 100%;
-    border-left: 1px solid rgba(255, 193, 7, 0.3);
-    border-right: 1px solid rgba(255, 193, 7, 0.3);
-    background: rgba(255, 193, 7, 0.08);
-    transition: background 0.2s ease;
-
-    &:hover {
-        background: rgba(255, 193, 7, 0.15);
-    }
-
-    .btn-success {
-        font-size: 0.75rem;
-        line-height: 1.2;
-    }
 }

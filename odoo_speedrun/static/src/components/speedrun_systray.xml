@@ -6,16 +6,16 @@
                  t-on-click="onClickSystray">
 
                 <!-- Round indicator -->
-                <span class="badge bg-dark text-warning border border-warning" style="font-size: 0.7rem;">
+                <span class="badge text-bg-secondary">
                     R<t t-esc="state.currentRound"/>/<t t-esc="state.totalRounds"/>
                 </span>
 
                 <!-- Countdown state: show task name -->
                 <t t-if="state.phase === 'countdown'">
-                    <span class="badge bg-info text-dark fw-bold" style="font-size: 0.8rem;">
+                    <span class="badge text-bg-info">
                         GET READY
                     </span>
-                    <span class="text-truncate d-none d-lg-inline" style="max-width: 250px; font-size: 0.8rem;"
+                    <span class="text-truncate d-none d-lg-inline small" style="max-width: 250px;"
                         t-att-title="state.taskName">
                         <t t-esc="state.taskName"/>
                     </span>
@@ -24,19 +24,19 @@
                 <!-- Playing state: timer + task + check button -->
                 <t t-if="state.phase === 'playing'">
                     <!-- Timer -->
-                    <span class="badge bg-warning text-dark fw-bold font-monospace" style="font-size: 0.85rem;">
+                    <span class="badge text-bg-primary font-monospace">
                         <i class="fa fa-clock-o me-1"/><t t-esc="state.elapsed"/>
                     </span>
 
                     <!-- Task name (truncated) -->
-                    <span class="text-truncate d-none d-lg-inline" style="max-width: 200px; font-size: 0.8rem;"
+                    <span class="text-truncate d-none d-lg-inline small" style="max-width: 200px;"
                         t-att-title="state.taskName">
                         <t t-esc="state.taskName"/>
                     </span>
 
                     <!-- Check button -->
                     <t t-if="!state.myFinished">
-                        <button class="btn btn-sm btn-success fw-bold py-0 px-2"
+                        <button class="btn btn-sm btn-primary py-0 px-2"
                             t-att-disabled="state.checking"
                             t-on-click.stop="onClickCheck">
                             <t t-if="state.checking">
@@ -48,7 +48,7 @@
                         </button>
                     </t>
                     <t t-else="">
-                        <span class="badge bg-success" style="font-size: 0.7rem;">
+                        <span class="badge text-bg-success">
                             <i class="fa fa-check me-1"/>Done
                         </span>
                     </t>
@@ -56,7 +56,7 @@
 
                 <!-- Round finished state -->
                 <t t-if="state.phase === 'round_finished'">
-                    <span class="badge bg-info" style="font-size: 0.8rem;">
+                    <span class="badge text-bg-info">
                         Round complete - click to view
                     </span>
                 </t>

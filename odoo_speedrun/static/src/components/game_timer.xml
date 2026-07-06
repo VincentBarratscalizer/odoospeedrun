@@ -3,13 +3,13 @@
     <t t-name="odoo_speedrun.GameTimer">
         <div class="o_speedrun_timer text-center">
             <!-- Task card -->
-            <div class="card bg-secondary bg-opacity-25 border-warning mb-4">
+            <div class="card mb-4">
                 <div class="card-body p-4">
-                    <h5 class="text-muted text-uppercase mb-2">Your Mission</h5>
-                    <h2 class="text-warning fw-bold mb-3">
+                    <h6 class="text-muted text-uppercase mb-2">Your Mission</h6>
+                    <h3 class="mb-3">
                         <t t-esc="props.game.task_name"/>
-                    </h2>
-                    <p class="fs-5 text-light mb-0" t-if="props.game.task_description">
+                    </h3>
+                    <p class="text-muted mb-0" t-if="props.game.task_description">
                         <t t-esc="props.game.task_description"/>
                     </p>
                 </div>
@@ -17,15 +17,15 @@
 
             <!-- Timer display -->
             <div class="o_speedrun_timer_display mb-4">
-                <div class="font-monospace fw-bold text-warning" style="font-size: 4.5rem; letter-spacing: 4px;">
+                <div class="display-3 font-monospace fw-bold">
                     <t t-esc="timerState.elapsed"/>
                 </div>
             </div>
 
             <!-- Check button -->
             <t t-if="!props.myFinished">
-                <button class="btn btn-lg px-5 py-3 fw-bold fs-3"
-                    t-att-class="timerState.checking ? 'btn-secondary' : 'btn-success'"
+                <button class="btn btn-lg px-5"
+                    t-att-class="timerState.checking ? 'btn-secondary' : 'btn-primary'"
                     t-att-disabled="timerState.checking"
                     t-on-click="onClickCheck">
                     <t t-if="timerState.checking">
@@ -42,27 +42,27 @@
                 </t>
             </t>
             <t t-else="">
-                <div class="alert alert-success fs-4 d-inline-block px-5">
+                <div class="alert alert-success d-inline-block px-5">
                     Task completed! Waiting for other players...
                 </div>
             </t>
 
             <!-- Players status -->
             <div class="mt-4">
-                <h5 class="text-muted">Players</h5>
+                <h6 class="text-muted">Players</h6>
                 <div class="d-flex flex-wrap justify-content-center gap-3">
                     <t t-foreach="props.game.players" t-as="player" t-key="player.user_id">
-                        <div class="card bg-dark border-secondary" style="min-width: 150px;">
+                        <div class="card" style="min-width: 150px;">
                             <div class="card-body p-3 text-center">
                                 <div class="fw-bold mb-1"><t t-esc="player.user_name"/></div>
                                 <t t-if="player.state === 'finished'">
-                                    <span class="badge bg-success">Done!</span>
+                                    <span class="badge text-bg-success">Done!</span>
                                 </t>
                                 <t t-elif="player.state === 'playing'">
-                                    <span class="badge bg-info">Playing...</span>
+                                    <span class="badge text-bg-info">Playing...</span>
                                 </t>
                                 <t t-else="">
-                                    <span class="badge bg-secondary"><t t-esc="player.state"/></span>
+                                    <span class="badge text-bg-secondary"><t t-esc="player.state"/></span>
                                 </t>
                             </div>
                         </div>

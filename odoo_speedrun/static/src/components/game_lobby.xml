@@ -5,37 +5,37 @@
             <!-- No game yet: show matchmaking / create / join -->
             <t t-if="!props.game">
                 <!-- Matchmaking card -->
-                <div class="card bg-secondary bg-opacity-25 border-success mb-4">
+                <div class="card mb-4">
                     <div class="card-body text-center p-4">
-                        <h3 class="card-title text-success mb-2">
-                            <i class="fa fa-crosshairs me-2"/>Ranked Matchmaking
-                        </h3>
+                        <h4 class="card-title mb-2">
+                            <i class="fa fa-crosshairs me-2 text-primary"/>Ranked Matchmaking
+                        </h4>
                         <t t-if="!isSearching">
                             <p class="text-muted mb-3">
                                 Get automatically matched with players of your skill level (ELO).
                                 <t t-if="props.stats">
-                                    <span class="ms-2 badge bg-dark border border-success text-success fs-6">
+                                    <span class="ms-2 badge text-bg-light border">
                                         Your ELO: <t t-esc="props.stats.elo"/>
                                     </span>
                                 </t>
                             </p>
-                            <button class="btn btn-success btn-lg fw-bold px-5"
+                            <button class="btn btn-primary btn-lg px-5"
                                 t-on-click="onClickFindMatch">
                                 <i class="fa fa-search me-2"/>Find Match
                             </button>
                         </t>
                         <t t-else="">
                             <div class="d-flex flex-column align-items-center gap-2">
-                                <div class="fs-5 text-success">
+                                <div>
                                     <i class="fa fa-spinner fa-spin me-2"/>Searching for opponents...
                                 </div>
                                 <div class="text-muted">
-                                    Wait time: <span class="font-monospace text-warning" t-esc="formatWait(props.matchmaking.waitSeconds)"/>
+                                    Wait time: <span class="font-monospace" t-esc="formatWait(props.matchmaking.waitSeconds)"/>
                                     <t t-if="props.matchmaking.queueSize > 1">
                                         <span class="ms-3"><t t-esc="props.matchmaking.queueSize"/> players in queue</span>
                                     </t>
                                 </div>
-                                <button class="btn btn-outline-danger mt-2"
+                                <button class="btn btn-secondary mt-2"
                                     t-on-click="onClickCancelMatch">
                                     Cancel Search
                                 </button>
@@ -46,12 +46,12 @@
 
                 <div class="row g-4">
                     <div class="col-md-6">
-                        <div class="card bg-secondary bg-opacity-25 border-warning h-100">
+                        <div class="card h-100">
                             <div class="card-body text-center p-4">
-                                <h3 class="card-title text-warning mb-3">Create a Game</h3>
+                                <h4 class="card-title mb-3">Create a Game</h4>
                                 <div class="mb-3">
                                     <input type="text"
-                                        class="form-control form-control-lg bg-dark text-white border-secondary"
+                                        class="form-control"
                                         placeholder="Game name (optional)"
                                         t-model="formState.gameName"
                                         t-att-disabled="isSearching"
@@ -63,15 +63,15 @@
                                     <div class="d-flex justify-content-center gap-2">
                                         <t t-foreach="[1, 3, 5, 7]" t-as="n" t-key="n">
                                             <button
-                                                class="btn btn-lg"
-                                                t-att-class="formState.totalRounds === n ? 'btn-warning' : 'btn-outline-secondary'"
+                                                class="btn"
+                                                t-att-class="formState.totalRounds === n ? 'btn-primary' : 'btn-outline-secondary'"
                                                 t-on-click="() => this.formState.totalRounds = n">
                                                 <t t-esc="n"/>
                                             </button>
                                         </t>
                                     </div>
                                 </div>
-                                <button class="btn btn-warning btn-lg w-100 fw-bold"
+                                <button class="btn btn-primary w-100"
                                     t-att-disabled="isSearching"
                                     t-on-click="onClickCreate">
                                     Create Game
@@ -80,12 +80,12 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card bg-secondary bg-opacity-25 border-info h-100">
+                        <div class="card h-100">
                             <div class="card-body text-center p-4">
-                                <h3 class="card-title text-info mb-3">Join a Game</h3>
+                                <h4 class="card-title mb-3">Join a Game</h4>
                                 <div class="mb-3">
                                     <input type="text"
-                                        class="form-control form-control-lg bg-dark text-white border-secondary text-center text-uppercase"
+                                        class="form-control text-center text-uppercase"
                                         placeholder="Enter join code"
                                         maxlength="6"
                                         t-model="formState.joinCode"
@@ -93,7 +93,7 @@
                                         t-on-keydown="(ev) => ev.key === 'Enter' and this.onClickJoin()"
                                     />
                                 </div>
-                                <button class="btn btn-info btn-lg w-100 fw-bold"
+                                <button class="btn btn-secondary w-100"
                                     t-att-disabled="isSearching"
                                     t-on-click="onClickJoin">
                                     Join Game
@@ -105,35 +105,35 @@
 
                 <!-- Personal stats panel -->
                 <t t-if="props.stats">
-                    <div class="card bg-secondary bg-opacity-25 border-light mt-4">
-                        <div class="card-header bg-dark d-flex justify-content-between align-items-center">
-                            <span class="fw-bold text-white">
+                    <div class="card mt-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">
                                 <i class="fa fa-user me-2"/>My Stats
                             </span>
-                            <span class="badge bg-warning text-dark fs-6">
+                            <span class="badge text-bg-primary">
                                 Level <t t-esc="props.stats.level"/> — <t t-esc="props.stats.level_title"/>
                             </span>
                         </div>
                         <div class="card-body">
                             <div class="row text-center mb-3">
                                 <div class="col">
-                                    <div class="fs-3 fw-bold text-success"><t t-esc="props.stats.elo"/></div>
+                                    <div class="h4 mb-0"><t t-esc="props.stats.elo"/></div>
                                     <div class="text-muted small">ELO</div>
                                 </div>
                                 <div class="col">
-                                    <div class="fs-3 fw-bold text-info"><t t-esc="props.stats.peak_elo"/></div>
+                                    <div class="h4 mb-0"><t t-esc="props.stats.peak_elo"/></div>
                                     <div class="text-muted small">Peak ELO</div>
                                 </div>
                                 <div class="col">
-                                    <div class="fs-3 fw-bold text-warning"><t t-esc="props.stats.xp"/></div>
+                                    <div class="h4 mb-0"><t t-esc="props.stats.xp"/></div>
                                     <div class="text-muted small">XP (next: <t t-esc="props.stats.next_level_xp"/>)</div>
                                 </div>
                                 <div class="col">
-                                    <div class="fs-3 fw-bold text-white"><t t-esc="props.stats.games_won"/> / <t t-esc="props.stats.games_played"/></div>
+                                    <div class="h4 mb-0"><t t-esc="props.stats.games_won"/> / <t t-esc="props.stats.games_played"/></div>
                                     <div class="text-muted small">Wins / Games</div>
                                 </div>
                                 <div class="col">
-                                    <div class="fs-3 fw-bold text-danger" t-esc="formatTime(props.stats.best_time_ms)"/>
+                                    <div class="h4 mb-0" t-esc="formatTime(props.stats.best_time_ms)"/>
                                     <div class="text-muted small">Best Time</div>
                                 </div>
                             </div>
@@ -144,7 +144,7 @@
                                     <div class="text-muted small mb-1">Badges (<t t-esc="props.stats.badges.length"/>)</div>
                                     <div class="d-flex flex-wrap gap-2">
                                         <t t-foreach="props.stats.badges" t-as="badge" t-key="badge.name">
-                                            <span class="badge bg-dark border border-warning fs-6 py-2 px-3"
+                                            <span class="badge text-bg-light border"
                                                 t-att-title="badge.description">
                                                 <t t-esc="badge.icon"/> <t t-esc="badge.name"/>
                                             </span>
@@ -156,7 +156,7 @@
                             <!-- Best times per task -->
                             <t t-if="props.stats.best_times.length">
                                 <div class="text-muted small mb-1">My Best Times</div>
-                                <table class="table table-dark table-sm mb-0">
+                                <table class="table table-sm mb-0">
                                     <thead>
                                         <tr>
                                             <th>Task</th>
@@ -169,7 +169,7 @@
                                         <t t-foreach="props.stats.best_times" t-as="bt" t-key="bt.task_name">
                                             <tr>
                                                 <td><t t-esc="bt.task_name"/></td>
-                                                <td class="text-end font-monospace text-warning" t-esc="formatTime(bt.best_time_ms)"/>
+                                                <td class="text-end font-monospace" t-esc="formatTime(bt.best_time_ms)"/>
                                                 <td class="text-end"><t t-esc="bt.attempts"/></td>
                                                 <td class="text-end"><t t-esc="bt.wins"/></td>
                                             </tr>
@@ -184,48 +184,48 @@
 
             <!-- Game lobby: waiting for players -->
             <t t-if="props.game">
-                <div class="card bg-secondary bg-opacity-25 border-light">
+                <div class="card">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div>
-                                <h2 class="mb-1">
+                                <h3 class="mb-1">
                                     <t t-esc="props.game.name"/>
                                     <t t-if="props.game.is_ranked">
-                                        <span class="badge bg-success ms-2 fs-6">Ranked</span>
+                                        <span class="badge text-bg-success ms-2">Ranked</span>
                                     </t>
-                                </h2>
+                                </h3>
                                 <p class="text-muted mb-0">
-                                    Host: <span class="text-info"><t t-esc="props.game.host_name"/></span>
-                                    <span class="ms-3 badge bg-secondary">
+                                    Host: <span class="fw-bold"><t t-esc="props.game.host_name"/></span>
+                                    <span class="ms-3 badge text-bg-secondary">
                                         <t t-esc="props.game.total_rounds"/> round<t t-if="props.game.total_rounds > 1">s</t>
                                     </span>
                                 </p>
                             </div>
                             <div class="text-end">
-                                <div class="fs-6 text-muted mb-1">Join Code</div>
-                                <div class="fs-2 fw-bold text-warning font-monospace letter-spacing-2">
+                                <div class="small text-muted mb-1">Join Code</div>
+                                <div class="h3 mb-0 fw-bold text-primary font-monospace letter-spacing-2">
                                     <t t-esc="props.game.code"/>
                                 </div>
                             </div>
                         </div>
 
-                        <h4 class="mb-3">
+                        <h5 class="mb-3">
                             Players
-                            <span class="badge bg-secondary ms-2">
+                            <span class="badge text-bg-secondary ms-2">
                                 <t t-esc="props.game.players.length"/> / <t t-esc="props.game.max_players"/>
                             </span>
-                        </h4>
+                        </h5>
 
                         <div class="list-group mb-4">
                             <t t-foreach="props.game.players" t-as="player" t-key="player.user_id">
-                                <div class="list-group-item bg-dark bg-opacity-50 text-white d-flex align-items-center border-secondary">
-                                    <span class="fs-4 me-3">
+                                <div class="list-group-item d-flex align-items-center">
+                                    <span class="me-3">
                                         <t t-if="player.user_id === props.game.host_id">&#x1F451;</t>
                                         <t t-else="">&#x1F3AE;</t>
                                     </span>
                                     <span class="fw-bold"><t t-esc="player.user_name"/></span>
                                     <t t-if="player.user_id === props.game.host_id">
-                                        <span class="badge bg-warning text-dark ms-2">Host</span>
+                                        <span class="badge text-bg-primary ms-2">Host</span>
                                     </t>
                                 </div>
                             </t>
@@ -233,17 +233,17 @@
 
                         <div class="d-flex gap-3">
                             <t t-if="canStart">
-                                <button class="btn btn-success btn-lg flex-grow-1 fw-bold"
+                                <button class="btn btn-primary btn-lg flex-grow-1"
                                     t-on-click="onClickStart">
                                     Start Game!
                                 </button>
                             </t>
                             <t t-if="!isHost">
                                 <div class="flex-grow-1 text-center">
-                                    <p class="text-muted mb-0 fs-5">Waiting for the host to start...</p>
+                                    <p class="text-muted mb-0">Waiting for the host to start...</p>
                                 </div>
                             </t>
-                            <button class="btn btn-outline-danger btn-lg"
+                            <button class="btn btn-secondary btn-lg"
                                 t-on-click="onClickLeave">
                                 Leave
                             </button>

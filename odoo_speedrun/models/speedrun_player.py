@@ -17,6 +17,8 @@ class SpeedrunPlayer(models.Model):
     finish_time = fields.Datetime()
     duration_ms = fields.Integer(string='Duration (ms)', compute='_compute_duration_ms', store=True)
     score = fields.Integer(string='Score', default=0)
+    round_wins = fields.Integer(string='Round Wins', default=0,
+                                help="Number of rounds finished in 1st place.")
 
     _unique_player_per_game = models.Constraint(
         'UNIQUE(game_id, user_id)',

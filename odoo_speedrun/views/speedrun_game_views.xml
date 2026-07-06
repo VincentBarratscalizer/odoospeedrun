@@ -38,7 +38,9 @@
                             <field name="code"/>
                             <field name="host_id"/>
                             <field name="max_players"/>
+                            <field name="game_mode"/>
                             <field name="total_rounds"/>
+                            <field name="rounds_to_win" invisible="game_mode != 'best_of'"/>
                             <field name="current_round"/>
                         </group>
                         <group>
@@ -59,6 +61,7 @@
                                         decoration-success="state == 'finished'"
                                         decoration-danger="state == 'dnf'"/>
                                     <field name="score"/>
+                                    <field name="round_wins"/>
                                     <field name="finish_time"/>
                                     <field name="duration_ms"/>
                                 </list>

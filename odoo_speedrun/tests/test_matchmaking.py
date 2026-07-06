@@ -30,7 +30,9 @@ class TestMatchmaking(SpeedrunCommon):
         self.assertEqual(game.host_id, self.user_a, "Longest-waiting player hosts")
         self.assertEqual(set(game.player_ids.user_id.ids), {self.user_a.id, self.user_b.id})
         self.assertEqual(game.state, 'countdown', "Ranked matches auto-start")
-        self.assertEqual(game.total_rounds, 3)
+        self.assertEqual(game.game_mode, 'best_of', "Ranked matches are best-of")
+        self.assertEqual(game.total_rounds, 5, "Best of 5")
+        self.assertEqual(game.rounds_to_win, 3, "First to 3 round wins")
 
     def test_queue_status(self):
         """Queue status reports waiting, then matched with game info."""
@@ -77,14 +79,27 @@ class TestMatchmaking(SpeedrunCommon):
         self.assertEqual(entry.state, 'cancelled')
         self.assertFalse(entry.game_id)
 
-    def test_cannot_join_twice(self):
-        self._queue(self.user_a).action_join_queue()
-        with self.assertRaises(UserError):
-            self._queue(self.user_a).action_join_queue()
+    def test_join_twice_is_idempotent(self):
+        """Re-joining while already waiting keeps the same entry (no error)."""
+        entry = self._queue(self.user_a).action_join_queue()
+        entry_again = self._queue(self.user_a).action_join_queue()
+        self.assertEqual(entry, entry_again)
+        self.assertEqual(self.env['speedrun.matchmaking.queue'].search_count(
+            [('user_id', '=', self.user_a.id), ('state', '=', 'waiting')]), 1)
 
-    def test_cannot_queue_while_in_game(self):
+    def test_queue_leaves_waiting_lobby(self):
+        """Queuing while idling in a waiting lobby auto-leaves the lobby."""
         game = self.env['speedrun.game'].with_user(self.user_a).create({})
         self.assertEqual(game.state, 'waiting')
+        entry = self._queue(self.user_a).action_join_queue()
+        self.assertEqual(entry.state, 'waiting')
+        self.assertNotIn(self.user_a, game.player_ids.user_id)
+
+    def test_cannot_queue_while_playing(self):
+        """Queuing during a started game is refused."""
+        game = self.env['speedrun.game'].with_user(self.user_a).create({})
+        game.with_user(self.user_a).action_start()
+        self.assertEqual(game.state, 'countdown')
         with self.assertRaises(UserError):
             self._queue(self.user_a).action_join_queue()
 
@@ -102,6 +117,64 @@ class TestMatchmaking(SpeedrunCommon):
         games = entries.mapped('game_id')
         self.assertEqual(len(games), 1, "All three fit in one match")
         self.assertEqual(len(games.player_ids), 3)
+
+    # ------------------------------------------------------------------
+    # Best-of mode gameplay
+    # ------------------------------------------------------------------
+    def _play_best_of_round(self, game, finish_order, first_round=False):
+        """Play one round of a game; players finish in the given order."""
+        host = game.host_id
+        if first_round:
+            game.with_user(host).action_start()
+        else:
+            game.with_user(host).action_next_round()
+        game.with_user(host).action_begin()
+        game.sudo().write({
+            'start_time': fields.Datetime.now() - timedelta(seconds=45),
+        })
+        for user in finish_order:
+            result = game.with_user(user).action_check_completion()
+            self.assertTrue(result.get('success'), result)
+
+    def _create_best_of_game(self):
+        game = self.env['speedrun.game'].with_user(self.user_a).create({
+            'game_mode': 'best_of',
+            'total_rounds': 5,
+        })
+        game.action_join(user_id=self.user_b.id)
+        return game
+
+    def test_best_of_ends_early(self):
+        """A best-of-5 game ends as soon as a player has 3 round wins."""
+        game = self._create_best_of_game()
+        self.assertEqual(game.rounds_to_win, 3)
+        for rnd in range(3):
+            self._play_best_of_round(game, [self.user_a, self.user_b], first_round=(rnd == 0))
+        self.assertEqual(game.state, 'finished', "3 straight wins end the game after 3 rounds")
+        self.assertEqual(game.current_round, 3)
+        self.assertEqual(game.winner_id, self.user_a)
+        player_a = game.player_ids.filtered(lambda p: p.user_id == self.user_a)
+        self.assertEqual(player_a.round_wins, 3)
+
+    def test_best_of_goes_the_distance(self):
+        """With alternating round winners, the game lasts the full 5 rounds."""
+        game = self._create_best_of_game()
+        orders = [
+            [self.user_a, self.user_b],
+            [self.user_b, self.user_a],
+            [self.user_a, self.user_b],
+            [self.user_b, self.user_a],
+            [self.user_a, self.user_b],
+        ]
+        for rnd, order in enumerate(orders):
+            self.assertNotEqual(game.state, 'finished', "Game must not end before someone has 3 wins")
+            self._play_best_of_round(game, order, first_round=(rnd == 0))
+        self.assertEqual(game.state, 'finished')
+        self.assertEqual(game.current_round, 5)
+        self.assertEqual(game.winner_id, self.user_a, "Alpha won rounds 1, 3 and 5")
+        wins = {p.user_id: p.round_wins for p in game.player_ids}
+        self.assertEqual(wins[self.user_a], 3)
+        self.assertEqual(wins[self.user_b], 2)
 
     def test_cron_cleans_stale_entries(self):
         """The cron purges old matched/cancelled entries."""

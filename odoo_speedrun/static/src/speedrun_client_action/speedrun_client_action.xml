@@ -15,6 +15,9 @@
                     <span class="badge text-bg-primary">
                         Round <t t-esc="state.game.current_round"/> / <t t-esc="state.game.total_rounds"/>
                     </span>
+                    <span t-if="state.game.game_mode === 'best_of'" class="badge text-bg-secondary ms-1">
+                        First to <t t-esc="state.game.rounds_to_win"/> wins
+                    </span>
                 </div>
             </t>
 
@@ -25,6 +28,9 @@
                         <t t-if="state.game and state.game.current_round > 0">
                             <div class="text-muted mb-2">
                                 Round <t t-esc="state.game.current_round"/> / <t t-esc="state.game.total_rounds"/>
+                                <t t-if="state.game.game_mode === 'best_of'">
+                                    · First to <t t-esc="state.game.rounds_to_win"/> wins
+                                </t>
                             </div>
                         </t>
 

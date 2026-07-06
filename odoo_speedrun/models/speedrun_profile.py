@@ -122,7 +122,11 @@ class SpeedrunProfile(models.Model):
 
         # --- ELO (only meaningful with 2+ players) ---
         elo_changes = {}
-        scores = {p.user_id.id: p.score for p in players}
+        if game.game_mode == 'best_of':
+            # Best-of: round wins decide, points break ties (tuple comparison)
+            scores = {p.user_id.id: (p.round_wins, p.score) for p in players}
+        else:
+            scores = {p.user_id.id: p.score for p in players}
         if len(players) >= 2:
             elos = {uid: profile_by_user[uid].elo for uid in scores}
             n = len(players)

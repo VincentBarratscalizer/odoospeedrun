@@ -40,6 +40,10 @@ class SpeedrunCommon(TransactionCase):
         })
         # Make task picking deterministic and always verifiable
         cls.env['speedrun.task'].search([('id', '!=', cls.task.id)]).write({'active': False})
+        # Neutralize pre-existing queue entries (e.g. real users on a dev DB)
+        # so matchmaking tests only ever match the test users together.
+        cls.env['speedrun.matchmaking.queue'].search(
+            [('state', '=', 'waiting')]).write({'state': 'cancelled'})
 
     def _play_game(self, users_in_finish_order, total_rounds=1):
         """Create and fully play a game. Players finish rounds in the given order."""

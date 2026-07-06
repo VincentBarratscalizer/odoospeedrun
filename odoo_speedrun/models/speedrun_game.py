@@ -34,7 +34,13 @@ class SpeedrunGame(models.Model):
     winner_id = fields.Many2one('res.users', string='Overall Winner', readonly=True)
 
     # Multi-round fields
-    total_rounds = fields.Integer(default=3, string='Number of Rounds')
+    game_mode = fields.Selection([
+        ('points', 'Points (fixed rounds)'),
+        ('best_of', 'Best Of (first to win a majority of rounds)'),
+    ], default='points', required=True, string='Game Mode')
+    total_rounds = fields.Integer(default=3, string='Number of Rounds',
+                                  help="In Best Of mode, this is the maximum number of rounds.")
+    rounds_to_win = fields.Integer(compute='_compute_rounds_to_win', string='Rounds to Win')
     current_round = fields.Integer(default=0, string='Current Round', readonly=True)
     max_players = fields.Integer(default=8)
     is_ranked = fields.Boolean(string='Ranked Match', readonly=True,
@@ -44,6 +50,11 @@ class SpeedrunGame(models.Model):
     def _compute_player_count(self):
         for game in self:
             game.player_count = len(game.player_ids)
+
+    @api.depends('total_rounds')
+    def _compute_rounds_to_win(self):
+        for game in self:
+            game.rounds_to_win = game.total_rounds // 2 + 1
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -230,8 +241,10 @@ class SpeedrunGame(models.Model):
             'points': points,
         })
 
-        # Update player total score
+        # Update player total score / round wins
         player.score += points
+        if rank == 1:
+            player.round_wins += 1
 
         user = self.env['res.users'].browse(user_id)
         self._bus_send('speedrun/player_finished', {
@@ -277,9 +290,19 @@ class SpeedrunGame(models.Model):
         self.write({'end_time': now})
 
         is_last_round = self.current_round >= self.total_rounds
+        if self.game_mode == 'best_of':
+            # Best-of: game ends as soon as a player reaches the required
+            # number of round wins (majority), or the max rounds are played.
+            is_last_round = is_last_round or any(
+                p.round_wins >= self.rounds_to_win for p in self.player_ids
+            )
         if is_last_round:
-            # Game over — determine overall winner by score
-            best_player = max(self.player_ids, key=lambda p: p.score)
+            # Game over — determine overall winner
+            if self.game_mode == 'best_of':
+                # Most round wins; total points break ties
+                best_player = max(self.player_ids, key=lambda p: (p.round_wins, p.score))
+            else:
+                best_player = max(self.player_ids, key=lambda p: p.score)
             self.write({
                 'state': 'finished',
                 'winner_id': best_player.user_id.id,
@@ -302,6 +325,8 @@ class SpeedrunGame(models.Model):
         return {
             'current_round': self.current_round,
             'total_rounds': self.total_rounds,
+            'game_mode': self.game_mode,
+            'rounds_to_win': self.rounds_to_win,
             'round_results': [{
                 'user_id': r.user_id.id,
                 'user_name': r.user_id.name,
@@ -319,26 +344,35 @@ class SpeedrunGame(models.Model):
             'winner_name': self.winner_id.name,
             'standings': self._build_standings(),
             'total_rounds': self.total_rounds,
+            'game_mode': self.game_mode,
+            'rounds_to_win': self.rounds_to_win,
         }
 
     def _build_standings(self):
-        """Build current standings sorted by score."""
+        """Build current standings (round wins first in best-of mode)."""
+        if self.game_mode == 'best_of':
+            players = self.player_ids.sorted(lambda p: (-p.round_wins, -p.score))
+        else:
+            players = self.player_ids.sorted(lambda p: -p.score)
         return [{
             'user_id': p.user_id.id,
             'user_name': p.user_id.name,
             'score': p.score,
-        } for p in self.player_ids.sorted(lambda p: -p.score)]
+            'round_wins': p.round_wins,
+        } for p in players]
 
     def _get_game_info(self):
         """Return game info dict for the frontend."""
         self.ensure_one()
         players = []
-        for p in self.player_ids.sorted(lambda p: -p.score):
+        for p in self.player_ids.sorted(lambda p: (-p.round_wins, -p.score)
+                                        if self.game_mode == 'best_of' else -p.score):
             players.append({
                 'user_id': p.user_id.id,
                 'user_name': p.user_id.name,
                 'state': p.state,
                 'score': p.score,
+                'round_wins': p.round_wins,
                 'duration_ms': p.duration_ms if p.state == 'finished' else None,
             })
 
@@ -369,7 +403,9 @@ class SpeedrunGame(models.Model):
             'players': players,
             'player_count': len(self.player_ids),
             'max_players': self.max_players,
+            'game_mode': self.game_mode,
             'total_rounds': self.total_rounds,
+            'rounds_to_win': self.rounds_to_win,
             'current_round': self.current_round,
             'task_name': self.task_id.name if self.task_id else None,
             'task_description': self.task_id.description if self.task_id else None,

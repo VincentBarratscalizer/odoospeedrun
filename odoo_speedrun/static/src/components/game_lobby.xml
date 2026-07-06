@@ -197,7 +197,12 @@
                                 <p class="text-muted mb-0">
                                     Host: <span class="fw-bold"><t t-esc="props.game.host_name"/></span>
                                     <span class="ms-3 badge text-bg-secondary">
-                                        <t t-esc="props.game.total_rounds"/> round<t t-if="props.game.total_rounds > 1">s</t>
+                                        <t t-if="props.game.game_mode === 'best_of'">
+                                            Best of <t t-esc="props.game.total_rounds"/> · first to <t t-esc="props.game.rounds_to_win"/> wins
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="props.game.total_rounds"/> round<t t-if="props.game.total_rounds > 1">s</t>
+                                        </t>
                                     </span>
                                 </p>
                             </div>

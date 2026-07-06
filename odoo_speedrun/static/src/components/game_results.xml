@@ -24,7 +24,13 @@
                         Round <t t-esc="props.game.current_round"/> Complete!
                     </h2>
                     <p class="text-muted">
-                        <t t-esc="props.game.total_rounds - props.game.current_round"/> round<t t-if="props.game.total_rounds - props.game.current_round > 1">s</t> remaining
+                        <t t-if="props.game.game_mode === 'best_of'">
+                            First to <t t-esc="props.game.rounds_to_win"/> round wins —
+                            up to <t t-esc="props.game.total_rounds - props.game.current_round"/> round<t t-if="props.game.total_rounds - props.game.current_round > 1">s</t> left
+                        </t>
+                        <t t-else="">
+                            <t t-esc="props.game.total_rounds - props.game.current_round"/> round<t t-if="props.game.total_rounds - props.game.current_round > 1">s</t> remaining
+                        </t>
                     </p>
                 </div>
             </t>
@@ -93,6 +99,7 @@
                             <tr>
                                 <th class="text-center" style="width: 60px;">Rank</th>
                                 <th>Player</th>
+                                <th t-if="props.game.game_mode === 'best_of'" class="text-center">Wins</th>
                                 <th class="text-center">Score</th>
                             </tr>
                         </thead>
@@ -107,6 +114,10 @@
                                         <t t-if="s.user_id === props.userId">
                                             <span class="badge text-bg-primary ms-1">You</span>
                                         </t>
+                                    </td>
+                                    <td t-if="props.game.game_mode === 'best_of'" class="text-center align-middle">
+                                        <span class="fw-bold"><t t-esc="s.round_wins || 0"/></span>
+                                        <span class="text-muted ms-1">/ <t t-esc="props.game.rounds_to_win"/></span>
                                     </td>
                                     <td class="text-center align-middle">
                                         <span class="fw-bold"><t t-esc="s.score"/></span>

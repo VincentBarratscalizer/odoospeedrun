@@ -7,7 +7,7 @@ MATCH_MAX_PLAYERS = 4
 BASE_ELO_RANGE = 200        # initial acceptable ELO gap
 RANGE_WIDENING_STEP = 100   # extra range gained per widening interval
 WIDENING_INTERVAL = 30      # seconds per widening step
-MATCH_ROUNDS = 3            # rounds of a ranked match
+MATCH_ROUNDS = 5            # max rounds of a ranked match (best of 5: first to 3 round wins)
 
 
 class SpeedrunMatchmakingQueue(models.Model):
@@ -30,17 +30,26 @@ class SpeedrunMatchmakingQueue(models.Model):
     # ------------------------------------------------------------------
     @api.model
     def action_join_queue(self):
-        """Enter the matchmaking queue for the current user."""
+        """Enter the matchmaking queue for the current user.
+
+        Idempotent: joining while already queued simply keeps waiting
+        (and opportunistically retries matching) instead of raising.
+        """
         uid = self.env.uid
         existing = self.search([('user_id', '=', uid), ('state', '=', 'waiting')], limit=1)
         if existing:
-            raise UserError("You are already in the matchmaking queue.")
+            self.sudo()._try_match()
+            return existing
         active_game = self.env['speedrun.game'].search([
             ('player_ids.user_id', '=', uid),
             ('state', 'in', ['waiting', 'countdown', 'running', 'round_finished']),
         ], limit=1)
         if active_game:
-            raise UserError("You are already in an active game. Leave it before queuing.")
+            if active_game.state == 'waiting':
+                # Just sitting in a lobby: leave it automatically and queue up.
+                active_game.action_leave(user_id=uid)
+            else:
+                raise UserError("You are already in an active game. Leave it before queuing.")
         profile = self.env['speedrun.profile'].sudo()._get_or_create(self.env.user)
         entry = self.create({
             'user_id': uid,
@@ -119,6 +128,7 @@ class SpeedrunMatchmakingQueue(models.Model):
         game = self.env['speedrun.game'].sudo().with_context(default_host_id=host.id).create({
             'name': 'Ranked Match',
             'host_id': host.id,
+            'game_mode': 'best_of',
             'total_rounds': MATCH_ROUNDS,
             'max_players': MATCH_MAX_PLAYERS,
             'is_ranked': True,

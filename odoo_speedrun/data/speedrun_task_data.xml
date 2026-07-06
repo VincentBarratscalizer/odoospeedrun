@@ -81,5 +81,585 @@ result = any(
             <field name="verification_count">1</field>
             <field name="difficulty">medium</field>
         </record>
+
+        <!-- ===================== -->
+        <!-- SALES TASKS           -->
+        <!-- ===================== -->
+
+        <record id="task_create_quotation" model="speedrun.task">
+            <field name="name">Create a quotation</field>
+            <field name="description">Create a new sales quotation for any customer with at least one order line.</field>
+            <field name="target_model">sale.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['sale.order'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('order_line', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">sale</field>
+        </record>
+
+        <record id="task_create_quotation_3_lines" model="speedrun.task">
+            <field name="name">Create a quotation with 3 products</field>
+            <field name="description">Create a sales quotation that contains at least 3 different order lines (3 different products).</field>
+            <field name="target_model">sale.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+orders = env['sale.order'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+result = any(len(o.order_line) >= 3 for o in orders)
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">sale</field>
+        </record>
+
+        <record id="task_confirm_sale_order" model="speedrun.task">
+            <field name="name">Confirm a sale order</field>
+            <field name="description">Create a sales quotation and confirm it (click "Confirm"). The order must be in "Sales Order" state.</field>
+            <field name="target_model">sale.order</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["state","=","sale"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">sale</field>
+        </record>
+
+        <record id="task_sale_order_1000" model="speedrun.task">
+            <field name="name">Create a quotation totaling over 1,000</field>
+            <field name="description">Create a sales quotation with a total amount (tax included) greater than 1,000. Use high quantities or expensive products!</field>
+            <field name="target_model">sale.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['sale.order'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('amount_total', '>', 1000),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">sale</field>
+        </record>
+
+        <record id="task_sale_order_invoice" model="speedrun.task">
+            <field name="name">Confirm a sale and create its invoice</field>
+            <field name="description">Create a quotation, confirm it as a sales order, then create an invoice from it. The invoice must exist (even as draft).</field>
+            <field name="target_model">sale.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+orders = env['sale.order'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('state', '=', 'sale'),
+])
+result = any(o.invoice_ids for o in orders)
+            </field>
+            <field name="difficulty">hard</field>
+            <field name="required_modules">sale,account</field>
+        </record>
+
+        <!-- ===================== -->
+        <!-- CRM TASKS             -->
+        <!-- ===================== -->
+
+        <record id="task_create_lead" model="speedrun.task">
+            <field name="name">Create an opportunity</field>
+            <field name="description">Create a new opportunity (lead) in the CRM pipeline with a name and an expected revenue.</field>
+            <field name="target_model">crm.lead</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['crm.lead'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('expected_revenue', '>', 0),
+]) >= 1
+            </field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">crm</field>
+        </record>
+
+        <record id="task_create_3_leads" model="speedrun.task">
+            <field name="name">Create 3 opportunities</field>
+            <field name="description">Create 3 new opportunities in the CRM pipeline. Speed matters - just name them and go!</field>
+            <field name="target_model">crm.lead</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="verification_count">3</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">crm</field>
+        </record>
+
+        <record id="task_win_opportunity" model="speedrun.task">
+            <field name="name">Win an opportunity</field>
+            <field name="description">Create an opportunity and mark it as "Won". You can do this from the CRM pipeline by moving it to the Won stage or using the "Won" button.</field>
+            <field name="target_model">crm.lead</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['crm.lead'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('stage_id.is_won', '=', True),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">crm</field>
+        </record>
+
+        <!-- ===================== -->
+        <!-- PURCHASE TASKS        -->
+        <!-- ===================== -->
+
+        <record id="task_create_purchase_order" model="speedrun.task">
+            <field name="name">Create a purchase order</field>
+            <field name="description">Create a new purchase order (Request for Quotation) for any vendor with at least one product line.</field>
+            <field name="target_model">purchase.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['purchase.order'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('order_line', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">purchase</field>
+        </record>
+
+        <record id="task_confirm_purchase_order" model="speedrun.task">
+            <field name="name">Confirm a purchase order</field>
+            <field name="description">Create a purchase order and confirm it. The order must be in "Purchase Order" state (not just a draft RFQ).</field>
+            <field name="target_model">purchase.order</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["state","=","purchase"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">purchase</field>
+        </record>
+
+        <!-- ===================== -->
+        <!-- ACCOUNTING TASKS      -->
+        <!-- ===================== -->
+
+        <record id="task_create_invoice" model="speedrun.task">
+            <field name="name">Create a customer invoice</field>
+            <field name="description">Create a new customer invoice with at least one invoice line. It can remain as a draft.</field>
+            <field name="target_model">account.move</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['account.move'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('move_type', '=', 'out_invoice'),
+    ('invoice_line_ids', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">account</field>
+        </record>
+
+        <record id="task_post_invoice" model="speedrun.task">
+            <field name="name">Post a customer invoice</field>
+            <field name="description">Create a customer invoice and confirm (post) it. The invoice must be in "Posted" state.</field>
+            <field name="target_model">account.move</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["move_type","=","out_invoice"],["state","=","posted"]]</field>
+            <field name="difficulty">hard</field>
+            <field name="required_modules">account</field>
+        </record>
+
+        <record id="task_create_vendor_bill" model="speedrun.task">
+            <field name="name">Create a vendor bill</field>
+            <field name="description">Create a vendor bill (supplier invoice) with at least one line. It can remain as draft.</field>
+            <field name="target_model">account.move</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['account.move'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('move_type', '=', 'in_invoice'),
+    ('invoice_line_ids', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">account</field>
+        </record>
+
+        <!-- ===================== -->
+        <!-- PROJECT TASKS         -->
+        <!-- ===================== -->
+
+        <record id="task_create_project" model="speedrun.task">
+            <field name="name">Create a project</field>
+            <field name="description">Create a new project with a name. That's it — keep it simple and fast!</field>
+            <field name="target_model">project.project</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">project</field>
+        </record>
+
+        <record id="task_project_5_tasks" model="speedrun.task">
+            <field name="name">Create a project with 5 tasks</field>
+            <field name="description">Create a new project and add at least 5 tasks to it. You can add tasks directly from the project's kanban or list view.</field>
+            <field name="target_model">project.project</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+projects = env['project.project'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+result = any(
+    env['project.task'].search_count([('project_id', '=', p.id)]) >= 5
+    for p in projects
+)
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">project</field>
+        </record>
+
+        <record id="task_create_7_tasks" model="speedrun.task">
+            <field name="name">Create 7 tasks</field>
+            <field name="description">Create 7 tasks in any project. You can use an existing project or create a new one.</field>
+            <field name="target_model">project.task</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="verification_count">7</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">project</field>
+        </record>
+
+        <!-- ===================== -->
+        <!-- HR TASKS              -->
+        <!-- ===================== -->
+
+        <record id="task_create_employee" model="speedrun.task">
+            <field name="name">Create an employee</field>
+            <field name="description">Create a new employee with a name, a job title, and a work email address.</field>
+            <field name="target_model">hr.employee</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['hr.employee'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('job_title', '!=', False),
+    ('work_email', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">hr</field>
+        </record>
+
+        <record id="task_create_3_employees" model="speedrun.task">
+            <field name="name">Create 3 employees</field>
+            <field name="description">Create 3 new employees. Each one just needs a name - be fast!</field>
+            <field name="target_model">hr.employee</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="verification_count">3</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">hr</field>
+        </record>
+
+        <record id="task_create_leave_request" model="speedrun.task">
+            <field name="name">Create a leave request</field>
+            <field name="description">Create a time off request (leave) for any employee. Go to Time Off and create a new request.</field>
+            <field name="target_model">hr.leave</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">hr_holidays</field>
+        </record>
+
+        <record id="task_log_expense" model="speedrun.task">
+            <field name="name">Log an expense</field>
+            <field name="description">Create a new expense with a description and an amount. Go to Expenses and click "New".</field>
+            <field name="target_model">hr.expense</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">hr_expense</field>
+        </record>
+
+        <record id="task_log_3_expenses" model="speedrun.task">
+            <field name="name">Log 3 expenses</field>
+            <field name="description">Create 3 separate expense entries. Each needs a description and an amount.</field>
+            <field name="target_model">hr.expense</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="verification_count">3</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">hr_expense</field>
+        </record>
+
+        <!-- ===================== -->
+        <!-- INVENTORY/STOCK TASKS -->
+        <!-- ===================== -->
+
+        <record id="task_create_delivery" model="speedrun.task">
+            <field name="name">Create a delivery order</field>
+            <field name="description">Create a new delivery order (outgoing shipment) from the Inventory app. Add at least one product to ship.</field>
+            <field name="target_model">stock.picking</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['stock.picking'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('picking_type_code', '=', 'outgoing'),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">stock</field>
+        </record>
+
+        <record id="task_create_receipt" model="speedrun.task">
+            <field name="name">Create a receipt</field>
+            <field name="description">Create a new receipt (incoming shipment) from the Inventory app. You're receiving goods into your warehouse.</field>
+            <field name="target_model">stock.picking</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['stock.picking'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('picking_type_code', '=', 'incoming'),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">stock</field>
+        </record>
+
+        <record id="task_validate_receipt" model="speedrun.task">
+            <field name="name">Validate a receipt</field>
+            <field name="description">Create an incoming receipt and validate it (mark it as done). The transfer must be in "Done" state.</field>
+            <field name="target_model">stock.picking</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['stock.picking'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('picking_type_code', '=', 'incoming'),
+    ('state', '=', 'done'),
+]) >= 1
+            </field>
+            <field name="difficulty">hard</field>
+            <field name="required_modules">stock</field>
+        </record>
+
+        <!-- ===================== -->
+        <!-- EVENT TASKS           -->
+        <!-- ===================== -->
+
+        <record id="task_create_event" model="speedrun.task">
+            <field name="name">Create an event</field>
+            <field name="description">Create a new event in the Events app with a name and a date. It's that simple!</field>
+            <field name="target_model">event.event</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">event</field>
+        </record>
+
+        <record id="task_event_3_registrations" model="speedrun.task">
+            <field name="name">Organize an event with 3 attendees</field>
+            <field name="description">Create an event and register at least 3 attendees to it. You can add attendees from the event form.</field>
+            <field name="target_model">event.event</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+events = env['event.event'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+result = any(
+    env['event.registration'].search_count([('event_id', '=', e.id)]) >= 3
+    for e in events
+)
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">event</field>
+        </record>
+
+        <!-- ===================== -->
+        <!-- CALENDAR TASKS        -->
+        <!-- ===================== -->
+
+        <record id="task_create_meeting" model="speedrun.task">
+            <field name="name">Schedule a meeting</field>
+            <field name="description">Create a new calendar event (meeting) with a title and a date. Go to Calendar and create a new event.</field>
+            <field name="target_model">calendar.event</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">calendar</field>
+        </record>
+
+        <record id="task_create_meeting_with_attendees" model="speedrun.task">
+            <field name="name">Schedule a meeting with 2 attendees</field>
+            <field name="description">Create a calendar event and invite at least 2 other people (attendees) to it.</field>
+            <field name="target_model">calendar.event</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+events = env['calendar.event'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+result = any(len(e.attendee_ids) >= 3 for e in events)
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">calendar</field>
+        </record>
+
+        <!-- ===================== -->
+        <!-- PRODUCT TASKS         -->
+        <!-- ===================== -->
+
+        <record id="task_create_service" model="speedrun.task">
+            <field name="name">Create a service product</field>
+            <field name="description">Create a new product of type "Service" (not a storable/consumable good). Set a sales price.</field>
+            <field name="target_model">product.template</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["type","=","service"]]</field>
+            <field name="difficulty">easy</field>
+        </record>
+
+        <record id="task_create_5_products" model="speedrun.task">
+            <field name="name">Create 5 products</field>
+            <field name="description">Create 5 new products. Any type, any price - just be quick about it!</field>
+            <field name="target_model">product.template</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="verification_count">5</field>
+            <field name="difficulty">medium</field>
+        </record>
+
+        <record id="task_create_expensive_product" model="speedrun.task">
+            <field name="name">Create a product worth 9,999</field>
+            <field name="description">Create a product with a sales price of exactly 9,999.00. Luxury item!</field>
+            <field name="target_model">product.template</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["list_price","=",9999.0]]</field>
+            <field name="difficulty">easy</field>
+        </record>
+
+        <!-- ===================== -->
+        <!-- CONTACT TASKS         -->
+        <!-- ===================== -->
+
+        <record id="task_create_contact_with_tag" model="speedrun.task">
+            <field name="name">Create a tagged contact</field>
+            <field name="description">Create a new contact and assign at least one tag (category) to it. Tags can be found in the contact form.</field>
+            <field name="target_model">res.partner</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['res.partner'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('category_id', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">easy</field>
+        </record>
+
+        <record id="task_create_contact_full" model="speedrun.task">
+            <field name="name">Create the ultimate contact</field>
+            <field name="description">Create a contact with ALL of the following: name, email, phone, mobile, street address, city, and a tag. Complete perfection!</field>
+            <field name="target_model">res.partner</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['res.partner'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('name', '!=', False),
+    ('email', '!=', False),
+    ('phone', '!=', False),
+    ('mobile', '!=', False),
+    ('street', '!=', False),
+    ('city', '!=', False),
+    ('category_id', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+        </record>
+
+        <record id="task_create_20_contacts" model="speedrun.task">
+            <field name="name">Create 20 contacts</field>
+            <field name="description">Create 20 new contacts as fast as you can! Each contact just needs a name. Go go go!</field>
+            <field name="target_model">res.partner</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["is_company","=",false]]</field>
+            <field name="verification_count">20</field>
+            <field name="difficulty">hard</field>
+        </record>
+
+        <!-- ===================== -->
+        <!-- MULTI-APP HARD TASKS  -->
+        <!-- ===================== -->
+
+        <record id="task_full_sale_flow" model="speedrun.task">
+            <field name="name">Complete sales flow: quote to payment</field>
+            <field name="description">Create a quotation, confirm it, create the invoice from the sale order, and post (confirm) the invoice. The full cycle!</field>
+            <field name="target_model">sale.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+orders = env['sale.order'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('state', '=', 'sale'),
+])
+result = any(
+    any(inv.state == 'posted' for inv in o.invoice_ids)
+    for o in orders
+)
+            </field>
+            <field name="difficulty">hard</field>
+            <field name="required_modules">sale,account</field>
+        </record>
+
+        <record id="task_purchase_to_receipt" model="speedrun.task">
+            <field name="name">Purchase and receive goods</field>
+            <field name="description">Create a purchase order, confirm it, then go to the receipt and validate it. Full purchase cycle!</field>
+            <field name="target_model">purchase.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+orders = env['purchase.order'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('state', '=', 'purchase'),
+])
+result = any(
+    any(p.state == 'done' for p in o.picking_ids)
+    for o in orders
+)
+            </field>
+            <field name="difficulty">hard</field>
+            <field name="required_modules">purchase,stock</field>
+        </record>
+
+        <record id="task_create_project_milestone" model="speedrun.task">
+            <field name="name">Organize a project with milestones</field>
+            <field name="description">Create a project, enable milestones on it, create at least 2 milestones, and add at least 3 tasks assigned to those milestones.</field>
+            <field name="target_model">project.project</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+projects = env['project.project'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+for p in projects:
+    milestones = env['project.milestone'].search([('project_id', '=', p.id)])
+    if len(milestones) >= 2:
+        tasks_with_ms = env['project.task'].search_count([
+            ('project_id', '=', p.id),
+            ('milestone_id', '!=', False),
+        ])
+        if tasks_with_ms >= 3:
+            result = True
+            break
+else:
+    result = False
+            </field>
+            <field name="difficulty">hard</field>
+            <field name="required_modules">project</field>
+        </record>
     </data>
 </odoo>

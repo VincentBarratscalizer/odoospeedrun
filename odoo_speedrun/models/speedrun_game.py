@@ -37,6 +37,8 @@ class SpeedrunGame(models.Model):
     total_rounds = fields.Integer(default=3, string='Number of Rounds')
     current_round = fields.Integer(default=0, string='Current Round', readonly=True)
     max_players = fields.Integer(default=8)
+    is_ranked = fields.Boolean(string='Ranked Match', readonly=True,
+                               help="Game created through matchmaking.")
 
     @api.depends('player_ids')
     def _compute_player_count(self):
@@ -282,7 +284,12 @@ class SpeedrunGame(models.Model):
                 'state': 'finished',
                 'winner_id': best_player.user_id.id,
             })
-            self._bus_send('speedrun/game_over', self._build_game_over_payload())
+            # Update profiles: ELO, XP, stats, badges, levels
+            # sudo: triggered by whichever player finished last
+            elo_changes = self.env['speedrun.profile'].sudo()._process_game_results(self.sudo())
+            payload = self._build_game_over_payload()
+            payload['elo_changes'] = elo_changes
+            self._bus_send('speedrun/game_over', payload)
         else:
             self.write({'state': 'round_finished'})
             self._bus_send('speedrun/round_over', self._build_round_over_payload())
@@ -358,6 +365,7 @@ class SpeedrunGame(models.Model):
             'state': self.state,
             'host_id': self.host_id.id,
             'host_name': self.host_id.name,
+            'is_ranked': self.is_ranked,
             'players': players,
             'player_count': len(self.player_ids),
             'max_players': self.max_players,

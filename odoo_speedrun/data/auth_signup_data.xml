@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Allow anyone to sign up from the portal login page (/web/signup).
+         Combined with the res.users._signup_create_user override, new signups
+         become internal users able to play speedrun games. -->
+    <function model="ir.config_parameter" name="set_param"
+        eval="('auth_signup.invitation_scope', 'b2c')"/>
+</odoo>

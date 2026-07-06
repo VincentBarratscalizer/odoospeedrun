@@ -54,10 +54,14 @@
                 <t t-if="state.phase === 'lobby'">
                     <GameLobby
                         game="state.game"
+                        stats="state.stats"
+                        matchmaking="state.matchmaking"
                         onCreateGame.bind="createGame"
                         onJoinGame.bind="joinGame"
                         onLeaveGame.bind="leaveGame"
                         onStartGame.bind="startGame"
+                        onFindMatch.bind="joinMatchmaking"
+                        onCancelMatch.bind="cancelMatchmaking"
                         userId="user.userId"
                     />
                 </t>

@@ -31,6 +31,8 @@ export class SpeedrunClientAction extends Component {
             myRank: 0,
             myPoints: 0,
             checkResult: null,
+            stats: null,
+            matchmaking: { searching: false, waitSeconds: 0, queueSize: 0 },
         });
 
         this._onBusNotification = this.onBusNotification.bind(this);
@@ -39,6 +41,8 @@ export class SpeedrunClientAction extends Component {
         // Restore active game on mount
         onWillStart(async () => {
             await this._restoreActiveGame();
+            await this._loadStats();
+            await this._restoreQueue();
         });
 
         onWillUnmount(() => {
@@ -47,7 +51,33 @@ export class SpeedrunClientAction extends Component {
             if (this._lobbyPoll) clearInterval(this._lobbyPoll);
             if (this._roundResultsPoll) clearInterval(this._roundResultsPoll);
             if (this._roundEndPoll) clearInterval(this._roundEndPoll);
+            if (this._queuePoll) clearInterval(this._queuePoll);
         });
+    }
+
+    async _loadStats() {
+        try {
+            this.state.stats = await rpc("/odoo_speedrun/my_stats", {});
+        } catch {
+            // Stats are optional, ignore failures
+        }
+    }
+
+    async _restoreQueue() {
+        if (this.state.game) return;
+        try {
+            const status = await rpc("/odoo_speedrun/matchmaking/status", {});
+            if (status.in_queue) {
+                this.state.matchmaking.searching = true;
+                this.state.matchmaking.waitSeconds = status.wait_seconds || 0;
+                this.state.matchmaking.queueSize = status.queue_size || 0;
+                this._startQueuePoll();
+            } else if (status.matched && status.game_info) {
+                this._onMatchFound(status.game_info);
+            }
+        } catch {
+            // Ignore
+        }
     }
 
     async _restoreActiveGame() {
@@ -190,7 +220,102 @@ export class SpeedrunClientAction extends Component {
                 case "speedrun/game_over":
                     this.onGameOver(payload);
                     break;
+                case "speedrun/match_found":
+                    this._onMatchFound(payload.game_info);
+                    break;
+                case "speedrun/badge_earned":
+                    playSound("taskComplete");
+                    this.notification.add(
+                        `${payload.badge_icon} Badge earned: ${payload.badge_name}` +
+                        (payload.xp_reward ? ` (+${payload.xp_reward} XP)` : ""),
+                        { type: "success", sticky: true },
+                    );
+                    this._loadStats();
+                    break;
+                case "speedrun/level_up":
+                    playSound("gameOver");
+                    this.notification.add(
+                        `🎉 Level up! You are now level ${payload.level} — ${payload.level_title}`,
+                        { type: "success", sticky: true },
+                    );
+                    this._loadStats();
+                    break;
             }
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Matchmaking
+    // ------------------------------------------------------------------
+    async joinMatchmaking() {
+        const result = await rpc("/odoo_speedrun/matchmaking/join", {});
+        if (result.error) {
+            this.notification.add(result.error, { type: "danger" });
+            return;
+        }
+        if (result.matched && result.game_info) {
+            this._onMatchFound(result.game_info);
+            return;
+        }
+        this.state.matchmaking.searching = true;
+        this.state.matchmaking.waitSeconds = result.wait_seconds || 0;
+        this.state.matchmaking.queueSize = result.queue_size || 1;
+        this._startQueuePoll();
+    }
+
+    async cancelMatchmaking() {
+        await rpc("/odoo_speedrun/matchmaking/leave", {});
+        this._stopQueuePoll();
+        this.state.matchmaking.searching = false;
+        this.state.matchmaking.waitSeconds = 0;
+    }
+
+    _startQueuePoll() {
+        this._stopQueuePoll();
+        this._queuePoll = setInterval(async () => {
+            if (!this.state.matchmaking.searching) {
+                this._stopQueuePoll();
+                return;
+            }
+            try {
+                const status = await rpc("/odoo_speedrun/matchmaking/status", {});
+                if (status.matched && status.game_info) {
+                    this._onMatchFound(status.game_info);
+                } else if (status.in_queue) {
+                    this.state.matchmaking.waitSeconds = status.wait_seconds || 0;
+                    this.state.matchmaking.queueSize = status.queue_size || 0;
+                } else {
+                    // Kicked out of the queue (e.g. cancelled elsewhere)
+                    this.state.matchmaking.searching = false;
+                    this._stopQueuePoll();
+                }
+            } catch {
+                // Ignore polling errors
+            }
+        }, 2000);
+    }
+
+    _stopQueuePoll() {
+        if (this._queuePoll) {
+            clearInterval(this._queuePoll);
+            this._queuePoll = null;
+        }
+    }
+
+    _onMatchFound(gameInfo) {
+        if (this.state.game && this.state.game.id === gameInfo.id) return;
+        this._stopQueuePoll();
+        this.state.matchmaking.searching = false;
+        this.state.matchmaking.waitSeconds = 0;
+        playSound("playerJoined");
+        this.notification.add("Match found! Get ready...", { type: "success" });
+        this.state.game = gameInfo;
+        this.busService.forceUpdateChannels();
+        this._redirectToHome = true;
+        this._applyGameState(gameInfo);
+        // Ranked matches auto-start: if still waiting/countdown info missing, poll
+        if (gameInfo.state === "waiting") {
+            this._startLobbyPoll();
         }
     }
 
@@ -305,6 +430,7 @@ export class SpeedrunClientAction extends Component {
             this.state.game.standings = payload.standings;
         }
         this.state.phase = "final_results";
+        this._loadStats();
     }
 
     async createGame(name, totalRounds) {
@@ -489,6 +615,7 @@ export class SpeedrunClientAction extends Component {
         this.state.phase = "lobby";
         this.state.myFinished = false;
         this.state.checkResult = null;
+        this._loadStats();
     }
 }
 

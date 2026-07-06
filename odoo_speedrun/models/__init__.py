@@ -3,4 +3,9 @@ from . import speedrun_game
 from . import speedrun_player
 from . import speedrun_round_result
 from . import speedrun_leaderboard
+from . import speedrun_profile
+from . import speedrun_badge
+from . import speedrun_matchmaking
+from . import speedrun_personal_best
 from . import ir_websocket
+from . import res_users

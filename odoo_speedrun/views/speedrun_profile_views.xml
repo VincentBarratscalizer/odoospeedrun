@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== Profile ==================== -->
+    <record id="speedrun_profile_view_list" model="ir.ui.view">
+        <field name="name">speedrun.profile.list</field>
+        <field name="model">speedrun.profile</field>
+        <field name="arch" type="xml">
+            <list create="false" delete="false" edit="false">
+                <field name="user_id"/>
+                <field name="elo" decoration-bf="1"/>
+                <field name="peak_elo" optional="show"/>
+                <field name="level"/>
+                <field name="level_title"/>
+                <field name="xp"/>
+                <field name="games_played"/>
+                <field name="games_won"/>
+                <field name="win_rate" widget="progressbar"/>
+                <field name="best_time_ms" optional="show"/>
+                <field name="badge_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_profile_view_form" model="ir.ui.view">
+        <field name="name">speedrun.profile.form</field>
+        <field name="model">speedrun.profile</field>
+        <field name="arch" type="xml">
+            <form create="false" delete="false" edit="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="user_id" readonly="1"/></h1>
+                        <h3><field name="level_title" readonly="1"/></h3>
+                    </div>
+                    <group>
+                        <group string="Rating">
+                            <field name="elo"/>
+                            <field name="peak_elo"/>
+                            <field name="level"/>
+                            <field name="xp"/>
+                        </group>
+                        <group string="Statistics">
+                            <field name="games_played"/>
+                            <field name="games_won"/>
+                            <field name="win_rate" widget="progressbar"/>
+                            <field name="rounds_played"/>
+                            <field name="rounds_won"/>
+                            <field name="best_time_ms"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Badges" name="badges">
+                            <field name="badge_award_ids" readonly="1">
+                                <list>
+                                    <field name="badge_id"/>
+                                    <field name="game_id"/>
+                                    <field name="create_date" string="Earned On"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="ELO History" name="elo_history">
+                            <field name="elo_history_ids" readonly="1">
+                                <list>
+                                    <field name="create_date" string="Date"/>
+                                    <field name="game_id"/>
+                                    <field name="elo_before"/>
+                                    <field name="elo_change"/>
+                                    <field name="elo_after"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="speedrun_profile_action_my" model="ir.actions.act_window">
+        <field name="name">My Stats</field>
+        <field name="res_model">speedrun.profile</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('user_id', '=', uid)]</field>
+    </record>
+
+    <record id="speedrun_profile_action_all" model="ir.actions.act_window">
+        <field name="name">Player Profiles</field>
+        <field name="res_model">speedrun.profile</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ==================== Personal Bests ==================== -->
+    <record id="speedrun_personal_best_view_list" model="ir.ui.view">
+        <field name="name">speedrun.personal.best.list</field>
+        <field name="model">speedrun.personal.best</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false" delete="false">
+                <field name="task_id"/>
+                <field name="user_id" optional="hide"/>
+                <field name="best_time_ms" decoration-success="1"/>
+                <field name="avg_time_ms"/>
+                <field name="attempts"/>
+                <field name="wins"/>
+                <field name="last_played"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_personal_best_action_my" model="ir.actions.act_window">
+        <field name="name">My Best Times</field>
+        <field name="res_model">speedrun.personal.best</field>
+        <field name="view_mode">list</field>
+        <field name="domain">[('user_id', '=', uid)]</field>
+    </record>
+
+    <!-- ==================== ELO History ==================== -->
+    <record id="speedrun_elo_history_view_list" model="ir.ui.view">
+        <field name="name">speedrun.elo.history.list</field>
+        <field name="model">speedrun.elo.history</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false" delete="false">
+                <field name="create_date" string="Date"/>
+                <field name="user_id" optional="hide"/>
+                <field name="game_id"/>
+                <field name="elo_before"/>
+                <field name="elo_change" decoration-success="elo_change &gt; 0" decoration-danger="elo_change &lt; 0"/>
+                <field name="elo_after"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_elo_history_view_graph" model="ir.ui.view">
+        <field name="name">speedrun.elo.history.graph</field>
+        <field name="model">speedrun.elo.history</field>
+        <field name="arch" type="xml">
+            <graph type="line">
+                <field name="create_date" interval="day"/>
+                <field name="elo_after" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="speedrun_elo_history_action_my" model="ir.actions.act_window">
+        <field name="name">My ELO Progression</field>
+        <field name="res_model">speedrun.elo.history</field>
+        <field name="view_mode">graph,list</field>
+        <field name="domain">[('user_id', '=', uid)]</field>
+    </record>
+
+    <!-- ==================== Badges ==================== -->
+    <record id="speedrun_badge_view_list" model="ir.ui.view">
+        <field name="name">speedrun.badge.list</field>
+        <field name="model">speedrun.badge</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="icon"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="criteria_type"/>
+                <field name="threshold"/>
+                <field name="xp_reward"/>
+                <field name="award_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_badge_view_form" model="ir.ui.view">
+        <field name="name">speedrun.badge.form</field>
+        <field name="model">speedrun.badge</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="icon" class="oe_inline" style="width: 60px;"/>
+                            <field name="name" class="oe_inline" placeholder="Badge Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="criteria_type"/>
+                            <field name="threshold"/>
+                            <field name="xp_reward"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="award_count"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="speedrun_badge_action" model="ir.actions.act_window">
+        <field name="name">Badges</field>
+        <field name="res_model">speedrun.badge</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ==================== Matchmaking queue (admin monitoring) ==================== -->
+    <record id="speedrun_matchmaking_view_list" model="ir.ui.view">
+        <field name="name">speedrun.matchmaking.queue.list</field>
+        <field name="model">speedrun.matchmaking.queue</field>
+        <field name="arch" type="xml">
+            <list create="false">
+                <field name="create_date" string="Queued At"/>
+                <field name="user_id"/>
+                <field name="elo"/>
+                <field name="state"/>
+                <field name="game_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_matchmaking_action" model="ir.actions.act_window">
+        <field name="name">Matchmaking Queue</field>
+        <field name="res_model">speedrun.matchmaking.queue</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

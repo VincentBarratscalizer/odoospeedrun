@@ -1,6 +1,6 @@
 {
     'name': 'Odoo Speedrun',
-    'version': '19.0.1.0.0',
+    'version': '19.0.2.0.0',
     'category': 'Extra Tools',
     'summary': 'Multiplayer speedrun game - race to complete Odoo tasks!',
     'description': """
@@ -8,14 +8,18 @@
         random Odoo tasks (create invoices, products, contacts...)
         as fast as possible. Real-time updates via WebSocket.
     """,
-    'depends': ['base', 'bus', 'web'],
+    'depends': ['base', 'bus', 'web', 'auth_signup'],
     'data': [
         'security/speedrun_security.xml',
         'security/ir.model.access.csv',
         'data/speedrun_task_data.xml',
+        'data/speedrun_badge_data.xml',
+        'data/speedrun_matchmaking_cron.xml',
+        'data/auth_signup_data.xml',
         'views/speedrun_task_views.xml',
         'views/speedrun_game_views.xml',
         'views/speedrun_leaderboard_views.xml',
+        'views/speedrun_profile_views.xml',
         'views/speedrun_menus.xml',
     ],
     'assets': {

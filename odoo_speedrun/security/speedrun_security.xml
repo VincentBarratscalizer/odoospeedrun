@@ -36,6 +36,18 @@
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
+    <!-- Matchmaking queue: users may only modify their own entries -->
+    <record id="speedrun_matchmaking_rule_own" model="ir.rule">
+        <field name="name">Speedrun Matchmaking: manage own entries</field>
+        <field name="model_id" ref="model_speedrun_matchmaking_queue"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="False"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
     <record id="speedrun_game_rule_write" model="ir.rule">
         <field name="name">Speedrun Game: write own games</field>
         <field name="model_id" ref="model_speedrun_game"/>

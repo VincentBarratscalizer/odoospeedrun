@@ -125,6 +125,34 @@ class SpeedrunController(http.Controller):
             } for r in rr]
         return info
 
+    # ------------------------------------------------------------------
+    # Matchmaking
+    # ------------------------------------------------------------------
+    @http.route('/odoo_speedrun/matchmaking/join', type='jsonrpc', auth='user')
+    def matchmaking_join(self):
+        try:
+            request.env['speedrun.matchmaking.queue'].action_join_queue()
+        except Exception as e:
+            return {'error': str(e)}
+        return request.env['speedrun.matchmaking.queue'].get_queue_status()
+
+    @http.route('/odoo_speedrun/matchmaking/leave', type='jsonrpc', auth='user')
+    def matchmaking_leave(self):
+        request.env['speedrun.matchmaking.queue'].action_leave_queue()
+        return {'success': True}
+
+    @http.route('/odoo_speedrun/matchmaking/status', type='jsonrpc', auth='user')
+    def matchmaking_status(self):
+        return request.env['speedrun.matchmaking.queue'].get_queue_status()
+
+    # ------------------------------------------------------------------
+    # Personal stats
+    # ------------------------------------------------------------------
+    @http.route('/odoo_speedrun/my_stats', type='jsonrpc', auth='user')
+    def my_stats(self):
+        profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
+        return profile._get_stats_payload()
+
     @http.route('/odoo_speedrun/leaderboard', type='jsonrpc', auth='user')
     def leaderboard(self, limit=20):
         records = request.env['speedrun.leaderboard'].search([], limit=int(limit))

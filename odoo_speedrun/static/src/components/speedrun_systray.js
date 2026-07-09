@@ -3,6 +3,7 @@
 import { Component, useState, onWillUnmount, onMounted } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
 import { rpc } from "@web/core/network/rpc";
 import { user } from "@web/core/user";
 import { playSound, playCountdownBeep } from "../services/sound_service";
@@ -30,6 +31,19 @@ export class SpeedrunSystray extends Component {
             checking: false,
             phase: null, // "playing" | "round_finished"
         });
+
+        // Global shortcut Alt+Shift+D: click the "Done!" button (check task completion).
+        // "global" so it works from any screen, "bypassEditableProtection" so it
+        // also fires while typing in an input (the player is doing the task).
+        useHotkey(
+            "alt+shift+d",
+            () => {
+                if (this.state.phase === "playing" && !this.state.myFinished) {
+                    this.onClickCheck();
+                }
+            },
+            { global: true, bypassEditableProtection: true }
+        );
 
         this._interval = null;
         this._onBusNotification = this.onBusNotification.bind(this);

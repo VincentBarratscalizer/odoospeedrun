@@ -25,6 +25,7 @@
             <!-- Check button -->
             <t t-if="!props.myFinished">
                 <button class="btn btn-lg px-5"
+                    title="Check task completion (Alt+Shift+D)"
                     t-att-class="timerState.checking ? 'btn-secondary' : 'btn-primary'"
                     t-att-disabled="timerState.checking"
                     t-on-click="onClickCheck">

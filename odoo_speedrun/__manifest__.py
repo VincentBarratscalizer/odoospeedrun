@@ -13,6 +13,7 @@
         'security/speedrun_security.xml',
         'security/ir.model.access.csv',
         'data/speedrun_task_data.xml',
+        'data/speedrun_task_data_apps.xml',
         'data/speedrun_badge_data.xml',
         'data/speedrun_matchmaking_cron.xml',
         'data/auth_signup_data.xml',

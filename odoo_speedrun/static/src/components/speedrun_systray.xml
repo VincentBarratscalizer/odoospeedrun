@@ -37,6 +37,7 @@
                     <!-- Check button -->
                     <t t-if="!state.myFinished">
                         <button class="btn btn-sm btn-primary py-0 px-2"
+                            title="Check task completion (Alt+Shift+D)"
                             t-att-disabled="state.checking"
                             t-on-click.stop="onClickCheck">
                             <t t-if="state.checking">

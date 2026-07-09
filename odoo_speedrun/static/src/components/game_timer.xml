@@ -22,20 +22,34 @@
                 </div>
             </div>
 
-            <!-- Check button -->
+            <!-- Action buttons -->
             <t t-if="!props.myFinished">
-                <button class="btn btn-lg px-5"
-                    title="Check task completion (Alt+Shift+D)"
-                    t-att-class="timerState.checking ? 'btn-secondary' : 'btn-primary'"
-                    t-att-disabled="timerState.checking"
-                    t-on-click="onClickCheck">
-                    <t t-if="timerState.checking">
-                        Checking...
-                    </t>
-                    <t t-else="">
-                        I'm Done!
-                    </t>
-                </button>
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <button class="btn btn-lg px-5"
+                        title="Check task completion (Alt+Shift+D)"
+                        t-att-class="timerState.checking ? 'btn-secondary' : 'btn-primary'"
+                        t-att-disabled="timerState.checking or timerState.surrendering"
+                        t-on-click="onClickCheck">
+                        <t t-if="timerState.checking">
+                            Checking...
+                        </t>
+                        <t t-else="">
+                            I'm Done!
+                        </t>
+                    </button>
+                    <button class="btn btn-lg btn-outline-danger px-4"
+                        title="Surrender this round — score no points (Alt+Shift+S)"
+                        t-att-disabled="timerState.checking or timerState.surrendering"
+                        t-on-click="onClickSurrender">
+                        <i class="fa fa-flag me-1"/>
+                        <t t-if="timerState.surrendering">
+                            Surrendering...
+                        </t>
+                        <t t-else="">
+                            Surrender
+                        </t>
+                    </button>
+                </div>
                 <t t-if="props.checkResult and !props.checkResult.success and props.checkResult.error">
                     <div class="alert alert-warning mt-3 d-inline-block">
                         <t t-esc="props.checkResult.error"/>

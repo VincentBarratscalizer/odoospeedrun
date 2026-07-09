@@ -13,6 +13,13 @@
         action="speedrun_client_action"
         sequence="1"/>
 
+    <!-- Tournaments (backend overview) -->
+    <menuitem id="menu_speedrun_tournaments"
+        name="Tournaments"
+        parent="menu_speedrun_root"
+        action="speedrun_tournament_action"
+        sequence="3"/>
+
     <!-- Leaderboard -->
     <menuitem id="menu_speedrun_leaderboard"
         name="Leaderboard"

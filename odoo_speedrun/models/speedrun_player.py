@@ -19,6 +19,10 @@ class SpeedrunPlayer(models.Model):
     score = fields.Integer(string='Score', default=0)
     round_wins = fields.Integer(string='Round Wins', default=0,
                                 help="Number of rounds finished in 1st place.")
+    dismissed = fields.Boolean(
+        string='Dismissed', default=False,
+        help="Set when the player leaves the final results screen (Play again). "
+             "Dismissed games are no longer restored on refresh.")
 
     _unique_player_per_game = models.Constraint(
         'UNIQUE(game_id, user_id)',

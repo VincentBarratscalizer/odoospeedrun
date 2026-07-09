@@ -45,6 +45,9 @@ class SpeedrunGame(models.Model):
     max_players = fields.Integer(default=8)
     is_ranked = fields.Boolean(string='Ranked Match', readonly=True,
                                help="Game created through matchmaking.")
+    tournament_match_id = fields.Many2one('speedrun.tournament.match', readonly=True,
+                                          ondelete='set null',
+                                          help="Set when this game backs a tournament match.")
 
     @api.depends('player_ids')
     def _compute_player_count(self):
@@ -111,6 +114,22 @@ class SpeedrunGame(models.Model):
             'user_name': user_name,
             'player_count': len(self.player_ids),
         })
+
+    def action_dismiss(self, user_id=None):
+        """Mark the current user as having left the results screen ("Play
+        again"). Dismissed games are no longer restored on refresh, but the
+        player row (and thus game history / standings) is kept intact."""
+        self.ensure_one()
+        user_id = user_id or self.env.uid
+        player = self.player_ids.filtered(lambda p: p.user_id.id == user_id)
+        if player:
+            player.dismissed = True
+        # Drop any stale matchmaking entry so the queue doesn't resurrect it.
+        self.env['speedrun.matchmaking.queue'].sudo().search([
+            ('user_id', '=', user_id),
+            ('game_id', '=', self.id),
+        ]).unlink()
+        return True
 
     def _pick_random_task(self, exclude_ids=None):
         """Pick a random task, strictly avoiding already-used ones."""
@@ -209,8 +228,8 @@ class SpeedrunGame(models.Model):
         player = self.player_ids.filtered(lambda p: p.user_id.id == user_id)
         if not player:
             return {'success': False, 'error': 'You are not in this game.'}
-        if player.state == 'finished':
-            return {'success': False, 'error': 'You have already finished this round.'}
+        if player.state != 'playing':
+            return {'success': False, 'error': 'You are no longer playing this round.'}
 
         # Verify the task
         completed = self.sudo().task_id._verify_completion(user_id, self.start_time)
@@ -255,8 +274,8 @@ class SpeedrunGame(models.Model):
             'points': points,
         })
 
-        # Check if all players have finished
-        all_done = all(p.state == 'finished' for p in self.player_ids)
+        # Check if all players are done (finished or surrendered)
+        all_done = all(p.state in ('finished', 'dnf') for p in self.player_ids)
         if all_done:
             self._end_round(now)
 
@@ -266,6 +285,60 @@ class SpeedrunGame(models.Model):
             'duration_ms': duration_ms,
             'rank': rank,
             'points': points,
+        }
+        if all_done:
+            response['game_info'] = self._get_game_info()
+        return response
+
+    def action_surrender(self, user_id=None):
+        """Surrender the current round: the player scores no points and stops
+        playing. Unlike a natural DNF (round timeout), this is a voluntary
+        forfeit triggered by the player."""
+        self.ensure_one()
+        user_id = user_id or self.env.uid
+        if self.state != 'running':
+            return {'success': False, 'error': 'Game is not running.'}
+
+        player = self.player_ids.filtered(lambda p: p.user_id.id == user_id)
+        if not player:
+            return {'success': False, 'error': 'You are not in this game.'}
+        if player.state != 'playing':
+            return {'success': False, 'error': 'You are no longer playing this round.'}
+
+        # Mark the player as DNF with no points for this round
+        player.write({'state': 'dnf'})
+        self.env['speedrun.round.result'].create({
+            'game_id': self.id,
+            'round_number': self.current_round,
+            'task_id': self.task_id.id,
+            'user_id': user_id,
+            'rank': 0,
+            'duration_ms': 0,
+            'points': 0,
+        })
+
+        user = self.env['res.users'].browse(user_id)
+        self._bus_send('speedrun/player_finished', {
+            'user_id': user_id,
+            'user_name': user.name,
+            'duration_ms': 0,
+            'rank': 0,
+            'points': 0,
+            'surrendered': True,
+        })
+
+        now = fields.Datetime.now()
+        all_done = all(p.state in ('finished', 'dnf') for p in self.player_ids)
+        if all_done:
+            self._end_round(now)
+
+        response = {
+            'success': True,
+            'surrendered': True,
+            'all_done': all_done,
+            'duration_ms': 0,
+            'rank': 0,
+            'points': 0,
         }
         if all_done:
             response['game_info'] = self._get_game_info()
@@ -313,6 +386,9 @@ class SpeedrunGame(models.Model):
             payload = self._build_game_over_payload()
             payload['elo_changes'] = elo_changes
             self._bus_send('speedrun/game_over', payload)
+            # Advance the tournament bracket if this game backs a match.
+            if self.tournament_match_id:
+                self.tournament_match_id.sudo()._on_game_over()
         else:
             self.write({'state': 'round_finished'})
             self._bus_send('speedrun/round_over', self._build_round_over_payload())
@@ -400,6 +476,8 @@ class SpeedrunGame(models.Model):
             'host_id': self.host_id.id,
             'host_name': self.host_id.name,
             'is_ranked': self.is_ranked,
+            'tournament_id': self.tournament_match_id.tournament_id.id if self.tournament_match_id else None,
+            'tournament_match_label': self.tournament_match_id.label if self.tournament_match_id else None,
             'players': players,
             'player_count': len(self.player_ids),
             'max_players': self.max_players,

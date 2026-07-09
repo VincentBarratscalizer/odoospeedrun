@@ -34,7 +34,7 @@
                         <t t-esc="state.taskName"/>
                     </span>
 
-                    <!-- Check button -->
+                    <!-- Check + Surrender buttons -->
                     <t t-if="!state.myFinished">
                         <button class="btn btn-sm btn-primary py-0 px-2"
                             title="Check task completion (Alt+Shift+D)"
@@ -46,6 +46,12 @@
                             <t t-else="">
                                 Done!
                             </t>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger py-0 px-2"
+                            title="Surrender this round — score no points (Alt+Shift+S)"
+                            t-att-disabled="state.checking"
+                            t-on-click.stop="onClickSurrender">
+                            <i class="fa fa-flag"/>
                         </button>
                     </t>
                     <t t-else="">

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.TournamentBracket">
+        <div class="o_speedrun_bracket_wrap">
+            <t t-if="props.bracket">
+                <!-- Winners bracket -->
+                <div class="mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="fa fa-trophy me-2"/>Winners Bracket
+                    </h5>
+                    <div class="o_speedrun_bracket d-flex align-items-stretch overflow-auto pb-2">
+                        <t t-foreach="props.bracket.winners" t-as="round" t-key="'w'+round.round_number">
+                            <div class="o_speedrun_round d-flex flex-column justify-content-around px-2">
+                                <div class="text-center text-muted small text-uppercase mb-2 fw-bold">
+                                    <t t-esc="round.label"/>
+                                </div>
+                                <t t-foreach="round.matches" t-as="m" t-key="m.id">
+                                    <t t-call="odoo_speedrun.BracketMatch">
+                                        <t t-set="match" t-value="m"/>
+                                    </t>
+                                </t>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Losers bracket -->
+                <div class="mb-4" t-if="props.bracket.losers.length">
+                    <h5 class="text-danger mb-3">
+                        <i class="fa fa-life-ring me-2"/>Losers Bracket
+                    </h5>
+                    <div class="o_speedrun_bracket d-flex align-items-stretch overflow-auto pb-2">
+                        <t t-foreach="props.bracket.losers" t-as="round" t-key="'l'+round.round_number">
+                            <div class="o_speedrun_round d-flex flex-column justify-content-around px-2">
+                                <div class="text-center text-muted small text-uppercase mb-2 fw-bold">
+                                    <t t-esc="round.label"/>
+                                </div>
+                                <t t-foreach="round.matches" t-as="m" t-key="m.id">
+                                    <t t-call="odoo_speedrun.BracketMatch">
+                                        <t t-set="match" t-value="m"/>
+                                    </t>
+                                </t>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Grand final -->
+                <div t-if="props.bracket.grand.length">
+                    <h5 class="text-warning mb-3">
+                        <i class="fa fa-crown me-2"/>Grand Final
+                    </h5>
+                    <div class="o_speedrun_bracket d-flex align-items-stretch">
+                        <div class="o_speedrun_round d-flex flex-column justify-content-around px-2">
+                            <t t-foreach="props.bracket.grand" t-as="m" t-key="m.id">
+                                <t t-call="odoo_speedrun.BracketMatch">
+                                    <t t-set="match" t-value="m"/>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+
+    <!-- A single match card -->
+    <t t-name="odoo_speedrun.BracketMatch">
+        <div class="o_speedrun_match card mb-3 shadow-sm"
+             t-att-class="{'border-warning': match.state === 'running', 'border-primary': match.can_play}">
+            <div class="card-header p-1 px-2 d-flex justify-content-between align-items-center">
+                <span class="small text-truncate" t-att-title="match.label"><t t-esc="match.label"/></span>
+                <span class="badge" t-att-class="stateClass(match.state)">
+                    <t t-esc="stateLabel(match.state)"/>
+                </span>
+            </div>
+            <div class="card-body p-0">
+                <!-- Player 1 -->
+                <div class="o_speedrun_slot d-flex justify-content-between align-items-center px-2 py-1 border-bottom"
+                     t-att-class="{'fw-bold': match.p1.is_me, 'o_speedrun_slot_win': match.p1.is_winner, 'text-muted': match.p1.bye}">
+                    <span class="text-truncate">
+                        <t t-if="match.p1.name"><t t-esc="match.p1.name"/></t>
+                        <t t-else="" class="text-muted fst-italic">—</t>
+                    </span>
+                    <span t-if="match.game_id or match.state === 'done'" class="badge text-bg-light ms-2">
+                        <t t-esc="match.p1.score"/>
+                    </span>
+                </div>
+                <!-- Player 2 -->
+                <div class="o_speedrun_slot d-flex justify-content-between align-items-center px-2 py-1"
+                     t-att-class="{'fw-bold': match.p2.is_me, 'o_speedrun_slot_win': match.p2.is_winner, 'text-muted': match.p2.bye}">
+                    <span class="text-truncate">
+                        <t t-if="match.p2.name"><t t-esc="match.p2.name"/></t>
+                        <t t-else="" class="text-muted fst-italic">—</t>
+                    </span>
+                    <span t-if="match.game_id or match.state === 'done'" class="badge text-bg-light ms-2">
+                        <t t-esc="match.p2.score"/>
+                    </span>
+                </div>
+            </div>
+            <div t-if="match.can_play" class="card-footer p-1">
+                <button class="btn btn-primary btn-sm w-100" t-on-click="() => this.onPlay(match.id)">
+                    <i class="fa fa-play me-1"/>Play my match
+                </button>
+            </div>
+            <div t-elif="match.state === 'running' and match.my_match" class="card-footer p-1">
+                <span class="badge text-bg-warning w-100">
+                    <i class="fa fa-spinner fa-spin me-1"/>Match in progress
+                </span>
+            </div>
+        </div>
+    </t>
+</templates>

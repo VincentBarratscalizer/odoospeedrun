@@ -75,11 +75,23 @@ class SpeedrunMatchmakingQueue(models.Model):
         if not entry:
             return {'in_queue': False}
         if entry.state == 'matched' and entry.game_id:
-            return {
-                'in_queue': False,
-                'matched': True,
-                'game_info': entry.game_id.sudo()._get_game_info(),
-            }
+            # Only resurrect a match that is still in progress. Once the game
+            # is finished (or the player has left it), the entry is stale:
+            # drop it so a refresh doesn't drag the player back into the
+            # results screen of a game they already left.
+            game = entry.game_id.sudo()
+            still_playing = (
+                game.state in ('waiting', 'countdown', 'running', 'round_finished')
+                and self.env.uid in game.player_ids.user_id.ids
+            )
+            if still_playing:
+                return {
+                    'in_queue': False,
+                    'matched': True,
+                    'game_info': game._get_game_info(),
+                }
+            entry.sudo().unlink()
+            return {'in_queue': False}
         wait_seconds = int((fields.Datetime.now() - entry.create_date).total_seconds())
         return {
             'in_queue': True,

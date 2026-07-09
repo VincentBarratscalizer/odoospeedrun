@@ -8,11 +8,12 @@ import { user } from "@web/core/user";
 import { GameLobby } from "../components/game_lobby";
 import { GameTimer } from "../components/game_timer";
 import { GameResults } from "../components/game_results";
+import { TournamentPanel } from "../components/tournament_panel";
 import { playSound, playCountdownBeep } from "../services/sound_service";
 
 export class SpeedrunClientAction extends Component {
     static template = "odoo_speedrun.SpeedrunClientAction";
-    static components = { GameLobby, GameTimer, GameResults };
+    static components = { GameLobby, GameTimer, GameResults, TournamentPanel };
     static props = ["*"];
 
     setup() {
@@ -27,13 +28,19 @@ export class SpeedrunClientAction extends Component {
             game: null,
             countdown: 0,
             myFinished: false,
+            mySurrendered: false,
             myDurationMs: 0,
             myRank: 0,
             myPoints: 0,
             checkResult: null,
             stats: null,
             matchmaking: { searching: false, waitSeconds: 0, queueSize: 0 },
+            // Tournaments
+            tournaments: null,
+            tournament: null,
         });
+        // Id of a tournament to return to after a bracket match finishes
+        this._returnTournamentId = null;
 
         this._onBusNotification = this.onBusNotification.bind(this);
         this.busService.addEventListener("notification", this._onBusNotification);
@@ -52,6 +59,7 @@ export class SpeedrunClientAction extends Component {
             if (this._roundResultsPoll) clearInterval(this._roundResultsPoll);
             if (this._roundEndPoll) clearInterval(this._roundEndPoll);
             if (this._queuePoll) clearInterval(this._queuePoll);
+            if (this._tournamentPoll) clearInterval(this._tournamentPoll);
         });
     }
 
@@ -106,14 +114,16 @@ export class SpeedrunClientAction extends Component {
             case "running": {
                 // Check if current user already finished this round
                 const me = result.players?.find(p => p.user_id === this.user.userId);
-                if (me && me.state === "finished") {
+                if (me && (me.state === "finished" || me.state === "dnf")) {
                     this.state.myFinished = true;
+                    this.state.mySurrendered = me.state === "dnf";
                     this.state.myDurationMs = me.duration_ms;
                     this.state.phase = "waiting_others";
                     this._waitForRoundEnd();
                 } else {
                     this.state.phase = "playing";
                     this.state.myFinished = false;
+                    this.state.mySurrendered = false;
                     this.state.checkResult = null;
                     // Notify systray
                     window.dispatchEvent(new CustomEvent("speedrun-update", {
@@ -223,6 +233,14 @@ export class SpeedrunClientAction extends Component {
                 case "speedrun/match_found":
                     this._onMatchFound(payload.game_info);
                     break;
+                case "speedrun/tournament_update":
+                    if (this.state.tournament && this.state.tournament.id === payload.tournament_id) {
+                        this.refreshTournament();
+                    }
+                    if (this.state.tournaments) {
+                        this._loadTournaments();
+                    }
+                    break;
                 case "speedrun/badge_earned":
                     playSound("taskComplete");
                     this.notification.add(
@@ -302,8 +320,169 @@ export class SpeedrunClientAction extends Component {
         }
     }
 
+    // ------------------------------------------------------------------
+    // Tournaments
+    // ------------------------------------------------------------------
+    async openTournaments() {
+        this.state.tournament = null;
+        this.state.phase = "tournaments";
+        await this._loadTournaments();
+    }
+
+    async _loadTournaments() {
+        try {
+            this.state.tournaments = await rpc("/odoo_speedrun/tournament/list", {});
+        } catch {
+            this.state.tournaments = [];
+        }
+    }
+
+    backToArena() {
+        this._stopTournamentPoll();
+        this.state.phase = "lobby";
+        this.state.tournament = null;
+        if (!this.state.game) {
+            this._startLobbyPoll?.();
+        }
+    }
+
+    async openTournament(tournamentId) {
+        if (!tournamentId) {
+            // null => return to the list
+            this._stopTournamentPoll();
+            this.state.tournament = null;
+            this.state.phase = "tournaments";
+            await this._loadTournaments();
+            return;
+        }
+        const result = await rpc("/odoo_speedrun/tournament/get", { tournament_id: tournamentId });
+        if (result.error) {
+            this.notification.add(result.error, { type: "danger" });
+            return;
+        }
+        this.state.tournament = result;
+        this.state.phase = "tournament";
+        this._startTournamentPoll();
+    }
+
+    async refreshTournament() {
+        if (!this.state.tournament) return;
+        const result = await rpc("/odoo_speedrun/tournament/get", {
+            tournament_id: this.state.tournament.id,
+        });
+        if (result && !result.error) {
+            this.state.tournament = result;
+        }
+    }
+
+    _startTournamentPoll() {
+        this._stopTournamentPoll();
+        this._tournamentPoll = setInterval(async () => {
+            if (this.state.phase !== "tournament" || !this.state.tournament) {
+                this._stopTournamentPoll();
+                return;
+            }
+            await this.refreshTournament();
+            // If one of my matches has started, jump into it.
+            if (!this.state.game) {
+                try {
+                    const active = await rpc("/odoo_speedrun/my_active_game", {});
+                    if (active && active.id && active.tournament_id) {
+                        this._onMatchFound(active);
+                    }
+                } catch {
+                    // ignore
+                }
+            }
+        }, 3000);
+    }
+
+    _stopTournamentPoll() {
+        if (this._tournamentPoll) {
+            clearInterval(this._tournamentPoll);
+            this._tournamentPoll = null;
+        }
+    }
+
+    async createTournament(vals) {
+        const result = await rpc("/odoo_speedrun/tournament/create", vals);
+        if (result.error) {
+            this.notification.add(result.error, { type: "danger" });
+            return;
+        }
+        this.state.tournament = result;
+        this.state.phase = "tournament";
+        this._startTournamentPoll();
+    }
+
+    async _tournamentAction(url, extra = {}) {
+        if (!this.state.tournament) return;
+        const result = await rpc(url, { tournament_id: this.state.tournament.id, ...extra });
+        if (result && result.error) {
+            this.notification.add(result.error, { type: "danger" });
+            return;
+        }
+        if (result && result.id) {
+            this.state.tournament = result;
+        }
+    }
+
+    registerTournament() {
+        return this._tournamentAction("/odoo_speedrun/tournament/register");
+    }
+    unregisterTournament() {
+        return this._tournamentAction("/odoo_speedrun/tournament/unregister");
+    }
+    closeRegistration() {
+        return this._tournamentAction("/odoo_speedrun/tournament/close_registration");
+    }
+    reopenRegistration() {
+        return this._tournamentAction("/odoo_speedrun/tournament/reopen_registration");
+    }
+    autoSeed(method) {
+        return this._tournamentAction("/odoo_speedrun/tournament/auto_seed", { method });
+    }
+    moveSeed(userId, direction) {
+        return this._tournamentAction("/odoo_speedrun/tournament/move_seed", {
+            user_id: userId,
+            direction,
+        });
+    }
+    startTournament() {
+        return this._tournamentAction("/odoo_speedrun/tournament/start");
+    }
+
+    async cancelTournament() {
+        if (!this.state.tournament) return;
+        const result = await rpc("/odoo_speedrun/tournament/cancel", {
+            tournament_id: this.state.tournament.id,
+        });
+        if (result && result.error) {
+            this.notification.add(result.error, { type: "danger" });
+            return;
+        }
+        this._stopTournamentPoll();
+        this.state.tournament = null;
+        this.state.phase = "tournaments";
+        await this._loadTournaments();
+    }
+
+    async playMatch(matchId) {
+        const result = await rpc("/odoo_speedrun/tournament/play_match", { match_id: matchId });
+        if (result.error) {
+            this.notification.add(result.error, { type: "danger" });
+            return;
+        }
+        if (result.game_info) {
+            this._onMatchFound(result.game_info);
+        }
+    }
+
     _onMatchFound(gameInfo) {
         if (this.state.game && this.state.game.id === gameInfo.id) return;
+        // Remember the tournament so we can return to its bracket afterwards.
+        this._returnTournamentId = gameInfo.tournament_id || null;
+        this._stopTournamentPoll();
         this._stopQueuePoll();
         this.state.matchmaking.searching = false;
         this.state.matchmaking.waitSeconds = 0;
@@ -367,6 +546,7 @@ export class SpeedrunClientAction extends Component {
                     }
                     this.state.phase = "playing";
                     this.state.myFinished = false;
+                    this.state.mySurrendered = false;
                     this.state.checkResult = null;
                     window.dispatchEvent(new CustomEvent("speedrun-update", {
                         detail: { type: "game_started", data: result },
@@ -394,6 +574,7 @@ export class SpeedrunClientAction extends Component {
         }
         this.state.phase = "playing";
         this.state.myFinished = false;
+        this.state.mySurrendered = false;
         this.state.checkResult = null;
         // Navigate to Odoo home so user can work on the task
         this.actionService.doAction("menu");
@@ -514,6 +695,7 @@ export class SpeedrunClientAction extends Component {
             }
             this.state.phase = "playing";
             this.state.myFinished = false;
+            this.state.mySurrendered = false;
             this.state.checkResult = null;
             // Notify systray directly (bus notifications don't reach the sender)
             window.dispatchEvent(new CustomEvent("speedrun-update", {
@@ -548,6 +730,34 @@ export class SpeedrunClientAction extends Component {
         } else if (result.error) {
             playSound("error");
             this.notification.add(result.error, { type: "warning" });
+        }
+    }
+
+    async surrender() {
+        if (!this.state.game) return;
+        const result = await rpc("/odoo_speedrun/surrender", { game_id: this.state.game.id });
+        if (result.error) {
+            this.notification.add(result.error, { type: "danger" });
+            return;
+        }
+        if (result.success) {
+            this.state.myFinished = true;
+            this.state.mySurrendered = true;
+            this.state.myDurationMs = 0;
+            this.state.myRank = 0;
+            this.state.myPoints = 0;
+            playSound("error");
+            if (result.all_done && result.game_info) {
+                // Everyone is done — go straight to results
+                this._showRoundResults(result.game_info);
+            } else {
+                // Show waiting screen, poll for round end
+                this.state.phase = "waiting_others";
+                window.dispatchEvent(new CustomEvent("speedrun-update", {
+                    detail: { type: "player_done" },
+                }));
+                this._waitForRoundEnd();
+            }
         }
     }
 
@@ -611,11 +821,23 @@ export class SpeedrunClientAction extends Component {
     }
 
     playAgain() {
+        const returnTo = this._returnTournamentId;
+        // Tell the server we've left the results screen so a refresh doesn't
+        // restore the finished game and drop us back into final results.
+        if (this.state.game) {
+            rpc("/odoo_speedrun/dismiss_game", { game_id: this.state.game.id }).catch(() => {});
+        }
         this.state.game = null;
-        this.state.phase = "lobby";
         this.state.myFinished = false;
+        this.state.mySurrendered = false;
         this.state.checkResult = null;
         this._loadStats();
+        if (returnTo) {
+            this._returnTournamentId = null;
+            this.openTournament(returnTo);
+        } else {
+            this.state.phase = "lobby";
+        }
     }
 }
 

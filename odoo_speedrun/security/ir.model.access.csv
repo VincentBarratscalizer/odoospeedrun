@@ -17,3 +17,6 @@ access_speedrun_badge_award_user,speedrun.badge.award.user,model_speedrun_badge_
 access_speedrun_badge_award_admin,speedrun.badge.award.admin,model_speedrun_badge_award,base.group_system,1,1,1,1
 access_speedrun_matchmaking_queue_user,speedrun.matchmaking.queue.user,model_speedrun_matchmaking_queue,base.group_user,1,1,1,1
 access_speedrun_personal_best_user,speedrun.personal.best.user,model_speedrun_personal_best,base.group_user,1,0,0,0
+access_speedrun_tournament_user,speedrun.tournament.user,model_speedrun_tournament,base.group_user,1,1,1,1
+access_speedrun_tournament_reg_user,speedrun.tournament.registration.user,model_speedrun_tournament_registration,base.group_user,1,1,1,1
+access_speedrun_tournament_match_user,speedrun.tournament.match.user,model_speedrun_tournament_match,base.group_user,1,1,1,1

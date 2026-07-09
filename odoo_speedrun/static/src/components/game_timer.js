@@ -9,6 +9,7 @@ export class GameTimer extends Component {
         myFinished: Boolean,
         checkResult: { type: [Object, { value: null }] },
         onCheckCompletion: Function,
+        onSurrender: Function,
     };
 
     setup() {
@@ -16,6 +17,7 @@ export class GameTimer extends Component {
             elapsed: "00:00.000",
             elapsedMs: 0,
             checking: false,
+            surrendering: false,
         });
 
         this._interval = null;
@@ -58,6 +60,19 @@ export class GameTimer extends Component {
             await this.props.onCheckCompletion();
         } finally {
             this.timerState.checking = false;
+        }
+    }
+
+    async onClickSurrender() {
+        if (this.timerState.checking || this.timerState.surrendering) return;
+        if (!window.confirm("Surrender this round? You will score no points.")) {
+            return;
+        }
+        this.timerState.surrendering = true;
+        try {
+            await this.props.onSurrender();
+        } finally {
+            this.timerState.surrendering = false;
         }
     }
 }

@@ -45,6 +45,17 @@ export class SpeedrunSystray extends Component {
             { global: true, bypassEditableProtection: true }
         );
 
+        // Global shortcut Alt+Shift+S: surrender the current round (score no points).
+        useHotkey(
+            "alt+shift+s",
+            () => {
+                if (this.state.phase === "playing" && !this.state.myFinished) {
+                    this.onClickSurrender();
+                }
+            },
+            { global: true, bypassEditableProtection: true }
+        );
+
         this._interval = null;
         this._onBusNotification = this.onBusNotification.bind(this);
         this.busService.addEventListener("notification", this._onBusNotification);
@@ -264,6 +275,30 @@ export class SpeedrunSystray extends Component {
                 this._goToGame();
             } else if (result.error) {
                 playSound("error");
+                this.notification.add(result.error, { type: "warning" });
+            }
+        } finally {
+            this.state.checking = false;
+        }
+    }
+
+    async onClickSurrender() {
+        if (this.state.checking || !this.state.gameId) return;
+        if (!window.confirm("Surrender this round? You will score no points.")) {
+            return;
+        }
+        this.state.checking = true;
+        try {
+            const result = await rpc("/odoo_speedrun/surrender", {
+                game_id: this.state.gameId,
+            });
+            if (result.success) {
+                playSound("error");
+                this.state.myFinished = true;
+                if (this._interval) clearInterval(this._interval);
+                // Redirect to game screen to see the waiting screen
+                this._goToGame();
+            } else if (result.error) {
                 this.notification.add(result.error, { type: "warning" });
             }
         } finally {

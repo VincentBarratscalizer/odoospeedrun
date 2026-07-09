@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="speedrun_tournament_view_list" model="ir.ui.view">
+        <field name="name">speedrun.tournament.list</field>
+        <field name="model">speedrun.tournament</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="organizer_id"/>
+                <field name="match_best_of"/>
+                <field name="participant_count"/>
+                <field name="state" widget="badge"
+                    decoration-info="state == 'registration'"
+                    decoration-warning="state in ('seeding', 'running')"
+                    decoration-success="state == 'finished'"/>
+                <field name="winner_id"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_tournament_view_form" model="ir.ui.view">
+        <field name="name">speedrun.tournament.form</field>
+        <field name="model">speedrun.tournament</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="registration,seeding,running,finished"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="organizer_id"/>
+                            <field name="match_best_of"/>
+                            <field name="seeding_method"/>
+                            <field name="max_participants"/>
+                        </group>
+                        <group>
+                            <field name="participant_count"/>
+                            <field name="bracket_size"/>
+                            <field name="winner_id"/>
+                            <field name="runner_up_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Participants">
+                            <field name="registration_ids">
+                                <list editable="bottom" default_order="seed">
+                                    <field name="seed"/>
+                                    <field name="user_id"/>
+                                    <field name="elo"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Matches">
+                            <field name="match_ids">
+                                <list default_order="bracket desc, round_number, match_number">
+                                    <field name="label"/>
+                                    <field name="bracket"/>
+                                    <field name="round_number"/>
+                                    <field name="player1_id"/>
+                                    <field name="player2_id"/>
+                                    <field name="winner_id"/>
+                                    <field name="state" widget="badge"
+                                        decoration-info="state in ('waiting', 'ready')"
+                                        decoration-warning="state == 'running'"
+                                        decoration-success="state in ('done', 'bye')"/>
+                                    <field name="game_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="speedrun_tournament_action" model="ir.actions.act_window">
+        <field name="name">Tournaments</field>
+        <field name="res_model">speedrun.tournament</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

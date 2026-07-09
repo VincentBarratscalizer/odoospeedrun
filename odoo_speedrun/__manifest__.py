@@ -19,6 +19,7 @@
         'data/auth_signup_data.xml',
         'views/speedrun_task_views.xml',
         'views/speedrun_game_views.xml',
+        'views/speedrun_tournament_views.xml',
         'views/speedrun_leaderboard_views.xml',
         'views/speedrun_profile_views.xml',
         'views/speedrun_menus.xml',

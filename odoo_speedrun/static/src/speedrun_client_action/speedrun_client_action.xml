@@ -56,8 +56,16 @@
             </t>
 
             <!-- Main content -->
-            <div class="o_speedrun_content w-100" style="max-width: 900px;">
+            <div class="o_speedrun_content w-100"
+                 t-att-style="(state.phase === 'tournaments' || state.phase === 'tournament') ? 'max-width: 1200px;' : 'max-width: 900px;'">
                 <t t-if="state.phase === 'lobby'">
+                    <t t-if="!state.game">
+                        <div class="text-center mb-4">
+                            <button class="btn btn-outline-warning btn-lg px-4" t-on-click="openTournaments">
+                                <i class="fa fa-trophy me-2"/>Tournaments
+                            </button>
+                        </div>
+                    </t>
                     <GameLobby
                         game="state.game"
                         stats="state.stats"
@@ -71,32 +79,62 @@
                         userId="user.userId"
                     />
                 </t>
+
+                <t t-if="state.phase === 'tournaments' or state.phase === 'tournament'">
+                    <TournamentPanel
+                        tournaments="state.tournaments"
+                        tournament="state.tournament"
+                        userId="user.userId"
+                        onBack.bind="backToArena"
+                        onOpen.bind="openTournament"
+                        onCreate.bind="createTournament"
+                        onRegister.bind="registerTournament"
+                        onUnregister.bind="unregisterTournament"
+                        onCloseRegistration.bind="closeRegistration"
+                        onReopenRegistration.bind="reopenRegistration"
+                        onAutoSeed.bind="autoSeed"
+                        onMoveSeed.bind="moveSeed"
+                        onStart.bind="startTournament"
+                        onPlayMatch.bind="playMatch"
+                        onRefresh.bind="refreshTournament"
+                        onCancel.bind="cancelTournament"
+                    />
+                </t>
                 <t t-if="state.phase === 'playing'">
                     <GameTimer
                         game="state.game"
                         myFinished="state.myFinished"
                         checkResult="state.checkResult"
                         onCheckCompletion.bind="checkCompletion"
+                        onSurrender.bind="surrender"
                     />
                 </t>
                 <t t-if="state.phase === 'waiting_others'">
                     <div class="text-center">
                         <!-- My result -->
                         <div class="mb-4">
-                            <h2 class="text-success mb-2">Task Complete!</h2>
-                            <div class="display-6 fw-bold font-monospace mb-2" t-esc="formatTime(state.myDurationMs)"/>
-                            <div class="d-flex justify-content-center gap-2">
-                                <t t-if="state.myRank">
-                                    <span class="badge text-bg-primary">
-                                        Rank #<t t-esc="state.myRank"/>
-                                    </span>
-                                </t>
-                                <t t-if="state.myPoints">
-                                    <span class="badge text-bg-success">
-                                        +<t t-esc="state.myPoints"/> pts
-                                    </span>
-                                </t>
-                            </div>
+                            <t t-if="state.mySurrendered">
+                                <h2 class="text-danger mb-2">Round Surrendered</h2>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <span class="badge text-bg-secondary">No points this round</span>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <h2 class="text-success mb-2">Task Complete!</h2>
+                                <div class="display-6 fw-bold font-monospace mb-2" t-esc="formatTime(state.myDurationMs)"/>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <t t-if="state.myRank">
+                                        <span class="badge text-bg-primary">
+                                            Rank #<t t-esc="state.myRank"/>
+                                        </span>
+                                    </t>
+                                    <t t-if="state.myPoints">
+                                        <span class="badge text-bg-success">
+                                            +<t t-esc="state.myPoints"/> pts
+                                        </span>
+                                    </t>
+                                </div>
+                            </t>
                         </div>
 
                         <!-- Other players status -->

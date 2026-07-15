@@ -1,0 +1,321 @@
+from odoo import http
+from odoo.http import request
+
+
+class SpeedrunController(http.Controller):
+
+    @http.route('/odoo_speedrun/create_game', type='jsonrpc', auth='user')
+    def create_game(self, name=None, max_players=8, total_rounds=3):
+        vals = {'max_players': max_players, 'total_rounds': int(total_rounds)}
+        if name:
+            vals['name'] = name
+        game = request.env['speedrun.game'].create(vals)
+        return game._get_game_info()
+
+    @http.route('/odoo_speedrun/join_game', type='jsonrpc', auth='user')
+    def join_game(self, code):
+        game = request.env['speedrun.game'].search([
+            ('code', '=', code.upper().strip()),
+            ('state', '=', 'waiting'),
+        ], limit=1)
+        if not game:
+            return {'error': 'Game not found or already started.'}
+        try:
+            game.action_join()
+        except Exception as e:
+            return {'error': str(e)}
+        return game._get_game_info()
+
+    @http.route('/odoo_speedrun/leave_game', type='jsonrpc', auth='user')
+    def leave_game(self, game_id):
+        game = request.env['speedrun.game'].browse(int(game_id))
+        if not game.exists():
+            return {'error': 'Game not found.'}
+        game.action_leave()
+        return {'success': True}
+
+    @http.route('/odoo_speedrun/start_game', type='jsonrpc', auth='user')
+    def start_game(self, game_id):
+        game = request.env['speedrun.game'].browse(int(game_id))
+        if not game.exists():
+            return {'error': 'Game not found.'}
+        try:
+            game.action_start()
+        except Exception as e:
+            return {'error': str(e)}
+        return {
+            'success': True,
+            'countdown_seconds': 5,
+            'task_name': game.task_id.name,
+            'task_description': game.task_id.description or '',
+            'current_round': game.current_round,
+            'total_rounds': game.total_rounds,
+        }
+
+    @http.route('/odoo_speedrun/begin_game', type='jsonrpc', auth='user')
+    def begin_game(self, game_id):
+        """Called after countdown finishes to officially start the timer."""
+        game = request.env['speedrun.game'].browse(int(game_id))
+        if not game.exists():
+            return {'error': 'Game not found.'}
+        try:
+            game.action_begin()
+        except Exception as e:
+            return {'error': str(e)}
+        return game._get_game_info()
+
+    @http.route('/odoo_speedrun/next_round', type='jsonrpc', auth='user')
+    def next_round(self, game_id):
+        game = request.env['speedrun.game'].browse(int(game_id))
+        if not game.exists():
+            return {'error': 'Game not found.'}
+        try:
+            game.action_next_round()
+        except Exception as e:
+            return {'error': str(e)}
+        return {
+            'success': True,
+            'countdown_seconds': 5,
+            'task_name': game.task_id.name,
+            'task_description': game.task_id.description or '',
+            'current_round': game.current_round,
+            'total_rounds': game.total_rounds,
+        }
+
+    @http.route('/odoo_speedrun/check_completion', type='jsonrpc', auth='user')
+    def check_completion(self, game_id):
+        game = request.env['speedrun.game'].browse(int(game_id))
+        if not game.exists():
+            return {'error': 'Game not found.'}
+        return game.action_check_completion()
+
+    @http.route('/odoo_speedrun/surrender', type='jsonrpc', auth='user')
+    def surrender(self, game_id):
+        game = request.env['speedrun.game'].browse(int(game_id))
+        if not game.exists():
+            return {'error': 'Game not found.'}
+        return game.action_surrender()
+
+    @http.route('/odoo_speedrun/game_info', type='jsonrpc', auth='user')
+    def game_info(self, game_id):
+        game = request.env['speedrun.game'].browse(int(game_id))
+        if not game.exists():
+            return {'error': 'Game not found.'}
+        return game._get_game_info()
+
+    @http.route('/odoo_speedrun/dismiss_game', type='jsonrpc', auth='user')
+    def dismiss_game(self, game_id):
+        """Mark a finished game as dismissed so it isn't restored on refresh."""
+        game = request.env['speedrun.game'].browse(int(game_id))
+        if not game.exists():
+            return {'error': 'Game not found.'}
+        game.action_dismiss()
+        return {'success': True}
+
+    @http.route('/odoo_speedrun/my_active_game', type='jsonrpc', auth='user')
+    def my_active_game(self):
+        """Return the user's current game info, if any.
+
+        Only the user's single most recent game is considered — we never fall
+        back to older games. That game is restored when it is either in
+        progress, or finished but not yet dismissed (so results survive a
+        refresh until the player clicks "Play again"). Once dismissed, nothing
+        is restored and the user lands back in the arena."""
+        uid = request.env.uid
+        game = request.env['speedrun.game'].search([
+            ('player_ids.user_id', '=', uid),
+        ], limit=1, order='create_date desc')
+        if not game:
+            return {}
+        in_progress = game.state in ('waiting', 'countdown', 'running', 'round_finished')
+        if not in_progress:
+            player = game.player_ids.filtered(lambda p: p.user_id.id == uid)
+            if game.state != 'finished' or player.dismissed:
+                return {}
+        info = game._get_game_info()
+        # Include countdown remaining seconds if in countdown state
+        if game.state == 'countdown':
+            from odoo import fields
+            elapsed = (fields.Datetime.now() - game.write_date).total_seconds()
+            info['countdown_remaining'] = max(1, int(5 - elapsed))
+        # Include round results for the current round if available
+        if game.state == 'round_finished' and game.current_round:
+            rr = game.round_result_ids.filtered(
+                lambda r: r.round_number == game.current_round
+            ).sorted('rank')
+            info['round_results'] = [{
+                'user_id': r.user_id.id,
+                'user_name': r.user_id.name,
+                'rank': r.rank,
+                'duration_ms': r.duration_ms,
+                'points': r.points,
+            } for r in rr]
+        return info
+
+    # ------------------------------------------------------------------
+    # Matchmaking
+    # ------------------------------------------------------------------
+    @http.route('/odoo_speedrun/matchmaking/join', type='jsonrpc', auth='user')
+    def matchmaking_join(self):
+        try:
+            request.env['speedrun.matchmaking.queue'].action_join_queue()
+        except Exception as e:
+            return {'error': str(e)}
+        return request.env['speedrun.matchmaking.queue'].get_queue_status()
+
+    @http.route('/odoo_speedrun/matchmaking/leave', type='jsonrpc', auth='user')
+    def matchmaking_leave(self):
+        request.env['speedrun.matchmaking.queue'].action_leave_queue()
+        return {'success': True}
+
+    @http.route('/odoo_speedrun/matchmaking/status', type='jsonrpc', auth='user')
+    def matchmaking_status(self):
+        return request.env['speedrun.matchmaking.queue'].get_queue_status()
+
+    # ------------------------------------------------------------------
+    # Personal stats
+    # ------------------------------------------------------------------
+    @http.route('/odoo_speedrun/my_stats', type='jsonrpc', auth='user')
+    def my_stats(self):
+        profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
+        return profile._get_stats_payload()
+
+    @http.route('/odoo_speedrun/leaderboard', type='jsonrpc', auth='user')
+    def leaderboard(self, limit=20):
+        records = request.env['speedrun.leaderboard'].search([], limit=int(limit))
+        return [{
+            'user_id': r.user_id.id,
+            'user_name': r.user_id.name,
+            'total_games': r.total_games,
+            'total_wins': r.total_wins,
+            'best_time_ms': r.best_time_ms,
+            'avg_time_ms': r.avg_time_ms,
+            'win_rate': round(r.win_rate, 1),
+        } for r in records]
+
+    # ------------------------------------------------------------------
+    # Tournaments
+    # ------------------------------------------------------------------
+    @http.route('/odoo_speedrun/tournament/list', type='jsonrpc', auth='user')
+    def tournament_list(self):
+        return request.env['speedrun.tournament']._get_list()
+
+    @http.route('/odoo_speedrun/tournament/get', type='jsonrpc', auth='user')
+    def tournament_get(self, tournament_id):
+        tournament = request.env['speedrun.tournament'].browse(int(tournament_id))
+        if not tournament.exists():
+            return {'error': 'Tournament not found.'}
+        return tournament._get_data()
+
+    @http.route('/odoo_speedrun/tournament/create', type='jsonrpc', auth='user')
+    def tournament_create(self, name=None, match_best_of='3', seeding_method='elo',
+                          max_participants=0):
+        vals = {
+            'match_best_of': str(match_best_of),
+            'seeding_method': seeding_method,
+            'max_participants': int(max_participants or 0),
+        }
+        if name:
+            vals['name'] = name
+        tournament = request.env['speedrun.tournament'].create(vals)
+        # Organizer auto-registers.
+        tournament.action_register()
+        return tournament._get_data()
+
+    @http.route('/odoo_speedrun/tournament/register', type='jsonrpc', auth='user')
+    def tournament_register(self, tournament_id):
+        tournament = request.env['speedrun.tournament'].browse(int(tournament_id))
+        if not tournament.exists():
+            return {'error': 'Tournament not found.'}
+        try:
+            tournament.action_register()
+        except Exception as e:
+            return {'error': str(e)}
+        return tournament._get_data()
+
+    @http.route('/odoo_speedrun/tournament/unregister', type='jsonrpc', auth='user')
+    def tournament_unregister(self, tournament_id):
+        tournament = request.env['speedrun.tournament'].browse(int(tournament_id))
+        if not tournament.exists():
+            return {'error': 'Tournament not found.'}
+        try:
+            tournament.action_unregister()
+        except Exception as e:
+            return {'error': str(e)}
+        return tournament._get_data()
+
+    @http.route('/odoo_speedrun/tournament/close_registration', type='jsonrpc', auth='user')
+    def tournament_close_registration(self, tournament_id):
+        tournament = request.env['speedrun.tournament'].browse(int(tournament_id))
+        if not tournament.exists():
+            return {'error': 'Tournament not found.'}
+        try:
+            tournament.action_close_registration()
+        except Exception as e:
+            return {'error': str(e)}
+        return tournament._get_data()
+
+    @http.route('/odoo_speedrun/tournament/reopen_registration', type='jsonrpc', auth='user')
+    def tournament_reopen_registration(self, tournament_id):
+        tournament = request.env['speedrun.tournament'].browse(int(tournament_id))
+        if not tournament.exists():
+            return {'error': 'Tournament not found.'}
+        try:
+            tournament.action_reopen_registration()
+        except Exception as e:
+            return {'error': str(e)}
+        return tournament._get_data()
+
+    @http.route('/odoo_speedrun/tournament/auto_seed', type='jsonrpc', auth='user')
+    def tournament_auto_seed(self, tournament_id, method='elo'):
+        tournament = request.env['speedrun.tournament'].browse(int(tournament_id))
+        if not tournament.exists():
+            return {'error': 'Tournament not found.'}
+        try:
+            tournament.action_auto_seed(method)
+        except Exception as e:
+            return {'error': str(e)}
+        return tournament._get_data()
+
+    @http.route('/odoo_speedrun/tournament/move_seed', type='jsonrpc', auth='user')
+    def tournament_move_seed(self, tournament_id, user_id, direction):
+        tournament = request.env['speedrun.tournament'].browse(int(tournament_id))
+        if not tournament.exists():
+            return {'error': 'Tournament not found.'}
+        try:
+            tournament.action_move_seed(int(user_id), direction)
+        except Exception as e:
+            return {'error': str(e)}
+        return tournament._get_data()
+
+    @http.route('/odoo_speedrun/tournament/start', type='jsonrpc', auth='user')
+    def tournament_start(self, tournament_id):
+        tournament = request.env['speedrun.tournament'].browse(int(tournament_id))
+        if not tournament.exists():
+            return {'error': 'Tournament not found.'}
+        try:
+            tournament.action_generate_bracket()
+        except Exception as e:
+            return {'error': str(e)}
+        return tournament._get_data()
+
+    @http.route('/odoo_speedrun/tournament/play_match', type='jsonrpc', auth='user')
+    def tournament_play_match(self, match_id):
+        match = request.env['speedrun.tournament.match'].browse(int(match_id))
+        if not match.exists():
+            return {'error': 'Match not found.'}
+        try:
+            return {'game_info': match.action_play()}
+        except Exception as e:
+            return {'error': str(e)}
+
+    @http.route('/odoo_speedrun/tournament/cancel', type='jsonrpc', auth='user')
+    def tournament_cancel(self, tournament_id):
+        tournament = request.env['speedrun.tournament'].browse(int(tournament_id))
+        if not tournament.exists():
+            return {'error': 'Tournament not found.'}
+        try:
+            tournament.action_cancel()
+        except Exception as e:
+            return {'error': str(e)}
+        return {'success': True}

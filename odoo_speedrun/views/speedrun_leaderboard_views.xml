@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="speedrun_leaderboard_view_tree" model="ir.ui.view">
+        <field name="name">speedrun.leaderboard.tree</field>
+        <field name="model">speedrun.leaderboard</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false" delete="false">
+                <field name="user_id"/>
+                <field name="total_games"/>
+                <field name="total_wins" decoration-success="total_wins > 0"/>
+                <field name="win_rate" widget="progressbar"/>
+                <field name="best_time_ms"/>
+                <field name="avg_time_ms"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_leaderboard_action" model="ir.actions.act_window">
+        <field name="name">Leaderboard</field>
+        <field name="res_model">speedrun.leaderboard</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

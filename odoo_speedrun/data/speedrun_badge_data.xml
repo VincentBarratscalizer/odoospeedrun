@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Participation badges -->
+    <record id="badge_first_game" model="speedrun.badge">
+        <field name="name">First Steps</field>
+        <field name="description">Play your first speedrun game.</field>
+        <field name="icon">👟</field>
+        <field name="sequence">1</field>
+        <field name="criteria_type">games_played</field>
+        <field name="threshold">1</field>
+        <field name="xp_reward">25</field>
+    </record>
+    <record id="badge_veteran" model="speedrun.badge">
+        <field name="name">Veteran</field>
+        <field name="description">Play 10 speedrun games.</field>
+        <field name="icon">🎖️</field>
+        <field name="sequence">2</field>
+        <field name="criteria_type">games_played</field>
+        <field name="threshold">10</field>
+        <field name="xp_reward">100</field>
+    </record>
+    <record id="badge_addict" model="speedrun.badge">
+        <field name="name">Speedrun Addict</field>
+        <field name="description">Play 50 speedrun games.</field>
+        <field name="icon">🕹️</field>
+        <field name="sequence">3</field>
+        <field name="criteria_type">games_played</field>
+        <field name="threshold">50</field>
+        <field name="xp_reward">300</field>
+    </record>
+
+    <!-- Victory badges -->
+    <record id="badge_first_win" model="speedrun.badge">
+        <field name="name">First Victory</field>
+        <field name="description">Win your first speedrun game.</field>
+        <field name="icon">🏆</field>
+        <field name="sequence">10</field>
+        <field name="criteria_type">games_won</field>
+        <field name="threshold">1</field>
+        <field name="xp_reward">50</field>
+    </record>
+    <record id="badge_champion" model="speedrun.badge">
+        <field name="name">Champion</field>
+        <field name="description">Win 10 speedrun games.</field>
+        <field name="icon">👑</field>
+        <field name="sequence">11</field>
+        <field name="criteria_type">games_won</field>
+        <field name="threshold">10</field>
+        <field name="xp_reward">250</field>
+    </record>
+    <record id="badge_round_master" model="speedrun.badge">
+        <field name="name">Round Master</field>
+        <field name="description">Finish first in 25 rounds.</field>
+        <field name="icon">⚡</field>
+        <field name="sequence">12</field>
+        <field name="criteria_type">rounds_won</field>
+        <field name="threshold">25</field>
+        <field name="xp_reward">200</field>
+    </record>
+
+    <!-- Speed badges -->
+    <record id="badge_speed_demon" model="speedrun.badge">
+        <field name="name">Speed Demon</field>
+        <field name="description">Complete a task in under 30 seconds.</field>
+        <field name="icon">🔥</field>
+        <field name="sequence">20</field>
+        <field name="criteria_type">best_time_under</field>
+        <field name="threshold">30000</field>
+        <field name="xp_reward">150</field>
+    </record>
+    <record id="badge_lightning" model="speedrun.badge">
+        <field name="name">Lightning</field>
+        <field name="description">Complete a task in under 15 seconds.</field>
+        <field name="icon">⚡️</field>
+        <field name="sequence">21</field>
+        <field name="criteria_type">best_time_under</field>
+        <field name="threshold">15000</field>
+        <field name="xp_reward">300</field>
+    </record>
+
+    <!-- ELO badges -->
+    <record id="badge_rising_star" model="speedrun.badge">
+        <field name="name">Rising Star</field>
+        <field name="description">Reach 1100 ELO.</field>
+        <field name="icon">🌟</field>
+        <field name="sequence">30</field>
+        <field name="criteria_type">elo_reached</field>
+        <field name="threshold">1100</field>
+        <field name="xp_reward">100</field>
+    </record>
+    <record id="badge_elite" model="speedrun.badge">
+        <field name="name">Elite</field>
+        <field name="description">Reach 1300 ELO.</field>
+        <field name="icon">💎</field>
+        <field name="sequence">31</field>
+        <field name="criteria_type">elo_reached</field>
+        <field name="threshold">1300</field>
+        <field name="xp_reward">250</field>
+    </record>
+
+    <!-- Level rewards: milestone badges granted when leveling up -->
+    <record id="badge_level_5" model="speedrun.badge">
+        <field name="name">Expert Runner</field>
+        <field name="description">Reach level 5 — reward for your dedication!</field>
+        <field name="icon">🥉</field>
+        <field name="sequence">40</field>
+        <field name="criteria_type">level_reached</field>
+        <field name="threshold">5</field>
+        <field name="xp_reward">200</field>
+    </record>
+    <record id="badge_level_10" model="speedrun.badge">
+        <field name="name">Grandmaster Runner</field>
+        <field name="description">Reach level 10 — an exceptional reward!</field>
+        <field name="icon">🥇</field>
+        <field name="sequence">41</field>
+        <field name="criteria_type">level_reached</field>
+        <field name="threshold">10</field>
+        <field name="xp_reward">500</field>
+    </record>
+</odoo>

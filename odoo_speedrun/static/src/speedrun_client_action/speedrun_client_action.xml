@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.SpeedrunClientAction">
+        <div class="o_speedrun_container d-flex flex-column align-items-center h-100 overflow-auto bg-view p-4">
+            <div class="o_speedrun_header text-center mb-4">
+                <h1 class="mb-1">
+                    <span class="text-primary">Odoo</span> Speedrun
+                </h1>
+                <p class="text-muted mb-0">Race to complete Odoo tasks!</p>
+            </div>
+
+            <!-- Round indicator -->
+            <t t-if="state.game and state.game.current_round > 0 and state.phase !== 'lobby'">
+                <div class="mb-3">
+                    <span class="badge text-bg-primary">
+                        Round <t t-esc="state.game.current_round"/> / <t t-esc="state.game.total_rounds"/>
+                    </span>
+                    <span t-if="state.game.game_mode === 'best_of'" class="badge text-bg-secondary ms-1">
+                        First to <t t-esc="state.game.rounds_to_win"/> wins
+                    </span>
+                </div>
+            </t>
+
+            <!-- Countdown overlay -->
+            <t t-if="state.phase === 'countdown'">
+                <div class="o_speedrun_countdown position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-view" style="z-index: 1050;">
+                    <div class="text-center" style="max-width: 800px;">
+                        <t t-if="state.game and state.game.current_round > 0">
+                            <div class="text-muted mb-2">
+                                Round <t t-esc="state.game.current_round"/> / <t t-esc="state.game.total_rounds"/>
+                                <t t-if="state.game.game_mode === 'best_of'">
+                                    · First to <t t-esc="state.game.rounds_to_win"/> wins
+                                </t>
+                            </div>
+                        </t>
+
+                        <!-- Task preview during countdown -->
+                        <t t-if="state.game and state.game.task_name">
+                            <div class="mb-4 px-4">
+                                <div class="small text-uppercase text-muted mb-2">Your mission</div>
+                                <h2 class="mb-2">
+                                    <t t-esc="state.game.task_name"/>
+                                </h2>
+                                <p class="text-muted mb-0" t-if="state.game.task_description">
+                                    <t t-esc="state.game.task_description"/>
+                                </p>
+                            </div>
+                        </t>
+
+                        <div class="display-1 fw-bold text-primary o_speedrun_countdown_number">
+                            <t t-if="state.countdown > 0"><t t-esc="state.countdown"/></t>
+                            <t t-else="">GO!</t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <!-- Main content -->
+            <div class="o_speedrun_content w-100"
+                 t-att-style="(state.phase === 'tournaments' || state.phase === 'tournament') ? 'max-width: 1200px;' : 'max-width: 900px;'">
+                <t t-if="state.phase === 'lobby'">
+                    <t t-if="!state.game">
+                        <div class="text-center mb-4">
+                            <button class="btn btn-outline-warning btn-lg px-4" t-on-click="openTournaments">
+                                <i class="fa fa-trophy me-2"/>Tournaments
+                            </button>
+                        </div>
+                    </t>
+                    <GameLobby
+                        game="state.game"
+                        stats="state.stats"
+                        matchmaking="state.matchmaking"
+                        onCreateGame.bind="createGame"
+                        onJoinGame.bind="joinGame"
+                        onLeaveGame.bind="leaveGame"
+                        onStartGame.bind="startGame"
+                        onFindMatch.bind="joinMatchmaking"
+                        onCancelMatch.bind="cancelMatchmaking"
+                        userId="user.userId"
+                    />
+                </t>
+
+                <t t-if="state.phase === 'tournaments' or state.phase === 'tournament'">
+                    <TournamentPanel
+                        tournaments="state.tournaments"
+                        tournament="state.tournament"
+                        userId="user.userId"
+                        onBack.bind="backToArena"
+                        onOpen.bind="openTournament"
+                        onCreate.bind="createTournament"
+                        onRegister.bind="registerTournament"
+                        onUnregister.bind="unregisterTournament"
+                        onCloseRegistration.bind="closeRegistration"
+                        onReopenRegistration.bind="reopenRegistration"
+                        onAutoSeed.bind="autoSeed"
+                        onMoveSeed.bind="moveSeed"
+                        onStart.bind="startTournament"
+                        onPlayMatch.bind="playMatch"
+                        onRefresh.bind="refreshTournament"
+                        onCancel.bind="cancelTournament"
+                    />
+                </t>
+                <t t-if="state.phase === 'playing'">
+                    <GameTimer
+                        game="state.game"
+                        myFinished="state.myFinished"
+                        checkResult="state.checkResult"
+                        onCheckCompletion.bind="checkCompletion"
+                        onSurrender.bind="surrender"
+                    />
+                </t>
+                <t t-if="state.phase === 'waiting_others'">
+                    <div class="text-center">
+                        <!-- My result -->
+                        <div class="mb-4">
+                            <t t-if="state.mySurrendered">
+                                <h2 class="text-danger mb-2">Round Surrendered</h2>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <span class="badge text-bg-secondary">No points this round</span>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <h2 class="text-success mb-2">Task Complete!</h2>
+                                <div class="display-6 fw-bold font-monospace mb-2" t-esc="formatTime(state.myDurationMs)"/>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <t t-if="state.myRank">
+                                        <span class="badge text-bg-primary">
+                                            Rank #<t t-esc="state.myRank"/>
+                                        </span>
+                                    </t>
+                                    <t t-if="state.myPoints">
+                                        <span class="badge text-bg-success">
+                                            +<t t-esc="state.myPoints"/> pts
+                                        </span>
+                                    </t>
+                                </div>
+                            </t>
+                        </div>
+
+                        <!-- Other players status -->
+                        <div class="card mb-4" style="max-width: 500px; margin: 0 auto;">
+                            <div class="card-header">
+                                Waiting for other players...
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="list-group list-group-flush">
+                                    <t t-foreach="state.game.players" t-as="player" t-key="player.user_id">
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold"><t t-esc="player.user_name"/></span>
+                                            <t t-if="player.state === 'finished'">
+                                                <span class="badge text-bg-success">
+                                                    <i class="fa fa-check me-1"/>
+                                                    <t t-esc="formatTime(player.duration_ms)"/>
+                                                </span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="badge text-bg-secondary">
+                                                    <i class="fa fa-spinner fa-spin me-1"/>Playing...
+                                                </span>
+                                            </t>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <t t-if="state.phase === 'round_results'">
+                    <GameResults
+                        game="state.game"
+                        userId="user.userId"
+                        mode="'round'"
+                        onNextRound.bind="nextRound"
+                        onPlayAgain.bind="playAgain"
+                    />
+                </t>
+                <t t-if="state.phase === 'final_results'">
+                    <GameResults
+                        game="state.game"
+                        userId="user.userId"
+                        mode="'final'"
+                        onNextRound.bind="nextRound"
+                        onPlayAgain.bind="playAgain"
+                    />
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.SpeedrunSystray">
+        <t t-if="state.visible">
+            <div class="o_speedrun_systray d-flex align-items-center gap-2 px-2 cursor-pointer"
+                 t-on-click="onClickSystray">
+
+                <!-- Round indicator -->
+                <span class="badge text-bg-secondary">
+                    R<t t-esc="state.currentRound"/>/<t t-esc="state.totalRounds"/>
+                </span>
+
+                <!-- Countdown state: show task name -->
+                <t t-if="state.phase === 'countdown'">
+                    <span class="badge text-bg-info">
+                        GET READY
+                    </span>
+                    <span class="text-truncate d-none d-lg-inline small" style="max-width: 250px;"
+                        t-att-title="state.taskName">
+                        <t t-esc="state.taskName"/>
+                    </span>
+                </t>
+
+                <!-- Playing state: timer + task + check button -->
+                <t t-if="state.phase === 'playing'">
+                    <!-- Timer -->
+                    <span class="badge text-bg-primary font-monospace">
+                        <i class="fa fa-clock-o me-1"/><t t-esc="state.elapsed"/>
+                    </span>
+
+                    <!-- Task name (truncated) -->
+                    <span class="text-truncate d-none d-lg-inline small" style="max-width: 200px;"
+                        t-att-title="state.taskName">
+                        <t t-esc="state.taskName"/>
+                    </span>
+
+                    <!-- Check + Surrender buttons -->
+                    <t t-if="!state.myFinished">
+                        <button class="btn btn-sm btn-primary py-0 px-2"
+                            title="Check task completion (Alt+Shift+D)"
+                            t-att-disabled="state.checking"
+                            t-on-click.stop="onClickCheck">
+                            <t t-if="state.checking">
+                                <i class="fa fa-spinner fa-spin"/>
+                            </t>
+                            <t t-else="">
+                                Done!
+                            </t>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger py-0 px-2"
+                            title="Surrender this round — score no points (Alt+Shift+S)"
+                            t-att-disabled="state.checking"
+                            t-on-click.stop="onClickSurrender">
+                            <i class="fa fa-flag"/>
+                        </button>
+                    </t>
+                    <t t-else="">
+                        <span class="badge text-bg-success">
+                            <i class="fa fa-check me-1"/>Done
+                        </span>
+                    </t>
+                </t>
+
+                <!-- Round finished state -->
+                <t t-if="state.phase === 'round_finished'">
+                    <span class="badge text-bg-info">
+                        Round complete - click to view
+                    </span>
+                </t>
+            </div>
+        </t>
+    </t>
+</templates>

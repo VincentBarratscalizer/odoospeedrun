@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.GameResults">
+        <div class="o_speedrun_results text-center">
+
+            <!-- Header -->
+            <t t-if="isFinal">
+                <div class="mb-4">
+                    <t t-if="isWinner">
+                        <h1 class="text-success mb-2">You Win!</h1>
+                        <p class="text-muted">Champion of the Speedrun!</p>
+                    </t>
+                    <t t-else="">
+                        <h1 class="mb-2">Game Over</h1>
+                        <p class="text-muted">
+                            Winner: <span class="fw-bold text-body"><t t-esc="props.game.winner_name"/></span>
+                        </p>
+                    </t>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="mb-4">
+                    <h2 class="mb-1">
+                        Round <t t-esc="props.game.current_round"/> Complete!
+                    </h2>
+                    <p class="text-muted">
+                        <t t-if="props.game.game_mode === 'best_of'">
+                            First to <t t-esc="props.game.rounds_to_win"/> round wins —
+                            up to <t t-esc="props.game.total_rounds - props.game.current_round"/> round<t t-if="props.game.total_rounds - props.game.current_round > 1">s</t> left
+                        </t>
+                        <t t-else="">
+                            <t t-esc="props.game.total_rounds - props.game.current_round"/> round<t t-if="props.game.total_rounds - props.game.current_round > 1">s</t> remaining
+                        </t>
+                    </p>
+                </div>
+            </t>
+
+            <!-- Round results (times for this round) -->
+            <t t-if="!isFinal and roundResults.length > 0">
+                <div class="card mb-4" style="max-width: 600px; margin: 0 auto;">
+                    <div class="card-header fw-bold">
+                        Round <t t-esc="props.game.current_round"/> — <t t-esc="props.game.task_name"/>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 60px;">Rank</th>
+                                    <th>Player</th>
+                                    <th class="text-end">Time</th>
+                                    <th class="text-center">Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="roundResults" t-as="r" t-key="r.user_id">
+                                    <tr t-att-class="r.user_id === props.userId ? 'table-active' : ''">
+                                        <td class="text-center">
+                                            <t t-if="r.rank > 0">
+                                                <t t-esc="getRankEmoji(r.rank - 1)"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="text-danger">DNF</span>
+                                            </t>
+                                        </td>
+                                        <td class="align-middle">
+                                            <span class="fw-bold"><t t-esc="r.user_name"/></span>
+                                            <t t-if="r.user_id === props.userId">
+                                                <span class="badge text-bg-primary ms-1">You</span>
+                                            </t>
+                                        </td>
+                                        <td class="text-end align-middle font-monospace">
+                                            <t t-esc="formatTime(r.duration_ms)"/>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <t t-if="r.points > 0">
+                                                <span class="badge text-bg-success">+<t t-esc="r.points"/></span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="text-muted">0</span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+
+            <!-- Overall standings -->
+            <div class="card mb-4" style="max-width: 600px; margin: 0 auto;">
+                <div class="card-header fw-bold">
+                    <t t-if="isFinal">Final Standings</t>
+                    <t t-else="">Current Standings</t>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 60px;">Rank</th>
+                                <th>Player</th>
+                                <th t-if="props.game.game_mode === 'best_of'" class="text-center">Wins</th>
+                                <th class="text-center">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="standings" t-as="s" t-key="s.user_id">
+                                <tr t-att-class="s.user_id === props.userId ? 'table-active' : ''">
+                                    <td class="text-center">
+                                        <t t-esc="getRankEmoji(s_index)"/>
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="fw-bold"><t t-esc="s.user_name"/></span>
+                                        <t t-if="s.user_id === props.userId">
+                                            <span class="badge text-bg-primary ms-1">You</span>
+                                        </t>
+                                    </td>
+                                    <td t-if="props.game.game_mode === 'best_of'" class="text-center align-middle">
+                                        <span class="fw-bold"><t t-esc="s.round_wins || 0"/></span>
+                                        <span class="text-muted ms-1">/ <t t-esc="props.game.rounds_to_win"/></span>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        <span class="fw-bold"><t t-esc="s.score"/></span>
+                                        <span class="text-muted ms-1">pts</span>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex justify-content-center gap-3">
+                <t t-if="!isFinal and isHost">
+                    <button class="btn btn-primary btn-lg px-5" t-on-click="() => this.props.onNextRound()">
+                        Next Round
+                    </button>
+                </t>
+                <t t-if="!isFinal and !isHost">
+                    <p class="text-muted mb-0">Waiting for host to start next round...</p>
+                </t>
+                <t t-if="isFinal">
+                    <button class="btn btn-primary btn-lg px-5" t-on-click="() => this.props.onPlayAgain()">
+                        Play Again
+                    </button>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,50 @@
+// Speedrun — minimal custom styling, everything else uses Odoo standard classes.
+
+.o_speedrun_countdown_number {
+    animation: o-speedrun-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes o-speedrun-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+// Join code readability
+.letter-spacing-2 {
+    letter-spacing: 4px;
+}
+
+// ---- Tournament bracket ----
+.o_speedrun_bracket {
+    min-height: 120px;
+    gap: 0.5rem;
+}
+
+.o_speedrun_round {
+    min-width: 190px;
+    flex: 0 0 auto;
+}
+
+.o_speedrun_match {
+    min-width: 175px;
+
+    .card-header {
+        font-size: 0.75rem;
+    }
+
+    .o_speedrun_slot {
+        font-size: 0.85rem;
+        min-height: 1.9rem;
+    }
+
+    .o_speedrun_slot_win {
+        background-color: var(--bs-success-bg-subtle, #d1e7dd);
+        font-weight: 600;
+    }
+}

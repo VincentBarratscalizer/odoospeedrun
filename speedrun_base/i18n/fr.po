@@ -1,0 +1,135 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* speedrun_base
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: French <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: speedrun_base
+#: model:speedrun.task,description:speedrun_base.task_create_contact
+msgid "Create a new contact (individual) with a name, email address, phone number, and a street address. All four fields must be filled."
+msgstr "Créez un nouveau contact (particulier) avec un nom, une adresse email, un numéro de téléphone et une adresse. Les quatre champs doivent être remplis."
+
+#. module: speedrun_base
+#: model:speedrun.task,name:speedrun_base.task_create_contact
+msgid "Create a complete contact"
+msgstr "Créer un contact complet"
+
+#. module: speedrun_base
+#: model:speedrun.task,description:speedrun_base.task_create_company
+msgid "Create a new company and add at least 3 individual contacts under it (as child contacts)."
+msgstr "Créez une nouvelle société et ajoutez-y au moins 3 contacts particuliers (en tant que contacts enfants)."
+
+#. module: speedrun_base
+#: model:speedrun.task,name:speedrun_base.task_create_company
+msgid "Create a company with 3 contacts"
+msgstr "Créer une société avec 3 contacts"
+
+#. module: speedrun_base
+#: model:speedrun.task,description:speedrun_base.task_create_product
+msgid "Create a new product (not a service) with a sales price of exactly 42.00."
+msgstr "Créez un nouveau produit (pas un service) avec un prix de vente d'exactement 42,00."
+
+#. module: speedrun_base
+#: model:speedrun.task,name:speedrun_base.task_create_product
+msgid "Create a product with a price of 42.00"
+msgstr "Créer un produit à 42,00"
+
+#. module: speedrun_base
+#: model:speedrun.task,description:speedrun_base.task_create_10_contacts
+msgid "Create 10 new individual contacts. Speed is key - each contact just needs a name!"
+msgstr "Créez 10 nouveaux contacts particuliers. La vitesse est essentielle - chaque contact n'a besoin que d'un nom !"
+
+#. module: speedrun_base
+#: model:speedrun.task,name:speedrun_base.task_create_10_contacts
+msgid "Create 10 contacts"
+msgstr "Créer 10 contacts"
+
+#. module: speedrun_base
+#: model:speedrun.task,description:speedrun_base.task_create_note
+msgid "Create 5 new contact tags (categories). Go to Contacts > Configuration > Tags."
+msgstr "Créez 5 nouvelles étiquettes de contact (catégories). Allez dans Contacts > Configuration > Étiquettes."
+
+#. module: speedrun_base
+#: model:speedrun.task,name:speedrun_base.task_create_note
+msgid "Create 5 tags on contacts"
+msgstr "Créer 5 étiquettes de contact"
+
+#. module: speedrun_base
+#: model:speedrun.task,description:speedrun_base.task_create_user
+msgid "Create a new internal user with a valid login (email) and name. The user must be confirmed (not in a pending state)."
+msgstr "Créez un nouvel utilisateur interne avec un identifiant valide (email) et un nom. L'utilisateur doit être confirmé (pas en attente)."
+
+#. module: speedrun_base
+#: model:speedrun.task,name:speedrun_base.task_create_user
+msgid "Create an internal user"
+msgstr "Créer un utilisateur interne"
+
+#. module: speedrun_base
+#: model:speedrun.task,description:speedrun_base.task_create_service
+msgid "Create a new product of type \"Service\" (not a storable/consumable good). Set a sales price."
+msgstr "Créez un nouveau produit de type « Service » (pas un bien stockable/consommable). Définissez un prix de vente."
+
+#. module: speedrun_base
+#: model:speedrun.task,name:speedrun_base.task_create_service
+msgid "Create a service product"
+msgstr "Créer un produit de type service"
+
+#. module: speedrun_base
+#: model:speedrun.task,description:speedrun_base.task_create_5_products
+msgid "Create 5 new products. Any type, any price - just be quick about it!"
+msgstr "Créez 5 nouveaux produits. Tout type, tout prix - soyez rapide !"
+
+#. module: speedrun_base
+#: model:speedrun.task,name:speedrun_base.task_create_5_products
+msgid "Create 5 products"
+msgstr "Créer 5 produits"
+
+#. module: speedrun_base
+#: model:speedrun.task,description:speedrun_base.task_create_expensive_product
+msgid "Create a product with a sales price of exactly 9,999.00. Luxury item!"
+msgstr "Créez un produit avec un prix de vente d'exactement 9 999,00. Article de luxe !"
+
+#. module: speedrun_base
+#: model:speedrun.task,name:speedrun_base.task_create_expensive_product
+msgid "Create a product worth 9,999"
+msgstr "Créer un produit à 9 999"
+
+#. module: speedrun_base
+#: model:speedrun.task,description:speedrun_base.task_create_contact_with_tag
+msgid "Create a new contact and assign at least one tag (category) to it. Tags can be found in the contact form."
+msgstr "Créez un nouveau contact et attribuez-lui au moins une étiquette (catégorie). Les étiquettes se trouvent dans la fiche du contact."
+
+#. module: speedrun_base
+#: model:speedrun.task,name:speedrun_base.task_create_contact_with_tag
+msgid "Create a tagged contact"
+msgstr "Créer un contact étiqueté"
+
+#. module: speedrun_base
+#: model:speedrun.task,description:speedrun_base.task_create_contact_full
+msgid "Create a contact with ALL of the following: name, email, phone, mobile, street address, city, and a tag. Complete perfection!"
+msgstr "Créez un contact avec TOUS les éléments suivants : nom, email, téléphone, mobile, adresse, ville et une étiquette. La perfection absolue !"
+
+#. module: speedrun_base
+#: model:speedrun.task,name:speedrun_base.task_create_contact_full
+msgid "Create the ultimate contact"
+msgstr "Créer le contact ultime"
+
+#. module: speedrun_base
+#: model:speedrun.task,description:speedrun_base.task_create_20_contacts
+msgid "Create 20 new contacts as fast as you can! Each contact just needs a name. Go go go!"
+msgstr "Créez 20 nouveaux contacts le plus vite possible ! Chaque contact n'a besoin que d'un nom. Allez allez allez !"
+
+#. module: speedrun_base
+#: model:speedrun.task,name:speedrun_base.task_create_20_contacts
+msgid "Create 20 contacts"
+msgstr "Créer 20 contacts"

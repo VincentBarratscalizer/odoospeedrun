@@ -1,0 +1,45 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* speedrun_account
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: French <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: speedrun_account
+#: model:speedrun.task,description:speedrun_account.task_create_invoice
+msgid "Create a new customer invoice with at least one invoice line. It can remain as a draft."
+msgstr "Créez une nouvelle facture client avec au moins une ligne de facture. Elle peut rester à l'état de brouillon."
+
+#. module: speedrun_account
+#: model:speedrun.task,name:speedrun_account.task_create_invoice
+msgid "Create a customer invoice"
+msgstr "Créer une facture client"
+
+#. module: speedrun_account
+#: model:speedrun.task,description:speedrun_account.task_post_invoice
+msgid "Create a customer invoice and confirm (post) it. The invoice must be in \"Posted\" state."
+msgstr "Créez une facture client et confirmez-la (comptabilisez-la). La facture doit être à l'état « Comptabilisé »."
+
+#. module: speedrun_account
+#: model:speedrun.task,name:speedrun_account.task_post_invoice
+msgid "Post a customer invoice"
+msgstr "Comptabiliser une facture client"
+
+#. module: speedrun_account
+#: model:speedrun.task,description:speedrun_account.task_create_vendor_bill
+msgid "Create a vendor bill (supplier invoice) with at least one line. It can remain as draft."
+msgstr "Créez une facture fournisseur avec au moins une ligne. Elle peut rester à l'état de brouillon."
+
+#. module: speedrun_account
+#: model:speedrun.task,name:speedrun_account.task_create_vendor_bill
+msgid "Create a vendor bill"
+msgstr "Créer une facture fournisseur"

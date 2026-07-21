@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="task_create_livechat_channel" model="speedrun.task">
+            <field name="name">Create a live chat channel</field>
+            <field name="description">Create a new channel in the Live Chat app and join it as an operator.</field>
+            <field name="target_model">im_livechat.channel</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">im_livechat</field>
+        </record>
+
+        <record id="task_create_web_page" model="speedrun.task">
+            <field name="name">Create a website page</field>
+            <field name="description">Create a new page on the website (Website app > New > Page).</field>
+            <field name="target_model">website.page</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">website</field>
+        </record>
+
+        <record id="task_publish_web_page" model="speedrun.task">
+            <field name="name">Publish a new website page</field>
+            <field name="description">Create a new website page AND publish it (toggle "Published" in the website editor).</field>
+            <field name="target_model">website.page</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["is_published","=",true]]</field>
+            <field name="difficulty">hard</field>
+            <field name="required_modules">website</field>
+        </record>
+
+        <record id="task_publish_product" model="speedrun.task">
+            <field name="name">Publish a product on the eCommerce</field>
+            <field name="description">Create a new product and publish it on the website shop.</field>
+            <field name="target_model">product.template</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["is_published","=",true]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">website_sale</field>
+        </record>
+
+        <record id="task_publish_event" model="speedrun.task">
+            <field name="name">Publish an event on the website</field>
+            <field name="description">Create an event and publish it on the website.</field>
+            <field name="target_model">event.event</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["is_published","=",true]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">website_event</field>
+        </record>
+
+        <record id="task_publish_job" model="speedrun.task">
+            <field name="name">Publish a job position on the website</field>
+            <field name="description">Create a job position and publish it on the website (Go Live).</field>
+            <field name="target_model">hr.job</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["is_published","=",true]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">website_hr_recruitment</field>
+        </record>
+
+        <record id="task_create_course" model="speedrun.task">
+            <field name="name">Create an eLearning course</field>
+            <field name="description">Create a new course in the eLearning app with a title.</field>
+            <field name="target_model">slide.channel</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">website_slides</field>
+        </record>
+
+        <record id="task_course_2_lessons" model="speedrun.task">
+            <field name="name">Create a course with 2 lessons</field>
+            <field name="description">Create an eLearning course and add at least 2 content items (lessons) to it.</field>
+            <field name="target_model">slide.channel</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+channels = env['slide.channel'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+result = any(
+    env['slide.slide'].search_count([
+        ('channel_id', '=', c.id),
+        ('is_category', '=', False),
+    ]) >= 2
+    for c in channels
+)
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">website_slides</field>
+        </record>
+    </data>
+</odoo>

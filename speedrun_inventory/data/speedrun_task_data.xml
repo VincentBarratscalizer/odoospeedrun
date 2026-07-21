@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="task_create_delivery" model="speedrun.task">
+            <field name="name">Create a delivery order</field>
+            <field name="description">Create a new delivery order (outgoing shipment) from the Inventory app. Add at least one product to ship.</field>
+            <field name="target_model">stock.picking</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['stock.picking'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('picking_type_code', '=', 'outgoing'),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">stock</field>
+        </record>
+
+        <record id="task_create_receipt" model="speedrun.task">
+            <field name="name">Create a receipt</field>
+            <field name="description">Create a new receipt (incoming shipment) from the Inventory app. You're receiving goods into your warehouse.</field>
+            <field name="target_model">stock.picking</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['stock.picking'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('picking_type_code', '=', 'incoming'),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">stock</field>
+        </record>
+
+        <record id="task_validate_receipt" model="speedrun.task">
+            <field name="name">Validate a receipt</field>
+            <field name="description">Create an incoming receipt and validate it (mark it as done). The transfer must be in "Done" state.</field>
+            <field name="target_model">stock.picking</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['stock.picking'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('picking_type_code', '=', 'incoming'),
+    ('state', '=', 'done'),
+]) >= 1
+            </field>
+            <field name="difficulty">hard</field>
+            <field name="required_modules">stock</field>
+        </record>
+
+        <record id="task_barcode_product" model="speedrun.task">
+            <field name="name">Set a barcode on a product</field>
+            <field name="description">Create a new product and assign it a barcode (any code, e.g. 1234567890128).</field>
+            <field name="target_model">product.product</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["barcode","!=",false]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">stock_barcode</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,115 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* speedrun_mrp
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: French <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: speedrun_mrp
+#: model:speedrun.task,description:speedrun_mrp.task_create_bom
+msgid "Create a Bill of Materials for a product with at least 2 component lines. Go to Manufacturing > Products > Bills of Materials."
+msgstr "Créez une nomenclature pour un produit avec au moins 2 lignes de composants. Allez dans Fabrication > Produits > Nomenclatures."
+
+#. module: speedrun_mrp
+#: model:speedrun.task,name:speedrun_mrp.task_create_bom
+msgid "Create a bill of materials with 2 components"
+msgstr "Créer une nomenclature avec 2 composants"
+
+#. module: speedrun_mrp
+#: model:speedrun.task,description:speedrun_mrp.task_create_mo
+msgid "Create a new manufacturing order for any product. It can stay as a draft."
+msgstr "Créez un nouvel ordre de fabrication pour n'importe quel produit. Il peut rester à l'état de brouillon."
+
+#. module: speedrun_mrp
+#: model:speedrun.task,name:speedrun_mrp.task_create_mo
+msgid "Create a manufacturing order"
+msgstr "Créer un ordre de fabrication"
+
+#. module: speedrun_mrp
+#: model:speedrun.task,description:speedrun_mrp.task_confirm_mo
+msgid "Create a manufacturing order and confirm it. The MO must no longer be in draft state."
+msgstr "Créez un ordre de fabrication et confirmez-le. L'OF ne doit plus être à l'état de brouillon."
+
+#. module: speedrun_mrp
+#: model:speedrun.task,name:speedrun_mrp.task_confirm_mo
+msgid "Confirm a manufacturing order"
+msgstr "Confirmer un ordre de fabrication"
+
+#. module: speedrun_mrp
+#: model:speedrun.task,description:speedrun_mrp.task_create_equipment
+msgid "Create a new equipment in the Maintenance app with a name."
+msgstr "Créez un nouvel équipement dans l'application Maintenance avec un nom."
+
+#. module: speedrun_mrp
+#: model:speedrun.task,name:speedrun_mrp.task_create_equipment
+msgid "Register an equipment"
+msgstr "Enregistrer un équipement"
+
+#. module: speedrun_mrp
+#: model:speedrun.task,description:speedrun_mrp.task_create_maintenance_request
+msgid "Create a new maintenance request in the Maintenance app."
+msgstr "Créez une nouvelle demande de maintenance dans l'application Maintenance."
+
+#. module: speedrun_mrp
+#: model:speedrun.task,name:speedrun_mrp.task_create_maintenance_request
+msgid "Create a maintenance request"
+msgstr "Créer une demande de maintenance"
+
+#. module: speedrun_mrp
+#: model:speedrun.task,description:speedrun_mrp.task_create_quality_alert
+msgid "Create a new quality alert in the Quality app."
+msgstr "Créez une nouvelle alerte qualité dans l'application Qualité."
+
+#. module: speedrun_mrp
+#: model:speedrun.task,name:speedrun_mrp.task_create_quality_alert
+msgid "Create a quality alert"
+msgstr "Créer une alerte qualité"
+
+#. module: speedrun_mrp
+#: model:speedrun.task,description:speedrun_mrp.task_create_quality_point
+msgid "Create a new quality control point in the Quality app (pick any operation type)."
+msgstr "Créez un nouveau point de contrôle qualité dans l'application Qualité (choisissez un type d'opération)."
+
+#. module: speedrun_mrp
+#: model:speedrun.task,name:speedrun_mrp.task_create_quality_point
+msgid "Create a quality control point"
+msgstr "Créer un point de contrôle qualité"
+
+#. module: speedrun_mrp
+#: model:speedrun.task,description:speedrun_mrp.task_create_repair
+msgid "Create a new repair order in the Repairs app for any product."
+msgstr "Créez un nouvel ordre de réparation dans l'application Réparations pour n'importe quel produit."
+
+#. module: speedrun_mrp
+#: model:speedrun.task,name:speedrun_mrp.task_create_repair
+msgid "Create a repair order"
+msgstr "Créer un ordre de réparation"
+
+#. module: speedrun_mrp
+#: model:speedrun.task,description:speedrun_mrp.task_confirm_repair
+msgid "Create a repair order and confirm it. It must be in \"Confirmed\" state."
+msgstr "Créez un ordre de réparation et confirmez-le. Il doit être à l'état « Confirmé »."
+
+#. module: speedrun_mrp
+#: model:speedrun.task,name:speedrun_mrp.task_confirm_repair
+msgid "Confirm a repair order"
+msgstr "Confirmer un ordre de réparation"
+
+#. module: speedrun_mrp
+#: model:speedrun.task,description:speedrun_mrp.task_create_eco
+msgid "Create a new Engineering Change Order (ECO) in the PLM app."
+msgstr "Créez un nouvel ordre de modification technique (ECO) dans l'application PLM."
+
+#. module: speedrun_mrp
+#: model:speedrun.task,name:speedrun_mrp.task_create_eco
+msgid "Create an engineering change order"
+msgstr "Créer un ordre de modification technique"

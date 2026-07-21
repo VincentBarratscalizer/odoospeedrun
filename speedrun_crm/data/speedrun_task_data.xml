@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="task_create_lead" model="speedrun.task">
+            <field name="name">Create an opportunity</field>
+            <field name="description">Create a new opportunity (lead) in the CRM pipeline with a name and an expected revenue.</field>
+            <field name="target_model">crm.lead</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['crm.lead'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('expected_revenue', '>', 0),
+]) >= 1
+            </field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">crm</field>
+        </record>
+
+        <record id="task_create_3_leads" model="speedrun.task">
+            <field name="name">Create 3 opportunities</field>
+            <field name="description">Create 3 new opportunities in the CRM pipeline. Speed matters - just name them and go!</field>
+            <field name="target_model">crm.lead</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="verification_count">3</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">crm</field>
+        </record>
+
+        <record id="task_win_opportunity" model="speedrun.task">
+            <field name="name">Win an opportunity</field>
+            <field name="description">Create an opportunity and mark it as "Won". You can do this from the CRM pipeline by moving it to the Won stage or using the "Won" button.</field>
+            <field name="target_model">crm.lead</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['crm.lead'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('stage_id.is_won', '=', True),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">crm</field>
+        </record>
+    </data>
+</odoo>

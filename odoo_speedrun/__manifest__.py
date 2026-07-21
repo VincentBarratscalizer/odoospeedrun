@@ -1,6 +1,7 @@
 {
     'name': 'Odoo Speedrun',
     'version': '19.0.2.0.0',
+    'author': 'Scalizer',
     'category': 'Extra Tools',
     'summary': 'Multiplayer speedrun game - race to complete Odoo tasks!',
     'description': """
@@ -12,8 +13,6 @@
     'data': [
         'security/speedrun_security.xml',
         'security/ir.model.access.csv',
-        'data/speedrun_task_data.xml',
-        'data/speedrun_task_data_apps.xml',
         'data/speedrun_badge_data.xml',
         'data/speedrun_matchmaking_cron.xml',
         'data/auth_signup_data.xml',

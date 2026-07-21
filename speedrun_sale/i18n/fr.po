@@ -1,0 +1,115 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* speedrun_sale
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: French <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: speedrun_sale
+#: model:speedrun.task,description:speedrun_sale.task_create_quotation
+msgid "Create a new sales quotation for any customer with at least one order line."
+msgstr "Créez un nouveau devis pour n'importe quel client avec au moins une ligne de commande."
+
+#. module: speedrun_sale
+#: model:speedrun.task,name:speedrun_sale.task_create_quotation
+msgid "Create a quotation"
+msgstr "Créer un devis"
+
+#. module: speedrun_sale
+#: model:speedrun.task,description:speedrun_sale.task_create_quotation_3_lines
+msgid "Create a sales quotation that contains at least 3 different order lines (3 different products)."
+msgstr "Créez un devis contenant au moins 3 lignes de commande différentes (3 produits différents)."
+
+#. module: speedrun_sale
+#: model:speedrun.task,name:speedrun_sale.task_create_quotation_3_lines
+msgid "Create a quotation with 3 products"
+msgstr "Créer un devis avec 3 produits"
+
+#. module: speedrun_sale
+#: model:speedrun.task,description:speedrun_sale.task_confirm_sale_order
+msgid "Create a sales quotation and confirm it (click \"Confirm\"). The order must be in \"Sales Order\" state."
+msgstr "Créez un devis et confirmez-le (cliquez sur « Confirmer »). La commande doit être à l'état « Bon de commande »."
+
+#. module: speedrun_sale
+#: model:speedrun.task,name:speedrun_sale.task_confirm_sale_order
+msgid "Confirm a sale order"
+msgstr "Confirmer une commande client"
+
+#. module: speedrun_sale
+#: model:speedrun.task,description:speedrun_sale.task_sale_order_1000
+msgid "Create a sales quotation with a total amount (tax included) greater than 1,000. Use high quantities or expensive products!"
+msgstr "Créez un devis avec un montant total (TTC) supérieur à 1 000. Utilisez de grandes quantités ou des produits chers !"
+
+#. module: speedrun_sale
+#: model:speedrun.task,name:speedrun_sale.task_sale_order_1000
+msgid "Create a quotation totaling over 1,000"
+msgstr "Créer un devis de plus de 1 000"
+
+#. module: speedrun_sale
+#: model:speedrun.task,description:speedrun_sale.task_sale_order_invoice
+msgid "Create a quotation, confirm it as a sales order, then create an invoice from it. The invoice must exist (even as draft)."
+msgstr "Créez un devis, confirmez-le en commande client, puis créez une facture à partir de celui-ci. La facture doit exister (même en brouillon)."
+
+#. module: speedrun_sale
+#: model:speedrun.task,name:speedrun_sale.task_sale_order_invoice
+msgid "Confirm a sale and create its invoice"
+msgstr "Confirmer une vente et créer sa facture"
+
+#. module: speedrun_sale
+#: model:speedrun.task,description:speedrun_sale.task_full_sale_flow
+msgid "Create a quotation, confirm it, create the invoice from the sale order, and post (confirm) the invoice. The full cycle!"
+msgstr "Créez un devis, confirmez-le, créez la facture à partir de la commande, puis comptabilisez (confirmez) la facture. Le cycle complet !"
+
+#. module: speedrun_sale
+#: model:speedrun.task,name:speedrun_sale.task_full_sale_flow
+msgid "Complete sales flow: quote to payment"
+msgstr "Flux de vente complet : du devis au paiement"
+
+#. module: speedrun_sale
+#: model:speedrun.task,description:speedrun_sale.task_create_subscription_plan
+msgid "Create a new recurring plan in the Subscriptions app (e.g. Monthly)."
+msgstr "Créez un nouveau plan récurrent dans l'application Abonnements (ex. Mensuel)."
+
+#. module: speedrun_sale
+#: model:speedrun.task,name:speedrun_sale.task_create_subscription_plan
+msgid "Create a subscription plan"
+msgstr "Créer un plan d'abonnement"
+
+#. module: speedrun_sale
+#: model:speedrun.task,description:speedrun_sale.task_create_subscription
+msgid "Create a new subscription (a sales order with a recurring plan) with at least one order line."
+msgstr "Créez un nouvel abonnement (une commande client avec un plan récurrent) avec au moins une ligne de commande."
+
+#. module: speedrun_sale
+#: model:speedrun.task,name:speedrun_sale.task_create_subscription
+msgid "Create a subscription"
+msgstr "Créer un abonnement"
+
+#. module: speedrun_sale
+#: model:speedrun.task,description:speedrun_sale.task_create_rental_product
+msgid "Create a new product that can be rented (enable \"Can be Rented\")."
+msgstr "Créez un nouveau produit qui peut être loué (activez « Peut être loué »)."
+
+#. module: speedrun_sale
+#: model:speedrun.task,name:speedrun_sale.task_create_rental_product
+msgid "Create a rentable product"
+msgstr "Créer un produit louable"
+
+#. module: speedrun_sale
+#: model:speedrun.task,description:speedrun_sale.task_create_rental_order
+msgid "Create a new rental order in the Rental app with at least one rental line."
+msgstr "Créez une nouvelle commande de location dans l'application Location avec au moins une ligne de location."
+
+#. module: speedrun_sale
+#: model:speedrun.task,name:speedrun_sale.task_create_rental_order
+msgid "Create a rental order"
+msgstr "Créer une commande de location"

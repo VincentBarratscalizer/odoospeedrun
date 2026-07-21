@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="task_create_purchase_order" model="speedrun.task">
+            <field name="name">Create a purchase order</field>
+            <field name="description">Create a new purchase order (Request for Quotation) for any vendor with at least one product line.</field>
+            <field name="target_model">purchase.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['purchase.order'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('order_line', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">purchase</field>
+        </record>
+
+        <record id="task_confirm_purchase_order" model="speedrun.task">
+            <field name="name">Confirm a purchase order</field>
+            <field name="description">Create a purchase order and confirm it. The order must be in "Purchase Order" state (not just a draft RFQ).</field>
+            <field name="target_model">purchase.order</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["state","=","purchase"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">purchase</field>
+        </record>
+
+        <record id="task_purchase_to_receipt" model="speedrun.task">
+            <field name="name">Purchase and receive goods</field>
+            <field name="description">Create a purchase order, confirm it, then go to the receipt and validate it. Full purchase cycle!</field>
+            <field name="target_model">purchase.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+orders = env['purchase.order'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('state', '=', 'purchase'),
+])
+result = any(
+    any(p.state == 'done' for p in o.picking_ids)
+    for o in orders
+)
+            </field>
+            <field name="difficulty">hard</field>
+            <field name="required_modules">purchase,stock</field>
+        </record>
+    </data>
+</odoo>

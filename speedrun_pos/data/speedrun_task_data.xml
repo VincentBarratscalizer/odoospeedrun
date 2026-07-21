@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="task_pos_product" model="speedrun.task">
+            <field name="name">Make a product available in POS</field>
+            <field name="description">Create a new product and make it available in the Point of Sale (check "Available in POS").</field>
+            <field name="target_model">product.template</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["available_in_pos","=",true]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">point_of_sale</field>
+        </record>
+
+        <record id="task_open_pos_session" model="speedrun.task">
+            <field name="name">Open a POS session</field>
+            <field name="description">Open a new session in the Point of Sale app (click "Open Register" on any POS).</field>
+            <field name="target_model">pos.session</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">point_of_sale</field>
+        </record>
+
+        <record id="task_restaurant_floor" model="speedrun.task">
+            <field name="name">Create a restaurant floor with 4 tables</field>
+            <field name="description">Create a restaurant floor plan with at least 4 tables (POS > Configuration > Floor Plans).</field>
+            <field name="target_model">restaurant.floor</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+floors = env['restaurant.floor'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+result = any(len(f.table_ids) >= 4 for f in floors)
+            </field>
+            <field name="difficulty">hard</field>
+            <field name="required_modules">pos_restaurant</field>
+        </record>
+    </data>
+</odoo>

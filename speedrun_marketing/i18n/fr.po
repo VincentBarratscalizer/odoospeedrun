@@ -1,0 +1,105 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* speedrun_marketing
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: French <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: speedrun_marketing
+#: model:speedrun.task,description:speedrun_marketing.task_create_event
+msgid "Create a new event in the Events app with a name and a date. It's that simple!"
+msgstr "Créez un nouvel événement dans l'application Événements avec un nom et une date. C'est aussi simple que ça !"
+
+#. module: speedrun_marketing
+#: model:speedrun.task,name:speedrun_marketing.task_create_event
+msgid "Create an event"
+msgstr "Créer un événement"
+
+#. module: speedrun_marketing
+#: model:speedrun.task,description:speedrun_marketing.task_event_3_registrations
+msgid "Create an event and register at least 3 attendees to it. You can add attendees from the event form."
+msgstr "Créez un événement et inscrivez-y au moins 3 participants. Vous pouvez ajouter des participants depuis la fiche de l'événement."
+
+#. module: speedrun_marketing
+#: model:speedrun.task,name:speedrun_marketing.task_event_3_registrations
+msgid "Organize an event with 3 attendees"
+msgstr "Organiser un événement avec 3 participants"
+
+#. module: speedrun_marketing
+#: model:speedrun.task,description:speedrun_marketing.task_create_appointment_type
+msgid "Create a new appointment type in the Appointments app with a name."
+msgstr "Créez un nouveau type de rendez-vous dans l'application Rendez-vous avec un nom."
+
+#. module: speedrun_marketing
+#: model:speedrun.task,name:speedrun_marketing.task_create_appointment_type
+msgid "Create an appointment type"
+msgstr "Créer un type de rendez-vous"
+
+#. module: speedrun_marketing
+#: model:speedrun.task,description:speedrun_marketing.task_create_survey
+msgid "Create a new survey in the Surveys app with a title."
+msgstr "Créez un nouveau sondage dans l'application Sondages avec un titre."
+
+#. module: speedrun_marketing
+#: model:speedrun.task,name:speedrun_marketing.task_create_survey
+msgid "Create a survey"
+msgstr "Créer un sondage"
+
+#. module: speedrun_marketing
+#: model:speedrun.task,description:speedrun_marketing.task_survey_3_questions
+msgid "Create a survey that contains at least 3 questions."
+msgstr "Créez un sondage contenant au moins 3 questions."
+
+#. module: speedrun_marketing
+#: model:speedrun.task,name:speedrun_marketing.task_survey_3_questions
+msgid "Create a survey with 3 questions"
+msgstr "Créer un sondage avec 3 questions"
+
+#. module: speedrun_marketing
+#: model:speedrun.task,description:speedrun_marketing.task_create_mailing_list
+msgid "Create a mailing list in Email Marketing and add at least 3 contacts to it."
+msgstr "Créez une liste de diffusion dans Email Marketing et ajoutez-y au moins 3 contacts."
+
+#. module: speedrun_marketing
+#: model:speedrun.task,name:speedrun_marketing.task_create_mailing_list
+msgid "Create a mailing list with 3 contacts"
+msgstr "Créer une liste de diffusion avec 3 contacts"
+
+#. module: speedrun_marketing
+#: model:speedrun.task,description:speedrun_marketing.task_create_mailing
+msgid "Create a new mailing in the Email Marketing app with a subject. It can stay as a draft."
+msgstr "Créez un nouvel envoi dans l'application Email Marketing avec un objet. Il peut rester à l'état de brouillon."
+
+#. module: speedrun_marketing
+#: model:speedrun.task,name:speedrun_marketing.task_create_mailing
+msgid "Create an email marketing campaign"
+msgstr "Créer une campagne d'email marketing"
+
+#. module: speedrun_marketing
+#: model:speedrun.task,description:speedrun_marketing.task_create_sms_mailing
+msgid "Create a new SMS mailing in the SMS Marketing app. It can stay as a draft."
+msgstr "Créez un nouvel envoi SMS dans l'application SMS Marketing. Il peut rester à l'état de brouillon."
+
+#. module: speedrun_marketing
+#: model:speedrun.task,name:speedrun_marketing.task_create_sms_mailing
+msgid "Create an SMS marketing campaign"
+msgstr "Créer une campagne de SMS marketing"
+
+#. module: speedrun_marketing
+#: model:speedrun.task,description:speedrun_marketing.task_create_marketing_campaign
+msgid "Create a new campaign in the Marketing Automation app with a name."
+msgstr "Créez une nouvelle campagne dans l'application Marketing Automation avec un nom."
+
+#. module: speedrun_marketing
+#: model:speedrun.task,name:speedrun_marketing.task_create_marketing_campaign
+msgid "Create a marketing automation campaign"
+msgstr "Créer une campagne d'automatisation marketing"

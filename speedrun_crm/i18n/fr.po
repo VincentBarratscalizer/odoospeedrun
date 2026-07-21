@@ -1,0 +1,45 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* speedrun_crm
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: French <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: speedrun_crm
+#: model:speedrun.task,description:speedrun_crm.task_create_lead
+msgid "Create a new opportunity (lead) in the CRM pipeline with a name and an expected revenue."
+msgstr "Créez une nouvelle opportunité (piste) dans le pipeline CRM avec un nom et un revenu attendu."
+
+#. module: speedrun_crm
+#: model:speedrun.task,name:speedrun_crm.task_create_lead
+msgid "Create an opportunity"
+msgstr "Créer une opportunité"
+
+#. module: speedrun_crm
+#: model:speedrun.task,description:speedrun_crm.task_create_3_leads
+msgid "Create 3 new opportunities in the CRM pipeline. Speed matters - just name them and go!"
+msgstr "Créez 3 nouvelles opportunités dans le pipeline CRM. La vitesse compte - nommez-les et foncez !"
+
+#. module: speedrun_crm
+#: model:speedrun.task,name:speedrun_crm.task_create_3_leads
+msgid "Create 3 opportunities"
+msgstr "Créer 3 opportunités"
+
+#. module: speedrun_crm
+#: model:speedrun.task,description:speedrun_crm.task_win_opportunity
+msgid "Create an opportunity and mark it as \"Won\". You can do this from the CRM pipeline by moving it to the Won stage or using the \"Won\" button."
+msgstr "Créez une opportunité et marquez-la comme « Gagnée ». Vous pouvez le faire depuis le pipeline CRM en la déplaçant vers l'étape Gagné ou via le bouton « Gagné »."
+
+#. module: speedrun_crm
+#: model:speedrun.task,name:speedrun_crm.task_win_opportunity
+msgid "Win an opportunity"
+msgstr "Gagner une opportunité"

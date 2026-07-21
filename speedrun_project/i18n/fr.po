@@ -1,0 +1,115 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* speedrun_project
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: French <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: speedrun_project
+#: model:speedrun.task,description:speedrun_project.task_create_project
+msgid "Create a new project with a name. That's it — keep it simple and fast!"
+msgstr "Créez un nouveau projet avec un nom. C'est tout — restez simple et rapide !"
+
+#. module: speedrun_project
+#: model:speedrun.task,name:speedrun_project.task_create_project
+msgid "Create a project"
+msgstr "Créer un projet"
+
+#. module: speedrun_project
+#: model:speedrun.task,description:speedrun_project.task_project_5_tasks
+msgid "Create a new project and add at least 5 tasks to it. You can add tasks directly from the project's kanban or list view."
+msgstr "Créez un nouveau projet et ajoutez-y au moins 5 tâches. Vous pouvez ajouter des tâches directement depuis la vue kanban ou liste du projet."
+
+#. module: speedrun_project
+#: model:speedrun.task,name:speedrun_project.task_project_5_tasks
+msgid "Create a project with 5 tasks"
+msgstr "Créer un projet avec 5 tâches"
+
+#. module: speedrun_project
+#: model:speedrun.task,description:speedrun_project.task_create_7_tasks
+msgid "Create 7 tasks in any project. You can use an existing project or create a new one."
+msgstr "Créez 7 tâches dans n'importe quel projet. Vous pouvez utiliser un projet existant ou en créer un nouveau."
+
+#. module: speedrun_project
+#: model:speedrun.task,name:speedrun_project.task_create_7_tasks
+msgid "Create 7 tasks"
+msgstr "Créer 7 tâches"
+
+#. module: speedrun_project
+#: model:speedrun.task,description:speedrun_project.task_create_project_milestone
+msgid "Create a project, enable milestones on it, create at least 2 milestones, and add at least 3 tasks assigned to those milestones."
+msgstr "Créez un projet, activez les jalons, créez au moins 2 jalons et ajoutez au moins 3 tâches affectées à ces jalons."
+
+#. module: speedrun_project
+#: model:speedrun.task,name:speedrun_project.task_create_project_milestone
+msgid "Organize a project with milestones"
+msgstr "Organiser un projet avec des jalons"
+
+#. module: speedrun_project
+#: model:speedrun.task,description:speedrun_project.task_log_timesheet
+msgid "Log a timesheet entry on any project with a description and a duration."
+msgstr "Saisissez une feuille de temps sur n'importe quel projet avec une description et une durée."
+
+#. module: speedrun_project
+#: model:speedrun.task,name:speedrun_project.task_log_timesheet
+msgid "Log a timesheet entry"
+msgstr "Saisir une feuille de temps"
+
+#. module: speedrun_project
+#: model:speedrun.task,description:speedrun_project.task_log_3_timesheets
+msgid "Log 3 separate timesheet entries on any project(s)."
+msgstr "Saisissez 3 feuilles de temps distinctes sur n'importe quel(s) projet(s)."
+
+#. module: speedrun_project
+#: model:speedrun.task,name:speedrun_project.task_log_3_timesheets
+msgid "Log 3 timesheet entries"
+msgstr "Saisir 3 feuilles de temps"
+
+#. module: speedrun_project
+#: model:speedrun.task,description:speedrun_project.task_create_3_todos
+msgid "Create 3 personal to-dos in the To-do app (tasks without a project)."
+msgstr "Créez 3 tâches personnelles à faire dans l'application À faire (tâches sans projet)."
+
+#. module: speedrun_project
+#: model:speedrun.task,name:speedrun_project.task_create_3_todos
+msgid "Create 3 to-dos"
+msgstr "Créer 3 tâches à faire"
+
+#. module: speedrun_project
+#: model:speedrun.task,description:speedrun_project.task_create_fsm_task
+msgid "Create a new task in the Field Service app with a title and a customer."
+msgstr "Créez une nouvelle tâche dans l'application Services sur site avec un titre et un client."
+
+#. module: speedrun_project
+#: model:speedrun.task,name:speedrun_project.task_create_fsm_task
+msgid "Create a field service task"
+msgstr "Créer une tâche de service sur site"
+
+#. module: speedrun_project
+#: model:speedrun.task,description:speedrun_project.task_create_shift
+msgid "Create a new shift in the Planning app. An open shift with a start and end time works."
+msgstr "Créez un nouveau créneau dans l'application Planning. Un créneau ouvert avec une heure de début et de fin convient."
+
+#. module: speedrun_project
+#: model:speedrun.task,name:speedrun_project.task_create_shift
+msgid "Create a planning shift"
+msgstr "Créer un créneau de planning"
+
+#. module: speedrun_project
+#: model:speedrun.task,description:speedrun_project.task_create_3_shifts
+msgid "Create 3 shifts in the Planning app. Be quick!"
+msgstr "Créez 3 créneaux dans l'application Planning. Soyez rapide !"
+
+#. module: speedrun_project
+#: model:speedrun.task,name:speedrun_project.task_create_3_shifts
+msgid "Create 3 planning shifts"
+msgstr "Créer 3 créneaux de planning"

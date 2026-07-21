@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="task_create_project" model="speedrun.task">
+            <field name="name">Create a project</field>
+            <field name="description">Create a new project with a name. That's it — keep it simple and fast!</field>
+            <field name="target_model">project.project</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">project</field>
+        </record>
+
+        <record id="task_project_5_tasks" model="speedrun.task">
+            <field name="name">Create a project with 5 tasks</field>
+            <field name="description">Create a new project and add at least 5 tasks to it. You can add tasks directly from the project's kanban or list view.</field>
+            <field name="target_model">project.project</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+projects = env['project.project'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+result = any(
+    env['project.task'].search_count([('project_id', '=', p.id)]) >= 5
+    for p in projects
+)
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">project</field>
+        </record>
+
+        <record id="task_create_7_tasks" model="speedrun.task">
+            <field name="name">Create 7 tasks</field>
+            <field name="description">Create 7 tasks in any project. You can use an existing project or create a new one.</field>
+            <field name="target_model">project.task</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="verification_count">7</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">project</field>
+        </record>
+
+        <record id="task_create_project_milestone" model="speedrun.task">
+            <field name="name">Organize a project with milestones</field>
+            <field name="description">Create a project, enable milestones on it, create at least 2 milestones, and add at least 3 tasks assigned to those milestones.</field>
+            <field name="target_model">project.project</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+projects = env['project.project'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+for p in projects:
+    milestones = env['project.milestone'].search([('project_id', '=', p.id)])
+    if len(milestones) >= 2:
+        tasks_with_ms = env['project.task'].search_count([
+            ('project_id', '=', p.id),
+            ('milestone_id', '!=', False),
+        ])
+        if tasks_with_ms >= 3:
+            result = True
+            break
+else:
+    result = False
+            </field>
+            <field name="difficulty">hard</field>
+            <field name="required_modules">project</field>
+        </record>
+
+        <record id="task_log_timesheet" model="speedrun.task">
+            <field name="name">Log a timesheet entry</field>
+            <field name="description">Log a timesheet entry on any project with a description and a duration.</field>
+            <field name="target_model">account.analytic.line</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["project_id","!=",false]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">hr_timesheet</field>
+        </record>
+
+        <record id="task_log_3_timesheets" model="speedrun.task">
+            <field name="name">Log 3 timesheet entries</field>
+            <field name="description">Log 3 separate timesheet entries on any project(s).</field>
+            <field name="target_model">account.analytic.line</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["project_id","!=",false]]</field>
+            <field name="verification_count">3</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">hr_timesheet</field>
+        </record>
+
+        <record id="task_create_3_todos" model="speedrun.task">
+            <field name="name">Create 3 to-dos</field>
+            <field name="description">Create 3 personal to-dos in the To-do app (tasks without a project).</field>
+            <field name="target_model">project.task</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["project_id","=",false]]</field>
+            <field name="verification_count">3</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">project_todo</field>
+        </record>
+
+        <record id="task_create_fsm_task" model="speedrun.task">
+            <field name="name">Create a field service task</field>
+            <field name="description">Create a new task in the Field Service app with a title and a customer.</field>
+            <field name="target_model">project.task</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['project.task'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('project_id.is_fsm', '=', True),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">industry_fsm</field>
+        </record>
+
+        <record id="task_create_shift" model="speedrun.task">
+            <field name="name">Create a planning shift</field>
+            <field name="description">Create a new shift in the Planning app. An open shift with a start and end time works.</field>
+            <field name="target_model">planning.slot</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">planning</field>
+        </record>
+
+        <record id="task_create_3_shifts" model="speedrun.task">
+            <field name="name">Create 3 planning shifts</field>
+            <field name="description">Create 3 shifts in the Planning app. Be quick!</field>
+            <field name="target_model">planning.slot</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="verification_count">3</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">planning</field>
+        </record>
+    </data>
+</odoo>

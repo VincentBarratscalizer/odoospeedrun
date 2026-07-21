@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="task_create_quotation" model="speedrun.task">
+            <field name="name">Create a quotation</field>
+            <field name="description">Create a new sales quotation for any customer with at least one order line.</field>
+            <field name="target_model">sale.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['sale.order'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('order_line', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">sale</field>
+        </record>
+
+        <record id="task_create_quotation_3_lines" model="speedrun.task">
+            <field name="name">Create a quotation with 3 products</field>
+            <field name="description">Create a sales quotation that contains at least 3 different order lines (3 different products).</field>
+            <field name="target_model">sale.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+orders = env['sale.order'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+result = any(len(o.order_line) >= 3 for o in orders)
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">sale</field>
+        </record>
+
+        <record id="task_confirm_sale_order" model="speedrun.task">
+            <field name="name">Confirm a sale order</field>
+            <field name="description">Create a sales quotation and confirm it (click "Confirm"). The order must be in "Sales Order" state.</field>
+            <field name="target_model">sale.order</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["state","=","sale"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">sale</field>
+        </record>
+
+        <record id="task_sale_order_1000" model="speedrun.task">
+            <field name="name">Create a quotation totaling over 1,000</field>
+            <field name="description">Create a sales quotation with a total amount (tax included) greater than 1,000. Use high quantities or expensive products!</field>
+            <field name="target_model">sale.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['sale.order'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('amount_total', '>', 1000),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">sale</field>
+        </record>
+
+        <record id="task_sale_order_invoice" model="speedrun.task">
+            <field name="name">Confirm a sale and create its invoice</field>
+            <field name="description">Create a quotation, confirm it as a sales order, then create an invoice from it. The invoice must exist (even as draft).</field>
+            <field name="target_model">sale.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+orders = env['sale.order'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('state', '=', 'sale'),
+])
+result = any(o.invoice_ids for o in orders)
+            </field>
+            <field name="difficulty">hard</field>
+            <field name="required_modules">sale,account</field>
+        </record>
+
+        <record id="task_full_sale_flow" model="speedrun.task">
+            <field name="name">Complete sales flow: quote to payment</field>
+            <field name="description">Create a quotation, confirm it, create the invoice from the sale order, and post (confirm) the invoice. The full cycle!</field>
+            <field name="target_model">sale.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+orders = env['sale.order'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('state', '=', 'sale'),
+])
+result = any(
+    any(inv.state == 'posted' for inv in o.invoice_ids)
+    for o in orders
+)
+            </field>
+            <field name="difficulty">hard</field>
+            <field name="required_modules">sale,account</field>
+        </record>
+
+        <record id="task_create_subscription_plan" model="speedrun.task">
+            <field name="name">Create a subscription plan</field>
+            <field name="description">Create a new recurring plan in the Subscriptions app (e.g. Monthly).</field>
+            <field name="target_model">sale.subscription.plan</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">sale_subscription</field>
+        </record>
+
+        <record id="task_create_subscription" model="speedrun.task">
+            <field name="name">Create a subscription</field>
+            <field name="description">Create a new subscription (a sales order with a recurring plan) with at least one order line.</field>
+            <field name="target_model">sale.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['sale.order'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('plan_id', '!=', False),
+    ('order_line', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">sale_subscription</field>
+        </record>
+
+        <record id="task_create_rental_product" model="speedrun.task">
+            <field name="name">Create a rentable product</field>
+            <field name="description">Create a new product that can be rented (enable "Can be Rented").</field>
+            <field name="target_model">product.template</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["rent_ok","=",true]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">sale_renting</field>
+        </record>
+
+        <record id="task_create_rental_order" model="speedrun.task">
+            <field name="name">Create a rental order</field>
+            <field name="description">Create a new rental order in the Rental app with at least one rental line.</field>
+            <field name="target_model">sale.order</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+orders = env['sale.order'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+result = any(any(l.is_rental for l in o.order_line) for o in orders)
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">sale_renting</field>
+        </record>
+    </data>
+</odoo>

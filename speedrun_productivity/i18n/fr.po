@@ -1,0 +1,135 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* speedrun_productivity
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: French <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: speedrun_productivity
+#: model:speedrun.task,description:speedrun_productivity.task_create_meeting
+msgid "Create a new calendar event (meeting) with a title and a date. Go to Calendar and create a new event."
+msgstr "Créez un nouvel événement d'agenda (réunion) avec un titre et une date. Allez dans Agenda et créez un nouvel événement."
+
+#. module: speedrun_productivity
+#: model:speedrun.task,name:speedrun_productivity.task_create_meeting
+msgid "Schedule a meeting"
+msgstr "Planifier une réunion"
+
+#. module: speedrun_productivity
+#: model:speedrun.task,description:speedrun_productivity.task_create_meeting_with_attendees
+msgid "Create a calendar event and invite at least 2 other people (attendees) to it."
+msgstr "Créez un événement d'agenda et invitez-y au moins 2 autres personnes (participants)."
+
+#. module: speedrun_productivity
+#: model:speedrun.task,name:speedrun_productivity.task_create_meeting_with_attendees
+msgid "Schedule a meeting with 2 attendees"
+msgstr "Planifier une réunion avec 2 participants"
+
+#. module: speedrun_productivity
+#: model:speedrun.task,description:speedrun_productivity.task_create_ticket
+msgid "Create a new helpdesk ticket with a subject. Go to Helpdesk and click \"New\"."
+msgstr "Créez un nouveau ticket d'assistance avec un sujet. Allez dans Assistance et cliquez sur « Nouveau »."
+
+#. module: speedrun_productivity
+#: model:speedrun.task,name:speedrun_productivity.task_create_ticket
+msgid "Create a helpdesk ticket"
+msgstr "Créer un ticket d'assistance"
+
+#. module: speedrun_productivity
+#: model:speedrun.task,description:speedrun_productivity.task_create_3_tickets
+msgid "Create 3 new helpdesk tickets. Each just needs a subject - be fast!"
+msgstr "Créez 3 nouveaux tickets d'assistance. Chacun n'a besoin que d'un sujet - soyez rapide !"
+
+#. module: speedrun_productivity
+#: model:speedrun.task,name:speedrun_productivity.task_create_3_tickets
+msgid "Create 3 helpdesk tickets"
+msgstr "Créer 3 tickets d'assistance"
+
+#. module: speedrun_productivity
+#: model:speedrun.task,description:speedrun_productivity.task_solve_ticket
+msgid "Create a helpdesk ticket and move it to a closing stage (e.g. \"Solved\"). The ticket must be in a folded/closing stage."
+msgstr "Créez un ticket d'assistance et déplacez-le vers une étape de clôture (ex. « Résolu »). Le ticket doit être dans une étape repliée/de clôture."
+
+#. module: speedrun_productivity
+#: model:speedrun.task,name:speedrun_productivity.task_solve_ticket
+msgid "Solve a helpdesk ticket"
+msgstr "Résoudre un ticket d'assistance"
+
+#. module: speedrun_productivity
+#: model:speedrun.task,description:speedrun_productivity.task_create_article
+msgid "Create a new article in the Knowledge app with a title."
+msgstr "Créez un nouvel article dans l'application Connaissances avec un titre."
+
+#. module: speedrun_productivity
+#: model:speedrun.task,name:speedrun_productivity.task_create_article
+msgid "Create a knowledge article"
+msgstr "Créer un article de connaissances"
+
+#. module: speedrun_productivity
+#: model:speedrun.task,description:speedrun_productivity.task_article_with_children
+msgid "Create a knowledge article and add at least 2 sub-articles (nested articles) under it."
+msgstr "Créez un article de connaissances et ajoutez-y au moins 2 sous-articles (articles imbriqués)."
+
+#. module: speedrun_productivity
+#: model:speedrun.task,name:speedrun_productivity.task_article_with_children
+msgid "Create an article with 2 sub-articles"
+msgstr "Créer un article avec 2 sous-articles"
+
+#. module: speedrun_productivity
+#: model:speedrun.task,description:speedrun_productivity.task_create_folder
+msgid "Create a new folder in the Documents app."
+msgstr "Créez un nouveau dossier dans l'application Documents."
+
+#. module: speedrun_productivity
+#: model:speedrun.task,name:speedrun_productivity.task_create_folder
+msgid "Create a documents folder"
+msgstr "Créer un dossier de documents"
+
+#. module: speedrun_productivity
+#: model:speedrun.task,description:speedrun_productivity.task_create_room
+msgid "Create a new room in the Rooms app with a name."
+msgstr "Créez une nouvelle salle dans l'application Salles avec un nom."
+
+#. module: speedrun_productivity
+#: model:speedrun.task,name:speedrun_productivity.task_create_room
+msgid "Create a meeting room"
+msgstr "Créer une salle de réunion"
+
+#. module: speedrun_productivity
+#: model:speedrun.task,description:speedrun_productivity.task_book_room
+msgid "Create a booking for a room in the Rooms app."
+msgstr "Créez une réservation pour une salle dans l'application Salles."
+
+#. module: speedrun_productivity
+#: model:speedrun.task,name:speedrun_productivity.task_book_room
+msgid "Book a meeting room"
+msgstr "Réserver une salle de réunion"
+
+#. module: speedrun_productivity
+#: model:speedrun.task,description:speedrun_productivity.task_create_frontdesk_station
+msgid "Create a new station in the Frontdesk app with a name."
+msgstr "Créez une nouvelle borne dans l'application Accueil avec un nom."
+
+#. module: speedrun_productivity
+#: model:speedrun.task,name:speedrun_productivity.task_create_frontdesk_station
+msgid "Create a frontdesk station"
+msgstr "Créer une borne d'accueil"
+
+#. module: speedrun_productivity
+#: model:speedrun.task,description:speedrun_productivity.task_create_sign_template
+msgid "Upload a PDF document in the Sign app to create a new template."
+msgstr "Téléversez un document PDF dans l'application Signature pour créer un nouveau modèle."
+
+#. module: speedrun_productivity
+#: model:speedrun.task,name:speedrun_productivity.task_create_sign_template
+msgid "Upload a document to sign"
+msgstr "Téléverser un document à signer"

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="task_create_employee" model="speedrun.task">
+            <field name="name">Create an employee</field>
+            <field name="description">Create a new employee with a name, a job title, and a work email address.</field>
+            <field name="target_model">hr.employee</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['hr.employee'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('job_title', '!=', False),
+    ('work_email', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">hr</field>
+        </record>
+
+        <record id="task_create_3_employees" model="speedrun.task">
+            <field name="name">Create 3 employees</field>
+            <field name="description">Create 3 new employees. Each one just needs a name - be fast!</field>
+            <field name="target_model">hr.employee</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="verification_count">3</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">hr</field>
+        </record>
+
+        <record id="task_create_leave_request" model="speedrun.task">
+            <field name="name">Create a leave request</field>
+            <field name="description">Create a time off request (leave) for any employee. Go to Time Off and create a new request.</field>
+            <field name="target_model">hr.leave</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">hr_holidays</field>
+        </record>
+
+        <record id="task_log_expense" model="speedrun.task">
+            <field name="name">Log an expense</field>
+            <field name="description">Create a new expense with a description and an amount. Go to Expenses and click "New".</field>
+            <field name="target_model">hr.expense</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">hr_expense</field>
+        </record>
+
+        <record id="task_log_3_expenses" model="speedrun.task">
+            <field name="name">Log 3 expenses</field>
+            <field name="description">Create 3 separate expense entries. Each needs a description and an amount.</field>
+            <field name="target_model">hr.expense</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="verification_count">3</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">hr_expense</field>
+        </record>
+
+        <record id="task_create_vehicle" model="speedrun.task">
+            <field name="name">Register a vehicle</field>
+            <field name="description">Create a new vehicle in the Fleet app. Pick any model and give it a license plate.</field>
+            <field name="target_model">fleet.vehicle</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["license_plate","!=",false]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">fleet</field>
+        </record>
+
+        <record id="task_vehicle_with_driver" model="speedrun.task">
+            <field name="name">Assign a driver to a vehicle</field>
+            <field name="description">Create a vehicle in the Fleet app and assign a driver to it.</field>
+            <field name="target_model">fleet.vehicle</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["driver_id","!=",false]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">fleet</field>
+        </record>
+
+        <record id="task_create_job_position" model="speedrun.task">
+            <field name="name">Create a job position</field>
+            <field name="description">Create a new job position in the Recruitment app.</field>
+            <field name="target_model">hr.job</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">hr_recruitment</field>
+        </record>
+
+        <record id="task_create_applicant" model="speedrun.task">
+            <field name="name">Register a job applicant</field>
+            <field name="description">Create a new applicant in the Recruitment app with a name and an email address.</field>
+            <field name="target_model">hr.applicant</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['hr.applicant'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('email_from', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">hr_recruitment</field>
+        </record>
+
+        <record id="task_create_attendance" model="speedrun.task">
+            <field name="name">Log an attendance entry</field>
+            <field name="description">Create an attendance record (check-in) for any employee from the Attendances app.</field>
+            <field name="target_model">hr.attendance</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">hr_attendance</field>
+        </record>
+
+        <record id="task_attendance_check_out" model="speedrun.task">
+            <field name="name">Log a complete attendance (in and out)</field>
+            <field name="description">Create an attendance record with both a check-in AND a check-out time.</field>
+            <field name="target_model">hr.attendance</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["check_out","!=",false]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">hr_attendance</field>
+        </record>
+
+        <record id="task_create_appraisal" model="speedrun.task">
+            <field name="name">Create an appraisal</field>
+            <field name="description">Create a new appraisal for any employee in the Appraisals app.</field>
+            <field name="target_model">hr.appraisal</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">hr_appraisal</field>
+        </record>
+
+        <record id="task_add_employee_skill" model="speedrun.task">
+            <field name="name">Add a skill to an employee</field>
+            <field name="description">Open an employee's profile and add a skill (e.g. a language or IT skill) in the Resume tab.</field>
+            <field name="target_model">hr.employee.skill</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">hr_skills</field>
+        </record>
+
+        <record id="task_create_payslip_batch" model="speedrun.task">
+            <field name="name">Create a payslip batch</field>
+            <field name="description">Create a new payslip batch in the Payroll app with a name and a period.</field>
+            <field name="target_model">hr.payslip.run</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">hr_payroll</field>
+        </record>
+
+        <record id="task_create_approval" model="speedrun.task">
+            <field name="name">Create an approval request</field>
+            <field name="description">Create a new approval request in the Approvals app (any category, e.g. Business Trip).</field>
+            <field name="target_model">approval.request</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">approvals</field>
+        </record>
+
+        <record id="task_submit_approval" model="speedrun.task">
+            <field name="name">Submit an approval request</field>
+            <field name="description">Create an approval request and submit it. It must no longer be in the "To Submit" state.</field>
+            <field name="target_model">approval.request</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["request_status","!=","new"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">approvals</field>
+        </record>
+
+        <record id="task_create_lunch_vendor" model="speedrun.task">
+            <field name="name">Create a lunch vendor</field>
+            <field name="description">Create a new vendor in the Lunch app configuration.</field>
+            <field name="target_model">lunch.supplier</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">lunch</field>
+        </record>
+
+        <record id="task_create_lunch_products" model="speedrun.task">
+            <field name="name">Create 3 lunch products</field>
+            <field name="description">Create 3 products in the Lunch app (each needs a name, a category, a vendor and a price).</field>
+            <field name="target_model">lunch.product</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="verification_count">3</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">lunch</field>
+        </record>
+    </data>
+</odoo>

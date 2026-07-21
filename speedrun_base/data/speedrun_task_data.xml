@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="task_create_contact" model="speedrun.task">
+            <field name="name">Create a complete contact</field>
+            <field name="description">Create a new contact (individual) with a name, email address, phone number, and a street address. All four fields must be filled.</field>
+            <field name="target_model">res.partner</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['res.partner'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('is_company', '=', False),
+    ('name', '!=', False),
+    ('email', '!=', False),
+    ('phone', '!=', False),
+    ('street', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">easy</field>
+        </record>
+
+        <record id="task_create_company" model="speedrun.task">
+            <field name="name">Create a company with 3 contacts</field>
+            <field name="description">Create a new company and add at least 3 individual contacts under it (as child contacts).</field>
+            <field name="target_model">res.partner</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+companies = env['res.partner'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('is_company', '=', True),
+])
+result = any(
+    env['res.partner'].search_count([
+        ('parent_id', '=', c.id),
+        ('is_company', '=', False),
+    ]) >= 3
+    for c in companies
+)
+            </field>
+            <field name="difficulty">medium</field>
+        </record>
+
+        <record id="task_create_product" model="speedrun.task">
+            <field name="name">Create a product with a price of 42.00</field>
+            <field name="description">Create a new product (not a service) with a sales price of exactly 42.00.</field>
+            <field name="target_model">product.template</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["list_price","=",42.0],["type","=","consu"]]</field>
+            <field name="difficulty">easy</field>
+        </record>
+
+        <record id="task_create_10_contacts" model="speedrun.task">
+            <field name="name">Create 10 contacts</field>
+            <field name="description">Create 10 new individual contacts. Speed is key - each contact just needs a name!</field>
+            <field name="target_model">res.partner</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["is_company","=",false]]</field>
+            <field name="verification_count">10</field>
+            <field name="difficulty">medium</field>
+        </record>
+
+        <record id="task_create_note" model="speedrun.task">
+            <field name="name">Create 5 tags on contacts</field>
+            <field name="description">Create 5 new contact tags (categories). Go to Contacts > Configuration > Tags.</field>
+            <field name="target_model">res.partner.category</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="verification_count">5</field>
+            <field name="difficulty">easy</field>
+        </record>
+
+        <record id="task_create_user" model="speedrun.task">
+            <field name="name">Create an internal user</field>
+            <field name="description">Create a new internal user with a valid login (email) and name. The user must be confirmed (not in a pending state).</field>
+            <field name="target_model">res.users</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["share","=",false]]</field>
+            <field name="verification_count">1</field>
+            <field name="difficulty">medium</field>
+        </record>
+
+        <record id="task_create_service" model="speedrun.task">
+            <field name="name">Create a service product</field>
+            <field name="description">Create a new product of type "Service" (not a storable/consumable good). Set a sales price.</field>
+            <field name="target_model">product.template</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["type","=","service"]]</field>
+            <field name="difficulty">easy</field>
+        </record>
+
+        <record id="task_create_5_products" model="speedrun.task">
+            <field name="name">Create 5 products</field>
+            <field name="description">Create 5 new products. Any type, any price - just be quick about it!</field>
+            <field name="target_model">product.template</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="verification_count">5</field>
+            <field name="difficulty">medium</field>
+        </record>
+
+        <record id="task_create_expensive_product" model="speedrun.task">
+            <field name="name">Create a product worth 9,999</field>
+            <field name="description">Create a product with a sales price of exactly 9,999.00. Luxury item!</field>
+            <field name="target_model">product.template</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["list_price","=",9999.0]]</field>
+            <field name="difficulty">easy</field>
+        </record>
+
+        <record id="task_create_contact_with_tag" model="speedrun.task">
+            <field name="name">Create a tagged contact</field>
+            <field name="description">Create a new contact and assign at least one tag (category) to it. Tags can be found in the contact form.</field>
+            <field name="target_model">res.partner</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['res.partner'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('category_id', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">easy</field>
+        </record>
+
+        <record id="task_create_contact_full" model="speedrun.task">
+            <field name="name">Create the ultimate contact</field>
+            <field name="description">Create a contact with ALL of the following: name, email, phone, mobile, street address, city, and a tag. Complete perfection!</field>
+            <field name="target_model">res.partner</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['res.partner'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('name', '!=', False),
+    ('email', '!=', False),
+    ('phone', '!=', False),
+    ('mobile', '!=', False),
+    ('street', '!=', False),
+    ('city', '!=', False),
+    ('category_id', '!=', False),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+        </record>
+
+        <record id="task_create_20_contacts" model="speedrun.task">
+            <field name="name">Create 20 contacts</field>
+            <field name="description">Create 20 new contacts as fast as you can! Each contact just needs a name. Go go go!</field>
+            <field name="target_model">res.partner</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["is_company","=",false]]</field>
+            <field name="verification_count">20</field>
+            <field name="difficulty">hard</field>
+        </record>
+    </data>
+</odoo>

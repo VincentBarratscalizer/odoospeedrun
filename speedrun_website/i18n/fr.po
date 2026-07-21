@@ -1,0 +1,95 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* speedrun_website
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: French <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: speedrun_website
+#: model:speedrun.task,description:speedrun_website.task_create_livechat_channel
+msgid "Create a new channel in the Live Chat app and join it as an operator."
+msgstr "Créez un nouveau canal dans l'application Live Chat et rejoignez-le en tant qu'opérateur."
+
+#. module: speedrun_website
+#: model:speedrun.task,name:speedrun_website.task_create_livechat_channel
+msgid "Create a live chat channel"
+msgstr "Créer un canal de live chat"
+
+#. module: speedrun_website
+#: model:speedrun.task,description:speedrun_website.task_create_web_page
+msgid "Create a new page on the website (Website app > New > Page)."
+msgstr "Créez une nouvelle page sur le site web (application Site Web > Nouveau > Page)."
+
+#. module: speedrun_website
+#: model:speedrun.task,name:speedrun_website.task_create_web_page
+msgid "Create a website page"
+msgstr "Créer une page de site web"
+
+#. module: speedrun_website
+#: model:speedrun.task,description:speedrun_website.task_publish_web_page
+msgid "Create a new website page AND publish it (toggle \"Published\" in the website editor)."
+msgstr "Créez une nouvelle page de site web ET publiez-la (activez « Publié » dans l'éditeur de site web)."
+
+#. module: speedrun_website
+#: model:speedrun.task,name:speedrun_website.task_publish_web_page
+msgid "Publish a new website page"
+msgstr "Publier une nouvelle page de site web"
+
+#. module: speedrun_website
+#: model:speedrun.task,description:speedrun_website.task_publish_product
+msgid "Create a new product and publish it on the website shop."
+msgstr "Créez un nouveau produit et publiez-le sur la boutique du site web."
+
+#. module: speedrun_website
+#: model:speedrun.task,name:speedrun_website.task_publish_product
+msgid "Publish a product on the eCommerce"
+msgstr "Publier un produit sur l'eCommerce"
+
+#. module: speedrun_website
+#: model:speedrun.task,description:speedrun_website.task_publish_event
+msgid "Create an event and publish it on the website."
+msgstr "Créez un événement et publiez-le sur le site web."
+
+#. module: speedrun_website
+#: model:speedrun.task,name:speedrun_website.task_publish_event
+msgid "Publish an event on the website"
+msgstr "Publier un événement sur le site web"
+
+#. module: speedrun_website
+#: model:speedrun.task,description:speedrun_website.task_publish_job
+msgid "Create a job position and publish it on the website (Go Live)."
+msgstr "Créez un poste et publiez-le sur le site web (Mettre en ligne)."
+
+#. module: speedrun_website
+#: model:speedrun.task,name:speedrun_website.task_publish_job
+msgid "Publish a job position on the website"
+msgstr "Publier un poste sur le site web"
+
+#. module: speedrun_website
+#: model:speedrun.task,description:speedrun_website.task_create_course
+msgid "Create a new course in the eLearning app with a title."
+msgstr "Créez un nouveau cours dans l'application eLearning avec un titre."
+
+#. module: speedrun_website
+#: model:speedrun.task,name:speedrun_website.task_create_course
+msgid "Create an eLearning course"
+msgstr "Créer un cours eLearning"
+
+#. module: speedrun_website
+#: model:speedrun.task,description:speedrun_website.task_course_2_lessons
+msgid "Create an eLearning course and add at least 2 content items (lessons) to it."
+msgstr "Créez un cours eLearning et ajoutez-y au moins 2 contenus (leçons)."
+
+#. module: speedrun_website
+#: model:speedrun.task,name:speedrun_website.task_course_2_lessons
+msgid "Create a course with 2 lessons"
+msgstr "Créer un cours avec 2 leçons"

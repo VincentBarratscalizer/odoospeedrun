@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="task_create_meeting" model="speedrun.task">
+            <field name="name">Schedule a meeting</field>
+            <field name="description">Create a new calendar event (meeting) with a title and a date. Go to Calendar and create a new event.</field>
+            <field name="target_model">calendar.event</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">calendar</field>
+        </record>
+
+        <record id="task_create_meeting_with_attendees" model="speedrun.task">
+            <field name="name">Schedule a meeting with 2 attendees</field>
+            <field name="description">Create a calendar event and invite at least 2 other people (attendees) to it.</field>
+            <field name="target_model">calendar.event</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+events = env['calendar.event'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+result = any(len(e.attendee_ids) >= 3 for e in events)
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">calendar</field>
+        </record>
+
+        <record id="task_create_ticket" model="speedrun.task">
+            <field name="name">Create a helpdesk ticket</field>
+            <field name="description">Create a new helpdesk ticket with a subject. Go to Helpdesk and click "New".</field>
+            <field name="target_model">helpdesk.ticket</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">helpdesk</field>
+        </record>
+
+        <record id="task_create_3_tickets" model="speedrun.task">
+            <field name="name">Create 3 helpdesk tickets</field>
+            <field name="description">Create 3 new helpdesk tickets. Each just needs a subject - be fast!</field>
+            <field name="target_model">helpdesk.ticket</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="verification_count">3</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">helpdesk</field>
+        </record>
+
+        <record id="task_solve_ticket" model="speedrun.task">
+            <field name="name">Solve a helpdesk ticket</field>
+            <field name="description">Create a helpdesk ticket and move it to a closing stage (e.g. "Solved"). The ticket must be in a folded/closing stage.</field>
+            <field name="target_model">helpdesk.ticket</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+result = env['helpdesk.ticket'].with_user(uid).search_count([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('stage_id.fold', '=', True),
+]) >= 1
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">helpdesk</field>
+        </record>
+
+        <record id="task_create_article" model="speedrun.task">
+            <field name="name">Create a knowledge article</field>
+            <field name="description">Create a new article in the Knowledge app with a title.</field>
+            <field name="target_model">knowledge.article</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">knowledge</field>
+        </record>
+
+        <record id="task_article_with_children" model="speedrun.task">
+            <field name="name">Create an article with 2 sub-articles</field>
+            <field name="description">Create a knowledge article and add at least 2 sub-articles (nested articles) under it.</field>
+            <field name="target_model">knowledge.article</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+articles = env['knowledge.article'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+    ('parent_id', '=', False),
+])
+result = any(
+    env['knowledge.article'].search_count([('parent_id', '=', a.id)]) >= 2
+    for a in articles
+)
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">knowledge</field>
+        </record>
+
+        <record id="task_create_folder" model="speedrun.task">
+            <field name="name">Create a documents folder</field>
+            <field name="description">Create a new folder in the Documents app.</field>
+            <field name="target_model">documents.document</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["type","=","folder"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">documents</field>
+        </record>
+
+        <record id="task_create_room" model="speedrun.task">
+            <field name="name">Create a meeting room</field>
+            <field name="description">Create a new room in the Rooms app with a name.</field>
+            <field name="target_model">room.room</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">room</field>
+        </record>
+
+        <record id="task_book_room" model="speedrun.task">
+            <field name="name">Book a meeting room</field>
+            <field name="description">Create a booking for a room in the Rooms app.</field>
+            <field name="target_model">room.booking</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">room</field>
+        </record>
+
+        <record id="task_create_frontdesk_station" model="speedrun.task">
+            <field name="name">Create a frontdesk station</field>
+            <field name="description">Create a new station in the Frontdesk app with a name.</field>
+            <field name="target_model">frontdesk.frontdesk</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">frontdesk</field>
+        </record>
+
+        <record id="task_create_sign_template" model="speedrun.task">
+            <field name="name">Upload a document to sign</field>
+            <field name="description">Upload a PDF document in the Sign app to create a new template.</field>
+            <field name="target_model">sign.template</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">hard</field>
+            <field name="required_modules">sign</field>
+        </record>
+    </data>
+</odoo>

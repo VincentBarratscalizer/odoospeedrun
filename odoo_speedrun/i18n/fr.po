@@ -1,0 +1,1969 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* odoo_speedrun
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: French <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_tournament__max_participants
+msgid "0 = unlimited."
+msgstr "0 = illimité."
+
+#. module: odoo_speedrun
+#: model:ir.model.constraint,message:odoo_speedrun.constraint_speedrun_badge_award_unique_badge_per_profile
+msgid "A badge can only be awarded once per player."
+msgstr "Un badge ne peut être attribué qu'une seule fois par joueur."
+
+#. module: odoo_speedrun
+#: model:ir.model.constraint,message:odoo_speedrun.constraint_speedrun_profile_unique_user_profile
+msgid "A user can only have one speedrun profile."
+msgstr "Un utilisateur ne peut avoir qu'un seul profil speedrun."
+
+#. module: odoo_speedrun
+#: model:ir.model.constraint,message:odoo_speedrun.constraint_speedrun_player_unique_player_per_game
+msgid "A user can only join a game once."
+msgstr "Un utilisateur ne peut rejoindre une partie qu'une seule fois."
+
+#. module: odoo_speedrun
+#: model:ir.model.constraint,message:odoo_speedrun.constraint_speedrun_tournament_registration_unique_reg
+msgid "A user can only register once per tournament."
+msgstr "Un utilisateur ne peut s'inscrire qu'une seule fois par tournoi."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__active
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__active
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament_registration__state__active
+msgid "Active"
+msgstr "Actif"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "All Tournaments"
+msgstr "Tous les tournois"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_personal_best__attempts
+msgid "Attempts"
+msgstr "Tentatives"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_leaderboard__avg_time_ms
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_personal_best__avg_time_ms
+msgid "Avg Time (ms)"
+msgstr "Temps moyen (ms)"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__award_ids
+msgid "Award"
+msgstr "Attribution"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__award_count
+msgid "Award Count"
+msgstr "Nombre d'attributions"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Back to Arena"
+msgstr "Retour à l'arène"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge_award__badge_id
+msgid "Badge"
+msgstr "Badge"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__badge_count
+msgid "Badge Count"
+msgstr "Nombre de badges"
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_badge_view_form
+msgid "Badge Name"
+msgstr "Nom du badge"
+
+#. module: odoo_speedrun
+#: model:ir.actions.act_window,name:odoo_speedrun.speedrun_badge_action
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__badge_award_ids
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_badges
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_profile_view_form
+msgid "Badges"
+msgstr "Badges"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Badges ("
+msgstr "Badges ("
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Best"
+msgstr "Meilleur"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_game__game_mode__best_of
+msgid "Best Of (first to win a majority of rounds)"
+msgstr "Au meilleur (premier à gagner la majorité des manches)"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Best Time"
+msgstr "Meilleur temps"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_leaderboard__best_time_ms
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_personal_best__best_time_ms
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__best_time_ms
+msgid "Best Time (ms)"
+msgstr "Meilleur temps (ms)"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_badge__criteria_type__best_time_under
+msgid "Best Time Under (ms)"
+msgstr "Meilleur temps sous (ms)"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Best of"
+msgstr "Au meilleur de"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament__match_best_of__3
+msgid "Best of 3"
+msgstr "Au meilleur de 3"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament__match_best_of__5
+msgid "Best of 5"
+msgstr "Au meilleur de 5"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_badge__xp_reward
+msgid "Bonus XP granted when the badge is earned."
+msgstr "XP bonus accordés lorsque le badge est obtenu."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__bracket
+msgid "Bracket"
+msgstr "Tableau"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__bracket_size
+msgid "Bracket Size"
+msgstr "Taille du tableau"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament__seeding_method__elo
+msgid "By ELO"
+msgstr "Par ELO"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament_match__state__bye
+msgid "Bye"
+msgstr "Exempt"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Cancel Search"
+msgstr "Annuler la recherche"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_matchmaking_queue__state__cancelled
+msgid "Cancelled"
+msgstr "Annulé"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__winner_id
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament_registration__state__champion
+#: model:speedrun.badge,name:odoo_speedrun.badge_champion
+msgid "Champion"
+msgstr "Champion"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "Champion of the Speedrun!"
+msgstr "Champion du Speedrun !"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_timer.xml:0
+#: code:addons/odoo_speedrun/static/src/components/speedrun_systray.xml:0
+msgid "Check task completion (Alt+Shift+D)"
+msgstr "Vérifier l'accomplissement de la tâche (Alt+Maj+D)"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_timer.xml:0
+msgid "Checking..."
+msgstr "Vérification..."
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Close Registration & Seed"
+msgstr "Clôturer les inscriptions et répartir"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task__required_modules
+msgid ""
+"Comma-separated module technical names required for this task (e.g. "
+"sale,account)."
+msgstr "Noms techniques des modules requis pour cette tâche, séparés par des virgules (ex. sale,account)."
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,description:odoo_speedrun.badge_lightning
+msgid "Complete a task in under 15 seconds."
+msgstr "Accomplir une tâche en moins de 15 secondes."
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,description:odoo_speedrun.badge_speed_demon
+msgid "Complete a task in under 30 seconds."
+msgstr "Accomplir une tâche en moins de 30 secondes."
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "Complete!"
+msgstr "Terminé !"
+
+#. module: odoo_speedrun
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_config
+msgid "Configuration"
+msgstr "Configuration"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_game__state__countdown
+msgid "Countdown"
+msgstr "Compte à rebours"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Create & Open Registration"
+msgstr "Créer et ouvrir les inscriptions"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Create Game"
+msgstr "Créer une partie"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Create a Game"
+msgstr "Créer une partie"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Create a Tournament"
+msgstr "Créer un tournoi"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__create_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge_award__create_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_elo_history__create_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__create_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_matchmaking_queue__create_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_player__create_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__create_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__create_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__create_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__create_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__create_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__create_uid
+msgid "Created by"
+msgstr "Créé par"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__create_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge_award__create_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_elo_history__create_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__create_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_matchmaking_queue__create_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_player__create_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__create_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__create_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__create_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__create_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__create_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__create_date
+msgid "Created on"
+msgstr "Créé le"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__criteria_type
+msgid "Criteria Type"
+msgstr "Type de critère"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__current_round
+msgid "Current Round"
+msgstr "Manche actuelle"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "Current Standings"
+msgstr "Classement actuel"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__task_id
+msgid "Current Task"
+msgstr "Tâche actuelle"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "DNF"
+msgstr "DNF"
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_elo_history_view_list
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_profile_view_form
+msgid "Date"
+msgstr "Date"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Delete"
+msgstr "Supprimer"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__description
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__description
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_badge_view_form
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_view_form
+msgid "Description"
+msgstr "Description"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task__description
+msgid "Detailed instructions shown to players during the game."
+msgstr "Instructions détaillées affichées aux joueurs pendant la partie."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_player__state__dnf
+msgid "Did Not Finish"
+msgstr "Non terminé"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__difficulty
+msgid "Difficulty"
+msgstr "Difficulté"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_player__dismissed
+msgid "Dismissed"
+msgstr "Ignoré"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_ir_websocket__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_res_users__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge_award__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_elo_history__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_leaderboard__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_matchmaking_queue__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_personal_best__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_player__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__display_name
+msgid "Display Name"
+msgstr "Nom affiché"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_task__verification_method__domain
+msgid "Domain"
+msgstr "Domaine"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/speedrun_systray.xml:0
+msgid "Done"
+msgstr "Terminé"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_timer.xml:0
+#: code:addons/odoo_speedrun/static/src/components/speedrun_systray.xml:0
+msgid "Done!"
+msgstr "Terminé !"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Double elimination · 1v1 best-of series · seeded bracket."
+msgstr "Double élimination · séries 1c1 au meilleur de · tableau réparti."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_player__duration_ms
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__duration_ms
+msgid "Duration (ms)"
+msgstr "Durée (ms)"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "ELO"
+msgstr "ELO"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__elo_history_ids
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_profile_view_form
+msgid "ELO History"
+msgstr "Historique ELO"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__elo
+msgid "ELO Rating"
+msgstr "Classement ELO"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_badge__criteria_type__elo_reached
+msgid "ELO Reached"
+msgstr "ELO atteint"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_tournament_registration__elo
+msgid "ELO snapshot at registration time."
+msgstr "Instantané ELO au moment de l'inscription."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_matchmaking_queue__elo
+msgid "ELO snapshot when joining the queue."
+msgstr "Instantané ELO à l'entrée dans la file."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_tournament__match_best_of
+msgid "Each tournament match is a 1v1 best-of series."
+msgstr "Chaque match de tournoi est une série 1c1 au meilleur de."
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_profile_view_form
+msgid "Earned On"
+msgstr "Obtenu le"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_task__difficulty__easy
+msgid "Easy"
+msgstr "Facile"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament_registration__state__eliminated
+msgid "Eliminated"
+msgstr "Éliminé"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,name:odoo_speedrun.badge_elite
+msgid "Elite"
+msgstr "Élite"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_matchmaking_queue__elo
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__elo
+msgid "Elo"
+msgstr "Elo"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_elo_history__elo_after
+msgid "Elo After"
+msgstr "Elo après"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_elo_history__elo_before
+msgid "Elo Before"
+msgstr "Elo avant"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_elo_history__elo_change
+msgid "Elo Change"
+msgstr "Variation Elo"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_badge__icon
+msgid "Emoji shown next to the badge."
+msgstr "Émoji affiché à côté du badge."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__end_time
+msgid "End Time"
+msgstr "Heure de fin"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Enter join code"
+msgstr "Saisir le code d'accès"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__xp
+msgid "Experience Points"
+msgstr "Points d'expérience"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,name:odoo_speedrun.badge_level_5
+msgid "Expert Runner"
+msgstr "Coureur expert"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "Final Standings"
+msgstr "Classement final"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Find Match"
+msgstr "Trouver un match"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_player__finish_time
+msgid "Finish Time"
+msgstr "Heure d'arrivée"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,description:odoo_speedrun.badge_round_master
+msgid "Finish first in 25 rounds."
+msgstr "Terminer premier dans 25 manches."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_game__state__finished
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_player__state__finished
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament__state__finished
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament_match__state__done
+msgid "Finished"
+msgstr "Terminé"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_round_result__rank
+msgid "Finishing position (1=first, 0=DNF)"
+msgstr "Position d'arrivée (1=premier, 0=DNF)"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,name:odoo_speedrun.badge_first_game
+msgid "First Steps"
+msgstr "Premiers pas"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,name:odoo_speedrun.badge_first_win
+msgid "First Victory"
+msgstr "Première victoire"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "First to"
+msgstr "Premier à"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/speedrun_systray.xml:0
+msgid "GET READY"
+msgstr "PRÉPAREZ-VOUS"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "GO!"
+msgstr "PARTEZ !"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge_award__game_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_elo_history__game_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_matchmaking_queue__game_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_player__game_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__game_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__game_id
+msgid "Game"
+msgstr "Partie"
+
+#. module: odoo_speedrun
+#: model:ir.actions.act_window,name:odoo_speedrun.speedrun_game_action
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_history
+msgid "Game History"
+msgstr "Historique des parties"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__game_mode
+msgid "Game Mode"
+msgstr "Mode de jeu"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "Game Over"
+msgstr "Partie terminée"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_game__is_ranked
+msgid "Game created through matchmaking."
+msgstr "Partie créée via le matchmaking."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_badge_award__game_id
+msgid "Game during which the badge was earned."
+msgstr "Partie durant laquelle le badge a été obtenu."
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Game name (optional)"
+msgstr "Nom de la partie (facultatif)"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_leaderboard__total_games
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__games_played
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_badge__criteria_type__games_played
+msgid "Games Played"
+msgstr "Parties jouées"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__games_won
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_badge__criteria_type__games_won
+msgid "Games Won"
+msgstr "Parties gagnées"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Generate Bracket & Start"
+msgstr "Générer le tableau et démarrer"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Get automatically matched with players of your skill level (ELO)."
+msgstr "Soyez automatiquement mis en relation avec des joueurs de votre niveau (ELO)."
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_bracket.xml:0
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament_match__bracket__grand
+msgid "Grand Final"
+msgstr "Grande finale"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,name:odoo_speedrun.badge_level_10
+msgid "Grandmaster Runner"
+msgstr "Grand maître coureur"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_task__difficulty__hard
+msgid "Hard"
+msgstr "Difficile"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__host_id
+msgid "Host"
+msgstr "Hôte"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Host:"
+msgstr "Hôte :"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_timer.xml:0
+msgid "I'm Done!"
+msgstr "J'ai terminé !"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_ir_websocket__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_res_users__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge_award__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_elo_history__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_leaderboard__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_matchmaking_queue__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_personal_best__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_player__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__id
+msgid "ID"
+msgstr "ID"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__icon
+msgid "Icon"
+msgstr "Icône"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_game__total_rounds
+msgid "In Best Of mode, this is the maximum number of rounds."
+msgstr "En mode Au meilleur, il s'agit du nombre maximum de manches."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament_match__state__running
+msgid "In progress"
+msgstr "En cours"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__is_reset
+msgid "Is Reset"
+msgstr "Réinitialisé"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task__verification_domain
+msgid ""
+"JSON domain with placeholders: __uid__ (current user ID), __game_start__ "
+"(game start datetime as string)."
+msgstr "Domaine JSON avec des marqueurs : __uid__ (ID de l'utilisateur courant), __game_start__ (date/heure de début de partie sous forme de chaîne)."
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__code
+msgid "Join Code"
+msgstr "Code d'accès"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Join Game"
+msgstr "Rejoindre la partie"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Join a Game"
+msgstr "Rejoindre une partie"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__label
+msgid "Label"
+msgstr "Libellé"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_personal_best__last_played
+msgid "Last Played"
+msgstr "Dernière partie"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__write_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge_award__write_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_elo_history__write_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__write_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_matchmaking_queue__write_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_player__write_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__write_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__write_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__write_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__write_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__write_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__write_uid
+msgid "Last Updated by"
+msgstr "Dernière modification par"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__write_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge_award__write_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_elo_history__write_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__write_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_matchmaking_queue__write_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_player__write_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__write_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__write_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__write_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__write_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__write_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__write_date
+msgid "Last Updated on"
+msgstr "Dernière modification le"
+
+#. module: odoo_speedrun
+#: model:ir.actions.act_window,name:odoo_speedrun.speedrun_leaderboard_action
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_leaderboard
+msgid "Leaderboard"
+msgstr "Classement"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Leave"
+msgstr "Quitter"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__level
+msgid "Level"
+msgstr "Niveau"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_badge__criteria_type__level_reached
+msgid "Level Reached"
+msgstr "Niveau atteint"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__level_title
+msgid "Level Title"
+msgstr "Titre de niveau"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,name:odoo_speedrun.badge_lightning
+msgid "Lightning"
+msgstr "Éclair"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__loser_id
+msgid "Loser"
+msgstr "Perdant"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_bracket.xml:0
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament_match__bracket__loser
+msgid "Losers Bracket"
+msgstr "Tableau des perdants"
+
+#. module: odoo_speedrun
+#: model:res.groups,name:odoo_speedrun.group_speedrun_manager
+msgid "Manager"
+msgstr "Gestionnaire"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament__seeding_method__manual
+msgid "Manual"
+msgstr "Manuel"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__match_best_of
+msgid "Match Format"
+msgstr "Format du match"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__match_number
+msgid "Match Number"
+msgstr "Numéro du match"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_bracket.xml:0
+msgid "Match in progress"
+msgstr "Match en cours"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_matchmaking_queue__state__matched
+msgid "Matched"
+msgstr "Mis en relation"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__match_ids
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_tournament_view_form
+msgid "Matches"
+msgstr "Matchs"
+
+#. module: odoo_speedrun
+#: model:ir.actions.act_window,name:odoo_speedrun.speedrun_matchmaking_action
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_matchmaking
+msgid "Matchmaking Queue"
+msgstr "File de matchmaking"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__max_participants
+msgid "Max Participants"
+msgstr "Participants max"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__max_players
+msgid "Max Players"
+msgstr "Joueurs max"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_task__difficulty__medium
+msgid "Medium"
+msgstr "Moyen"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: model:ir.actions.act_window,name:odoo_speedrun.speedrun_personal_best_action_my
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_my_best_times
+msgid "My Best Times"
+msgstr "Mes meilleurs temps"
+
+#. module: odoo_speedrun
+#: model:ir.actions.act_window,name:odoo_speedrun.speedrun_elo_history_action_my
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_my_elo
+msgid "My ELO Progression"
+msgstr "Ma progression ELO"
+
+#. module: odoo_speedrun
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_my_profile
+msgid "My Profile"
+msgstr "Mon profil"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: model:ir.actions.act_window,name:odoo_speedrun.speedrun_profile_action_my
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_my_stats_root
+msgid "My Stats"
+msgstr "Mes statistiques"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__name
+msgid "Name"
+msgstr "Nom"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "New Tournament"
+msgstr "Nouveau tournoi"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__next_lose_match_id
+msgid "Next Lose Match"
+msgstr "Prochain match en cas de défaite"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__next_lose_slot
+msgid "Next Lose Slot"
+msgstr "Emplacement suivant en cas de défaite"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "Next Round"
+msgstr "Manche suivante"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__next_win_match_id
+msgid "Next Win Match"
+msgstr "Prochain match en cas de victoire"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__next_win_slot
+msgid "Next Win Slot"
+msgstr "Emplacement suivant en cas de victoire"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "No points this round"
+msgstr "Aucun point cette manche"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "No tournaments yet. Create one to get started!"
+msgstr "Aucun tournoi pour l'instant. Créez-en un pour commencer !"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__total_rounds
+msgid "Number of Rounds"
+msgstr "Nombre de manches"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task__verification_count
+msgid "Number of matching records needed."
+msgstr "Nombre d'enregistrements correspondants requis."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_player__round_wins
+msgid "Number of rounds finished in 1st place."
+msgstr "Nombre de manches terminées à la 1re place."
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "Odoo"
+msgstr "Odoo"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__organizer_id
+msgid "Organizer"
+msgstr "Organisateur"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Organizer:"
+msgstr "Organisateur :"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__winner_id
+msgid "Overall Winner"
+msgstr "Vainqueur global"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__p1_bye
+msgid "P1 Bye"
+msgstr "J1 exempt"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__p1_filled
+msgid "P1 Filled"
+msgstr "J1 rempli"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__p2_bye
+msgid "P2 Bye"
+msgstr "J2 exempt"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__p2_filled
+msgid "P2 Filled"
+msgstr "J2 rempli"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__participant_count
+msgid "Participant Count"
+msgstr "Nombre de participants"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_tournament_view_form
+msgid "Participants"
+msgstr "Participants"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__peak_elo
+msgid "Peak ELO"
+msgstr "ELO maximum"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,description:odoo_speedrun.badge_veteran
+msgid "Play 10 speedrun games."
+msgstr "Jouer 10 parties de speedrun."
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,description:odoo_speedrun.badge_addict
+msgid "Play 50 speedrun games."
+msgstr "Jouer 50 parties de speedrun."
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "Play Again"
+msgstr "Rejouer"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_bracket.xml:0
+msgid "Play my match"
+msgstr "Jouer mon match"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,description:odoo_speedrun.badge_first_game
+msgid "Play your first speedrun game."
+msgstr "Jouer votre première partie de speedrun."
+
+#. module: odoo_speedrun
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_play
+msgid "Play!"
+msgstr "Jouer !"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_leaderboard__user_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_personal_best__user_id
+#: model:res.groups,name:odoo_speedrun.group_speedrun_player
+msgid "Player"
+msgstr "Joueur"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__player_count
+msgid "Player Count"
+msgstr "Nombre de joueurs"
+
+#. module: odoo_speedrun
+#: model:ir.actions.act_window,name:odoo_speedrun.speedrun_profile_action_all
+msgid "Player Profiles"
+msgstr "Profils des joueurs"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__player1_id
+msgid "Player1"
+msgstr "Joueur 1"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__player2_id
+msgid "Player2"
+msgstr "Joueur 2"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: code:addons/odoo_speedrun/static/src/components/game_timer.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__player_ids
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_profiles
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_game_view_form
+msgid "Players"
+msgstr "Joueurs"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_player__state__playing
+msgid "Playing"
+msgstr "En jeu"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_timer.xml:0
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "Playing..."
+msgstr "En jeu..."
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "Points"
+msgstr "Points"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_game__game_mode__points
+msgid "Points (fixed rounds)"
+msgstr "Points (manches fixes)"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__points
+msgid "Points Earned"
+msgstr "Points gagnés"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge_award__profile_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_elo_history__profile_id
+msgid "Profile"
+msgstr "Profil"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_task__verification_method__python
+msgid "Python Code"
+msgstr "Code Python"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task__verification_code
+msgid ""
+"Python code for complex verification. Available variables: env, uid, "
+"start_time. Must set result = True/False."
+msgstr "Code Python pour une vérification complexe. Variables disponibles : env, uid, start_time. Doit définir result = True/False."
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_matchmaking_view_list
+msgid "Queued At"
+msgstr "Mis en file le"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/speedrun_systray.xml:0
+msgid "R"
+msgstr "R"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "Race to complete Odoo tasks!"
+msgstr "Accomplissez des tâches Odoo à toute vitesse !"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament__seeding_method__random
+msgid "Random"
+msgstr "Aléatoire"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Randomize"
+msgstr "Mélanger"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__rank
+msgid "Rank"
+msgstr "Rang"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "Rank #"
+msgstr "Rang n°"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Ranked"
+msgstr "Classé"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__is_ranked
+msgid "Ranked Match"
+msgstr "Match classé"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Ranked Matchmaking"
+msgstr "Matchmaking classé"
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_profile_view_form
+msgid "Rating"
+msgstr "Classement"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,description:odoo_speedrun.badge_rising_star
+msgid "Reach 1100 ELO."
+msgstr "Atteindre 1100 ELO."
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,description:odoo_speedrun.badge_elite
+msgid "Reach 1300 ELO."
+msgstr "Atteindre 1300 ELO."
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,description:odoo_speedrun.badge_level_10
+msgid "Reach level 10 — an exceptional reward!"
+msgstr "Atteindre le niveau 10 — une récompense exceptionnelle !"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,description:odoo_speedrun.badge_level_5
+msgid "Reach level 5 — reward for your dedication!"
+msgstr "Atteindre le niveau 5 — récompense de votre engagement !"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament_match__state__ready
+msgid "Ready to play"
+msgstr "Prêt à jouer"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Register"
+msgstr "S'inscrire"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament_registration__state__registered
+msgid "Registered"
+msgstr "Inscrit"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament__state__registration
+msgid "Registration Open"
+msgstr "Inscriptions ouvertes"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__registration_ids
+msgid "Registrations"
+msgstr "Inscriptions"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Reopen"
+msgstr "Rouvrir"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__required_modules
+msgid "Required Modules"
+msgstr "Modules requis"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,name:odoo_speedrun.badge_rising_star
+msgid "Rising Star"
+msgstr "Étoile montante"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "Round"
+msgstr "Manche"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_game__state__round_finished
+msgid "Round Finished"
+msgstr "Manche terminée"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,name:odoo_speedrun.badge_round_master
+msgid "Round Master"
+msgstr "Maître des manches"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__round_number
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__round_number
+msgid "Round Number"
+msgstr "Numéro de manche"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__round_result_ids
+msgid "Round Results"
+msgstr "Résultats de manche"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "Round Surrendered"
+msgstr "Manche abandonnée"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_personal_best__wins
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_player__round_wins
+msgid "Round Wins"
+msgstr "Manches gagnées"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/speedrun_systray.xml:0
+msgid "Round complete - click to view"
+msgstr "Manche terminée - cliquez pour voir"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__rounds_played
+msgid "Rounds Played"
+msgstr "Manches jouées"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__rounds_won
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_badge__criteria_type__rounds_won
+msgid "Rounds Won"
+msgstr "Manches gagnées"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__rounds_to_win
+msgid "Rounds to Win"
+msgstr "Manches à gagner"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__runner_up_id
+msgid "Runner-up"
+msgstr "Finaliste"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Runner-up:"
+msgstr "Finaliste :"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_game__state__running
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament__state__running
+msgid "Running"
+msgstr "En cours"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_player__score
+msgid "Score"
+msgstr "Score"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Searching for opponents..."
+msgstr "Recherche d'adversaires..."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__seed
+msgid "Seed"
+msgstr "Tête de série"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Seed by ELO"
+msgstr "Répartir par ELO"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament__state__seeding
+msgid "Seeding"
+msgstr "Répartition"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__seeding_method
+msgid "Seeding Method"
+msgstr "Méthode de répartition"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__sequence
+msgid "Sequence"
+msgstr "Séquence"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_player__dismissed
+msgid ""
+"Set when the player leaves the final results screen (Play again). Dismissed "
+"games are no longer restored on refresh."
+msgstr "Défini lorsque le joueur quitte l'écran des résultats finaux (Rejouer). Les parties ignorées ne sont plus restaurées au rafraîchissement."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_game__tournament_match_id
+msgid "Set when this game backs a tournament match."
+msgstr "Défini lorsque cette partie sert de support à un match de tournoi."
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,name:odoo_speedrun.badge_speed_demon
+msgid "Speed Demon"
+msgstr "Démon de la vitesse"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+#: model:ir.module.category,name:odoo_speedrun.module_category_speedrun
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_root
+#: model:res.groups.privilege,name:odoo_speedrun.privilege_speedrun
+msgid "Speedrun"
+msgstr "Speedrun"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,name:odoo_speedrun.badge_addict
+msgid "Speedrun Addict"
+msgstr "Accro au speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.actions.client,name:odoo_speedrun.speedrun_client_action
+msgid "Speedrun Arena"
+msgstr "Arène Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_badge
+msgid "Speedrun Badge"
+msgstr "Badge Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_badge_award
+msgid "Speedrun Badge Award"
+msgstr "Attribution de badge Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_elo_history
+msgid "Speedrun ELO History"
+msgstr "Historique ELO Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_game
+msgid "Speedrun Game Room"
+msgstr "Salon de jeu Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_leaderboard
+msgid "Speedrun Leaderboard"
+msgstr "Classement Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_matchmaking_queue
+msgid "Speedrun Matchmaking Queue"
+msgstr "File de matchmaking Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_personal_best
+msgid "Speedrun Personal Best Times"
+msgstr "Meilleurs temps personnels Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_player
+msgid "Speedrun Player"
+msgstr "Joueur Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_profile
+msgid "Speedrun Player Profile"
+msgstr "Profil de joueur Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_round_result
+msgid "Speedrun Round Result"
+msgstr "Résultat de manche Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_task
+msgid "Speedrun Task Definition"
+msgstr "Définition de tâche Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.actions.act_window,name:odoo_speedrun.speedrun_task_action
+msgid "Speedrun Tasks"
+msgstr "Tâches Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_tournament
+msgid "Speedrun Tournament"
+msgstr "Tournoi Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_tournament_match
+msgid "Speedrun Tournament Match"
+msgstr "Match de tournoi Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_tournament_registration
+msgid "Speedrun Tournament Registration"
+msgstr "Inscription au tournoi Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.actions.server,name:odoo_speedrun.cron_matchmaking_process_queue_ir_actions_server
+msgid "Speedrun: process matchmaking queue"
+msgstr "Speedrun : traiter la file de matchmaking"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Start Game!"
+msgstr "Démarrer la partie !"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__start_time
+msgid "Start Time"
+msgstr "Heure de début"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_game__start_time
+msgid "Start time of the current round"
+msgstr "Heure de début de la manche actuelle"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__state
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_matchmaking_queue__state
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_player__state
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__state
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__state
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__state
+msgid "State"
+msgstr "État"
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_profile_view_form
+msgid "Statistics"
+msgstr "Statistiques"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_timer.xml:0
+msgid "Surrender"
+msgstr "Abandonner"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_timer.xml:0
+#: code:addons/odoo_speedrun/static/src/components/speedrun_systray.xml:0
+msgid "Surrender this round — score no points (Alt+Shift+S)"
+msgstr "Abandonner cette manche — aucun point marqué (Alt+Maj+S)"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_timer.xml:0
+msgid "Surrendering..."
+msgstr "Abandon..."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__target_model
+msgid "Target Model"
+msgstr "Modèle cible"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_personal_best__task_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__task_id
+msgid "Task"
+msgstr "Tâche"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "Task Complete!"
+msgstr "Tâche accomplie !"
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_view_form
+msgid "Task Name"
+msgstr "Nom de la tâche"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_timer.xml:0
+msgid "Task completed! Waiting for other players..."
+msgstr "Tâche accomplie ! En attente des autres joueurs..."
+
+#. module: odoo_speedrun
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_tasks
+msgid "Tasks"
+msgstr "Tâches"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task__target_model
+msgid ""
+"Technical name of the Odoo model to check (e.g. res.partner, account.move)."
+msgstr "Nom technique du modèle Odoo à vérifier (ex. res.partner, account.move)."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__threshold
+msgid "Threshold"
+msgstr "Seuil"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "Time"
+msgstr "Temps"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__tournament_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__tournament_id
+msgid "Tournament"
+msgstr "Tournoi"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__tournament_match_id
+msgid "Tournament Match"
+msgstr "Match de tournoi"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Tournament name (optional)"
+msgstr "Nom du tournoi (facultatif)"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+#: model:ir.actions.act_window,name:odoo_speedrun.speedrun_tournament_action
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_tournaments
+msgid "Tournaments"
+msgstr "Tournois"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_res_users
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge_award__user_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_elo_history__user_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_matchmaking_queue__user_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_player__user_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__user_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__user_id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__user_id
+msgid "User"
+msgstr "Utilisateur"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_badge__threshold
+msgid ""
+"Value to reach (count, ELO, level, or milliseconds for time-based badges)."
+msgstr "Valeur à atteindre (nombre, ELO, niveau ou millisecondes pour les badges basés sur le temps)."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__verification_code
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_view_form
+msgid "Verification Code"
+msgstr "Code de vérification"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__verification_count
+msgid "Verification Count"
+msgstr "Nombre pour la vérification"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__verification_domain
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_view_form
+msgid "Verification Domain"
+msgstr "Domaine de vérification"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__verification_method
+msgid "Verification Method"
+msgstr "Méthode de vérification"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,name:odoo_speedrun.badge_veteran
+msgid "Veteran"
+msgstr "Vétéran"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Wait time:"
+msgstr "Temps d'attente :"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_game__state__waiting
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_matchmaking_queue__state__waiting
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_player__state__waiting
+msgid "Waiting"
+msgstr "En attente"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "Waiting for host to start next round..."
+msgstr "En attente que l'hôte lance la manche suivante..."
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "Waiting for other players..."
+msgstr "En attente des autres joueurs..."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament_match__state__waiting
+msgid "Waiting for players"
+msgstr "En attente de joueurs"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Waiting for the host to start..."
+msgstr "En attente du démarrage par l'hôte..."
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,description:odoo_speedrun.badge_champion
+msgid "Win 10 speedrun games."
+msgstr "Gagner 10 parties de speedrun."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_leaderboard__win_rate
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__win_rate
+msgid "Win Rate (%)"
+msgstr "Taux de victoire (%)"
+
+#. module: odoo_speedrun
+#: model:speedrun.badge,description:odoo_speedrun.badge_first_win
+msgid "Win your first speedrun game."
+msgstr "Gagner votre première partie de speedrun."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__winner_id
+msgid "Winner"
+msgstr "Vainqueur"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "Winner:"
+msgstr "Vainqueur :"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_bracket.xml:0
+#: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament_match__bracket__winner
+msgid "Winners Bracket"
+msgstr "Tableau des gagnants"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_leaderboard__total_wins
+msgid "Wins"
+msgstr "Victoires"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Wins / Games"
+msgstr "Victoires / Parties"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "Withdraw"
+msgstr "Se retirer"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "XP (next:"
+msgstr "XP (suivant :"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__xp_reward
+msgid "Xp Reward"
+msgstr "Récompense XP"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "You"
+msgstr "Vous"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "You Win!"
+msgstr "Vous gagnez !"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Your ELO:"
+msgstr "Votre ELO :"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_timer.xml:0
+msgid "Your Mission"
+msgstr "Votre mission"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "Your mission"
+msgstr "Votre mission"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "by"
+msgstr "par"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "left"
+msgstr "restant"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "players"
+msgstr "joueurs"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "players in queue"
+msgstr "joueurs dans la file"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "pts"
+msgstr "pts"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "remaining"
+msgstr "restant"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "round"
+msgstr "manche"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid ""
+"round wins —\n"
+"                            up to"
+msgstr "manches gagnées — jusqu'à"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: code:addons/odoo_speedrun/static/src/components/game_results.xml:0
+msgid "s"
+msgstr "s"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_ir_websocket
+msgid "websocket message handling"
+msgstr "gestion des messages websocket"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "wins"
+msgstr "victoires"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid ""
+"·\n"
+"                                        Best of"
+msgstr "· Au meilleur de"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
+msgid "· Double elimination"
+msgstr "· Double élimination"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
+msgid "· First to"
+msgstr "· Premier à"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "· first to"
+msgstr "· premier à"

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="task_create_event" model="speedrun.task">
+            <field name="name">Create an event</field>
+            <field name="description">Create a new event in the Events app with a name and a date. It's that simple!</field>
+            <field name="target_model">event.event</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">event</field>
+        </record>
+
+        <record id="task_event_3_registrations" model="speedrun.task">
+            <field name="name">Organize an event with 3 attendees</field>
+            <field name="description">Create an event and register at least 3 attendees to it. You can add attendees from the event form.</field>
+            <field name="target_model">event.event</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+events = env['event.event'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+result = any(
+    env['event.registration'].search_count([('event_id', '=', e.id)]) >= 3
+    for e in events
+)
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">event</field>
+        </record>
+
+        <record id="task_create_appointment_type" model="speedrun.task">
+            <field name="name">Create an appointment type</field>
+            <field name="description">Create a new appointment type in the Appointments app with a name.</field>
+            <field name="target_model">appointment.type</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">appointment</field>
+        </record>
+
+        <record id="task_create_survey" model="speedrun.task">
+            <field name="name">Create a survey</field>
+            <field name="description">Create a new survey in the Surveys app with a title.</field>
+            <field name="target_model">survey.survey</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">survey</field>
+        </record>
+
+        <record id="task_survey_3_questions" model="speedrun.task">
+            <field name="name">Create a survey with 3 questions</field>
+            <field name="description">Create a survey that contains at least 3 questions.</field>
+            <field name="target_model">survey.survey</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+surveys = env['survey.survey'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+result = any(len(s.question_ids) >= 3 for s in surveys)
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">survey</field>
+        </record>
+
+        <record id="task_create_mailing_list" model="speedrun.task">
+            <field name="name">Create a mailing list with 3 contacts</field>
+            <field name="description">Create a mailing list in Email Marketing and add at least 3 contacts to it.</field>
+            <field name="target_model">mailing.list</field>
+            <field name="verification_method">python</field>
+            <field name="verification_code">
+lists = env['mailing.list'].with_user(uid).search([
+    ('create_uid', '=', uid),
+    ('create_date', '>=', start_time),
+])
+result = any(len(l.contact_ids) >= 3 for l in lists)
+            </field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">mass_mailing</field>
+        </record>
+
+        <record id="task_create_mailing" model="speedrun.task">
+            <field name="name">Create an email marketing campaign</field>
+            <field name="description">Create a new mailing in the Email Marketing app with a subject. It can stay as a draft.</field>
+            <field name="target_model">mailing.mailing</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["mailing_type","=","mail"]]</field>
+            <field name="difficulty">easy</field>
+            <field name="required_modules">mass_mailing</field>
+        </record>
+
+        <record id="task_create_sms_mailing" model="speedrun.task">
+            <field name="name">Create an SMS marketing campaign</field>
+            <field name="description">Create a new SMS mailing in the SMS Marketing app. It can stay as a draft.</field>
+            <field name="target_model">mailing.mailing</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"],["mailing_type","=","sms"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">mass_mailing_sms</field>
+        </record>
+
+        <record id="task_create_marketing_campaign" model="speedrun.task">
+            <field name="name">Create a marketing automation campaign</field>
+            <field name="description">Create a new campaign in the Marketing Automation app with a name.</field>
+            <field name="target_model">marketing.campaign</field>
+            <field name="verification_method">domain</field>
+            <field name="verification_domain">[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]</field>
+            <field name="difficulty">medium</field>
+            <field name="required_modules">marketing_automation</field>
+        </record>
+    </data>
+</odoo>

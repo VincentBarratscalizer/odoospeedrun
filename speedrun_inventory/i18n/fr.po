@@ -53,3 +53,8 @@ msgstr "Créez un nouveau produit et attribuez-lui un code-barres (n'importe que
 #: model:speedrun.task,name:speedrun_inventory.task_barcode_product
 msgid "Set a barcode on a product"
 msgstr "Définir un code-barres sur un produit"
+
+#. module: speedrun_inventory
+#: model:speedrun.task.group,name:speedrun_inventory.group_inventory
+msgid "Inventory"
+msgstr "Inventaire"

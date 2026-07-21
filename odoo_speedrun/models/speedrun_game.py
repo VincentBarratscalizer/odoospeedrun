@@ -45,6 +45,11 @@ class SpeedrunGame(models.Model):
     max_players = fields.Integer(default=8)
     is_ranked = fields.Boolean(string='Ranked Match', readonly=True,
                                help="Game created through matchmaking.")
+    task_group_ids = fields.Many2many(
+        'speedrun.task.group',
+        'speedrun_game_task_group_rel', 'game_id', 'group_id',
+        string='Task Groups', readonly=True,
+        help="If set, tasks are drawn only from these groups during the game.")
     tournament_match_id = fields.Many2one('speedrun.tournament.match', readonly=True,
                                           ondelete='set null',
                                           help="Set when this game backs a tournament match.")
@@ -132,8 +137,17 @@ class SpeedrunGame(models.Model):
         return True
 
     def _pick_random_task(self, exclude_ids=None):
-        """Pick a random task, strictly avoiding already-used ones."""
+        """Pick a random task, strictly avoiding already-used ones.
+
+        If the game has task groups selected, the pool is restricted to the
+        tasks of those groups (that are still playable)."""
         available_tasks = self.env['speedrun.task']._get_available_tasks()
+        if self.task_group_ids:
+            group_task_ids = set(self.task_group_ids.task_ids.ids)
+            scoped = available_tasks.filtered(lambda t: t.id in group_task_ids)
+            if scoped:
+                available_tasks = scoped
+            # else: no playable task in the selected groups -> fall back to all
         if not available_tasks:
             raise UserError("No tasks available. Please contact an administrator.")
         if exclude_ids:
@@ -476,6 +490,12 @@ class SpeedrunGame(models.Model):
             'host_id': self.host_id.id,
             'host_name': self.host_id.name,
             'is_ranked': self.is_ranked,
+            'task_groups': [{
+                'id': g.id,
+                'name': g.name,
+                'icon': g.icon or '',
+                'image_url': g._image_url(),
+            } for g in self.task_group_ids],
             'tournament_id': self.tournament_match_id.tournament_id.id if self.tournament_match_id else None,
             'tournament_match_label': self.tournament_match_id.label if self.tournament_match_id else None,
             'players': players,

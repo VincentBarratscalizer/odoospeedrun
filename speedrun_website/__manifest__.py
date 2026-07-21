@@ -11,6 +11,7 @@
     'depends': ['odoo_speedrun', 'website', 'website_sale', 'website_event', 'website_hr_recruitment', 'website_slides', 'im_livechat'],
     'data': [
         'data/speedrun_task_data.xml',
+        'data/speedrun_task_group_data.xml',
     ],
     'installable': True,
     'application': False,

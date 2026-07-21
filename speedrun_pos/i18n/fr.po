@@ -43,3 +43,8 @@ msgstr "Créez un plan de salle de restaurant avec au moins 4 tables (PdV > Conf
 #: model:speedrun.task,name:speedrun_pos.task_restaurant_floor
 msgid "Create a restaurant floor with 4 tables"
 msgstr "Créer un plan de salle de restaurant avec 4 tables"
+
+#. module: speedrun_pos
+#: model:speedrun.task.group,name:speedrun_pos.group_pos
+msgid "Point of Sale"
+msgstr "Point de Vente"

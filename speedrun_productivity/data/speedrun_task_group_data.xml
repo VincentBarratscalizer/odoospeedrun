@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="group_productivity" model="speedrun.task.group">
+            <field name="name">Productivity</field>
+            <field name="icon">⚡</field>
+            <field name="sequence">130</field>
+            <field name="image_128" type="base64" file="knowledge/static/description/icon.png"/>
+            <field name="task_ids" eval="[(6, 0, [
+                ref('task_create_meeting'),
+                ref('task_create_meeting_with_attendees'),
+                ref('task_create_ticket'),
+                ref('task_create_3_tickets'),
+                ref('task_solve_ticket'),
+                ref('task_create_article'),
+                ref('task_article_with_children'),
+                ref('task_create_folder'),
+                ref('task_create_room'),
+                ref('task_book_room'),
+                ref('task_create_frontdesk_station'),
+                ref('task_create_sign_template'),
+            ])]"/>
+        </record>
+    </data>
+</odoo>

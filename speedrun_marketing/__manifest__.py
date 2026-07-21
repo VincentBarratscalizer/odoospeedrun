@@ -11,6 +11,7 @@
     'depends': ['odoo_speedrun', 'mass_mailing', 'mass_mailing_sms', 'marketing_automation', 'event', 'survey', 'appointment'],
     'data': [
         'data/speedrun_task_data.xml',
+        'data/speedrun_task_group_data.xml',
     ],
     'installable': True,
     'application': False,

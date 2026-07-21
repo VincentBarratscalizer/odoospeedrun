@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="group_website" model="speedrun.task.group">
+            <field name="name">Website</field>
+            <field name="icon">🌐</field>
+            <field name="sequence">110</field>
+            <field name="image_128" type="base64" file="website/static/description/icon.png"/>
+            <field name="task_ids" eval="[(6, 0, [
+                ref('task_create_livechat_channel'),
+                ref('task_create_web_page'),
+                ref('task_publish_web_page'),
+                ref('task_publish_product'),
+                ref('task_publish_event'),
+                ref('task_publish_job'),
+                ref('task_create_course'),
+                ref('task_course_2_lessons'),
+            ])]"/>
+        </record>
+    </data>
+</odoo>

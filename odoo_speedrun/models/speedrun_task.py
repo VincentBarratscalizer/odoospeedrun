@@ -41,6 +41,11 @@ class SpeedrunTask(models.Model):
     required_modules = fields.Char(
         help="Comma-separated module technical names required for this task (e.g. sale,account).",
     )
+    group_ids = fields.Many2many(
+        'speedrun.task.group',
+        'speedrun_task_group_rel', 'task_id', 'group_id',
+        string='Groups',
+    )
     active = fields.Boolean(default=True)
 
     def _check_modules_installed(self):

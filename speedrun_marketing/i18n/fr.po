@@ -103,3 +103,8 @@ msgstr "Créez une nouvelle campagne dans l'application Marketing Automation ave
 #: model:speedrun.task,name:speedrun_marketing.task_create_marketing_campaign
 msgid "Create a marketing automation campaign"
 msgstr "Créer une campagne d'automatisation marketing"
+
+#. module: speedrun_marketing
+#: model:speedrun.task.group,name:speedrun_marketing.group_marketing
+msgid "Marketing"
+msgstr "Marketing"

@@ -6,14 +6,26 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-21 18:57+0000\n"
-"PO-Revision-Date: 2026-07-21 18:57+0000\n"
+"POT-Creation-Date: 2026-07-21 20:58+0000\n"
+"PO-Revision-Date: 2026-07-21 20:58+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid " Modules to install manually: %s."
+msgstr ""
+
+#. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid "%(groups)s group(s) and %(tasks)s task(s) imported."
+msgstr ""
 
 #. module: odoo_speedrun
 #: model:ir.model.fields,help:odoo_speedrun.field_speedrun_tournament__max_participants
@@ -43,6 +55,7 @@ msgstr ""
 #. module: odoo_speedrun
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__active
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__active
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__active
 #: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament_registration__state__active
 msgid "Active"
 msgstr ""
@@ -56,8 +69,26 @@ msgstr ""
 #. module: odoo_speedrun
 #. odoo-javascript
 #: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "All tasks"
+msgstr ""
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_personal_best__attempts
 msgid "Attempts"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task_import_wizard__auto_install_modules
+msgid ""
+"Automatically install the Odoo modules referenced by the imported tasks "
+"(requires Administration / Settings rights)."
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__available_task_count
+msgid "Available Task Count"
 msgstr ""
 
 #. module: odoo_speedrun
@@ -189,6 +220,11 @@ msgid "Bye"
 msgstr ""
 
 #. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_import_wizard_form
+msgid "Cancel"
+msgstr ""
+
+#. module: odoo_speedrun
 #. odoo-javascript
 #: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
 msgid "Cancel Search"
@@ -260,6 +296,12 @@ msgid "Configuration"
 msgstr ""
 
 #. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid "Could not read the file. Make sure it is a valid .xlsx workbook (%s)."
+msgstr ""
+
+#. module: odoo_speedrun
 #: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_game__state__countdown
 msgid "Countdown"
 msgstr ""
@@ -298,6 +340,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__create_uid
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__create_uid
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__create_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__create_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__create_uid
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__create_uid
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__create_uid
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__create_uid
@@ -314,6 +358,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__create_date
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__create_date
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__create_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__create_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__create_date
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__create_date
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__create_date
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__create_date
@@ -401,6 +447,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__display_name
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__display_name
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__display_name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__display_name
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__display_name
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__display_name
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__display_name
@@ -429,6 +477,19 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/odoo_speedrun/static/src/components/tournament_panel.xml:0
 msgid "Double elimination · 1v1 best-of series · seeded bracket."
+msgstr ""
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_import_wizard_form
+msgid "Download template"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_import_wizard_form
+msgid ""
+"Download the template, fill in the <b>Tasks</b> and <b>Groups</b> sheets,\n"
+"                    then upload it here. Groups listed on the <b>Groups</b> sheet are created on\n"
+"                    import, and the modules required by the tasks can be installed automatically."
 msgstr ""
 
 #. module: odoo_speedrun
@@ -522,6 +583,11 @@ msgid "Emoji shown next to the badge."
 msgstr ""
 
 #. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task_group__icon
+msgid "Emoji shown next to the group (used when no image is set)."
+msgstr ""
+
+#. module: odoo_speedrun
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__end_time
 msgid "End Time"
 msgstr ""
@@ -533,6 +599,12 @@ msgid "Enter join code"
 msgstr ""
 
 #. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__existing_group_ids
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_import_wizard_form
+msgid "Existing groups"
+msgstr ""
+
+#. module: odoo_speedrun
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__xp
 msgid "Experience Points"
 msgstr ""
@@ -540,6 +612,16 @@ msgstr ""
 #. module: odoo_speedrun
 #: model:speedrun.badge,name:odoo_speedrun.badge_level_5
 msgid "Expert Runner"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__import_file
+msgid "File"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__import_filename
+msgid "File Name"
 msgstr ""
 
 #. module: odoo_speedrun
@@ -687,6 +769,16 @@ msgid "Grandmaster Runner"
 msgstr ""
 
 #. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_group_view_form
+msgid "Group Name"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__group_ids
+msgid "Groups"
+msgstr ""
+
+#. module: odoo_speedrun
 #: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_task__difficulty__hard
 msgid "Hard"
 msgstr ""
@@ -724,6 +816,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__id
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__id
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__id
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__id
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__id
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__id
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__id
@@ -732,7 +826,43 @@ msgstr ""
 
 #. module: odoo_speedrun
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__icon
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__icon
 msgid "Icon"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task_import_wizard__update_existing
+msgid ""
+"If a group with the same name already exists, update it instead of reusing "
+"it as-is."
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_game__task_group_ids
+msgid "If set, tasks are drawn only from these groups during the game."
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__image_128
+msgid "Image"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_import_wizard_form
+msgid "Import"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.actions.act_window,name:odoo_speedrun.speedrun_task_import_action
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_task_import
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_import_wizard_form
+msgid "Import Tasks"
+msgstr ""
+
+#. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid "Import complete"
 msgstr ""
 
 #. module: odoo_speedrun
@@ -743,6 +873,11 @@ msgstr ""
 #. module: odoo_speedrun
 #: model:ir.model.fields.selection,name:odoo_speedrun.selection__speedrun_tournament_match__state__running
 msgid "In progress"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__auto_install_modules
+msgid "Install required modules"
 msgstr ""
 
 #. module: odoo_speedrun
@@ -796,6 +931,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__write_uid
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__write_uid
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__write_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__write_uid
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__write_uid
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__write_uid
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__write_uid
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__write_uid
@@ -812,6 +949,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_profile__write_date
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_round_result__write_date
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__write_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__write_date
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__write_date
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__write_date
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_match__write_date
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament_registration__write_date
@@ -959,6 +1098,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__name
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__name
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__name
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__name
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_tournament__name
 msgid "Name"
 msgstr ""
@@ -1008,6 +1148,12 @@ msgid "No tournaments yet. Create one to get started!"
 msgstr ""
 
 #. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid "Nothing to import: no valid rows found in the file."
+msgstr ""
+
+#. module: odoo_speedrun
 #. odoo-javascript
 #: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__total_rounds
@@ -1028,6 +1174,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
 msgid "Odoo"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task_group__image_128
+msgid ""
+"Optional icon (PNG) shown for the group. Takes precedence over the emoji."
 msgstr ""
 
 #. module: odoo_speedrun
@@ -1166,6 +1318,12 @@ msgstr ""
 #: code:addons/odoo_speedrun/static/src/components/game_timer.xml:0
 #: code:addons/odoo_speedrun/static/src/speedrun_client_action/speedrun_client_action.xml:0
 msgid "Playing..."
+msgstr ""
+
+#. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid "Please upload a file first."
 msgstr ""
 
 #. module: odoo_speedrun
@@ -1327,6 +1485,11 @@ msgid "Required Modules"
 msgstr ""
 
 #. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__result_info
+msgid "Result Info"
+msgstr ""
+
+#. module: odoo_speedrun
 #: model:speedrun.badge,name:odoo_speedrun.badge_rising_star
 msgid "Rising Star"
 msgstr ""
@@ -1450,6 +1613,7 @@ msgstr ""
 
 #. module: odoo_speedrun
 #: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_badge__sequence
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__sequence
 msgid "Sequence"
 msgstr ""
 
@@ -1542,6 +1706,16 @@ msgstr ""
 #. module: odoo_speedrun
 #: model:ir.model,name:odoo_speedrun.model_speedrun_task
 msgid "Speedrun Task Definition"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_task_group
+msgid "Speedrun Task Group"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_task_import_wizard
+msgid "Speedrun Task Import Wizard"
 msgstr ""
 
 #. module: odoo_speedrun
@@ -1639,6 +1813,18 @@ msgid "Task Complete!"
 msgstr ""
 
 #. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__task_count
+msgid "Task Count"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.actions.act_window,name:odoo_speedrun.speedrun_task_group_action
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__task_group_ids
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_task_groups
+msgid "Task Groups"
+msgstr ""
+
+#. module: odoo_speedrun
 #: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_view_form
 msgid "Task Name"
 msgstr ""
@@ -1650,6 +1836,13 @@ msgid "Task completed! Waiting for other players..."
 msgstr ""
 
 #. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Task groups"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__task_ids
 #: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_tasks
 msgid "Tasks"
 msgstr ""
@@ -1658,6 +1851,18 @@ msgstr ""
 #: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task__target_model
 msgid ""
 "Technical name of the Odoo model to check (e.g. res.partner, account.move)."
+msgstr ""
+
+#. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid "The 'openpyxl' library is required to import xlsx files."
+msgstr ""
+
+#. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid "The workbook must contain a 'Tasks' sheet."
 msgstr ""
 
 #. module: odoo_speedrun
@@ -1694,6 +1899,11 @@ msgstr ""
 #: model:ir.actions.act_window,name:odoo_speedrun.speedrun_tournament_action
 #: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_tournaments
 msgid "Tournaments"
+msgstr ""
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__update_existing
+msgid "Update existing"
 msgstr ""
 
 #. module: odoo_speedrun

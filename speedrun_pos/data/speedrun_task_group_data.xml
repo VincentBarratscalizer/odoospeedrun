@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="group_pos" model="speedrun.task.group">
+            <field name="name">Point of Sale</field>
+            <field name="icon">🛍</field>
+            <field name="sequence">120</field>
+            <field name="image_128" type="base64" file="point_of_sale/static/description/icon.png"/>
+            <field name="task_ids" eval="[(6, 0, [
+                ref('task_pos_product'),
+                ref('task_open_pos_session'),
+                ref('task_restaurant_floor'),
+            ])]"/>
+        </record>
+    </data>
+</odoo>

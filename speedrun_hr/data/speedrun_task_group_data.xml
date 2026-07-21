@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="group_hr" model="speedrun.task.group">
+            <field name="name">Human Resources</field>
+            <field name="icon">👥</field>
+            <field name="sequence">90</field>
+            <field name="image_128" type="base64" file="hr/static/description/icon.png"/>
+            <field name="task_ids" eval="[(6, 0, [
+                ref('task_create_employee'),
+                ref('task_create_3_employees'),
+                ref('task_create_leave_request'),
+                ref('task_log_expense'),
+                ref('task_log_3_expenses'),
+                ref('task_create_vehicle'),
+                ref('task_vehicle_with_driver'),
+                ref('task_create_job_position'),
+                ref('task_create_applicant'),
+                ref('task_create_attendance'),
+                ref('task_attendance_check_out'),
+                ref('task_create_appraisal'),
+                ref('task_add_employee_skill'),
+                ref('task_create_payslip_batch'),
+                ref('task_create_approval'),
+                ref('task_submit_approval'),
+                ref('task_create_lunch_vendor'),
+                ref('task_create_lunch_products'),
+            ])]"/>
+        </record>
+    </data>
+</odoo>

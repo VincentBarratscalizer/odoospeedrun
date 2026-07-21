@@ -1,16 +1,110 @@
+import io
+
 from odoo import http
-from odoo.http import request
+from odoo.http import request, content_disposition
 
 
 class SpeedrunController(http.Controller):
 
+    @http.route('/odoo_speedrun/task_import_template', type='http', auth='user')
+    def task_import_template(self, **kw):
+        """Return a downloadable .xlsx template with two sheets: Tasks and Groups."""
+        import xlsxwriter
+
+        output = io.BytesIO()
+        wb = xlsxwriter.Workbook(output, {'in_memory': True})
+        bold = wb.add_format({'bold': True, 'bg_color': '#D9E1F2', 'border': 1})
+        wrap = wb.add_format({'text_wrap': True, 'valign': 'top'})
+
+        # --- Tasks sheet ---
+        task_headers = [
+            'name', 'description', 'target_model', 'verification_method',
+            'verification_domain', 'verification_code', 'verification_count',
+            'difficulty', 'required_modules', 'groups',
+        ]
+        ws = wb.add_worksheet('Tasks')
+        ws.set_column(0, len(task_headers) - 1, 26, wrap)
+        for col, header in enumerate(task_headers):
+            ws.write(0, col, header, bold)
+        # Example 1: domain verification
+        ws.write_row(1, 0, [
+            'Create a helpdesk ticket',
+            'Create a new helpdesk ticket with a subject.',
+            'helpdesk.ticket',
+            'domain',
+            '[["create_uid","=","__uid__"],["create_date",">=","__game_start__"]]',
+            '',
+            1,
+            'easy',
+            'helpdesk',
+            'Support',
+        ])
+        # Example 2: python verification (multi-line code)
+        ws.write_row(2, 0, [
+            'Confirm a sale and create its invoice',
+            'Create a quotation, confirm it, then create an invoice from it.',
+            'sale.order',
+            'python',
+            '[]',
+            "orders = env['sale.order'].with_user(uid).search([\n"
+            "    ('create_uid', '=', uid),\n"
+            "    ('create_date', '>=', start_time),\n"
+            "    ('state', '=', 'sale'),\n"
+            "])\n"
+            "result = any(o.invoice_ids for o in orders)",
+            1,
+            'hard',
+            'sale,account',
+            'Sales',
+        ])
+
+        # --- Groups sheet ---
+        group_headers = ['name', 'icon', 'sequence']
+        gs = wb.add_worksheet('Groups')
+        gs.set_column(0, 0, 26)
+        gs.set_column(1, 2, 14)
+        for col, header in enumerate(group_headers):
+            gs.write(0, col, header, bold)
+        gs.write_row(1, 0, ['Support', '\U0001F3AB', 140])
+        gs.write_row(2, 0, ['Sales', '\U0001F4B0', 20])
+
+        wb.close()
+        output.seek(0)
+        return request.make_response(
+            output.read(),
+            headers=[
+                ('Content-Type',
+                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+                ('Content-Disposition',
+                 content_disposition('speedrun_tasks_template.xlsx')),
+            ],
+        )
+
     @http.route('/odoo_speedrun/create_game', type='jsonrpc', auth='user')
-    def create_game(self, name=None, max_players=8, total_rounds=3):
+    def create_game(self, name=None, max_players=8, total_rounds=3, group_ids=None):
         vals = {'max_players': max_players, 'total_rounds': int(total_rounds)}
         if name:
             vals['name'] = name
+        if group_ids:
+            valid = request.env['speedrun.task.group'].browse(
+                [int(g) for g in group_ids]
+            ).exists()
+            if valid:
+                vals['task_group_ids'] = [(6, 0, valid.ids)]
         game = request.env['speedrun.game'].create(vals)
         return game._get_game_info()
+
+    @http.route('/odoo_speedrun/task_groups', type='jsonrpc', auth='user')
+    def task_groups(self):
+        """Return the selectable task groups (those with playable tasks)."""
+        groups = request.env['speedrun.task.group']._get_selectable_groups()
+        return [{
+            'id': g.id,
+            'name': g.name,
+            'icon': g.icon or '',
+            'image_url': g._image_url(),
+            'available_task_count': g.available_task_count,
+        } for g in groups]
 
     @http.route('/odoo_speedrun/join_game', type='jsonrpc', auth='user')
     def join_game(self, code):

@@ -43,3 +43,8 @@ msgstr "Créez un bon de commande, confirmez-le, puis allez à la réception et 
 #: model:speedrun.task,name:speedrun_purchase.task_purchase_to_receipt
 msgid "Purchase and receive goods"
 msgstr "Acheter et réceptionner des marchandises"
+
+#. module: speedrun_purchase
+#: model:speedrun.task.group,name:speedrun_purchase.group_purchase
+msgid "Purchase"
+msgstr "Achats"

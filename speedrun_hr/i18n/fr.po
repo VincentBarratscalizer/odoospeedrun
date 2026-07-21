@@ -193,3 +193,8 @@ msgstr "Créez 3 produits dans l'application Repas (chacun nécessite un nom, un
 #: model:speedrun.task,name:speedrun_hr.task_create_lunch_products
 msgid "Create 3 lunch products"
 msgstr "Créer 3 produits de repas"
+
+#. module: speedrun_hr
+#: model:speedrun.task.group,name:speedrun_hr.group_hr
+msgid "Human Resources"
+msgstr "Ressources humaines"

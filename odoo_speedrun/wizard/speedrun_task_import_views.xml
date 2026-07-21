@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="speedrun_task_import_wizard_form" model="ir.ui.view">
+        <field name="name">speedrun.task.import.wizard.form</field>
+        <field name="model">speedrun.task.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Tasks">
+                <div class="alert alert-info" role="alert">
+                    Download the template, fill in the <b>Tasks</b> and <b>Groups</b> sheets,
+                    then upload it here. Groups listed on the <b>Groups</b> sheet are created on
+                    import, and the modules required by the tasks can be installed automatically.
+                </div>
+                <group>
+                    <button name="action_download_template" type="object"
+                        string="Download template" class="btn-link" icon="fa-download"/>
+                </group>
+                <group>
+                    <field name="import_filename" invisible="1"/>
+                    <field name="import_file" filename="import_filename" widget="binary"/>
+                    <field name="auto_install_modules"/>
+                    <field name="update_existing"/>
+                </group>
+                <group string="Existing groups">
+                    <field name="existing_group_ids" nolabel="1" readonly="1">
+                        <list>
+                            <field name="image_128" widget="image" width="24" height="24"/>
+                            <field name="icon"/>
+                            <field name="name"/>
+                            <field name="available_task_count"/>
+                        </list>
+                    </field>
+                </group>
+                <footer>
+                    <button name="action_import" type="object" string="Import"
+                        class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="speedrun_task_import_action" model="ir.actions.act_window">
+        <field name="name">Import Tasks</field>
+        <field name="res_model">speedrun.task.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

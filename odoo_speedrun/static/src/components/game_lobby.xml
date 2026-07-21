@@ -71,6 +71,36 @@
                                         </t>
                                     </div>
                                 </div>
+                                <t t-if="props.taskGroups and props.taskGroups.length">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Task groups</label>
+                                        <div class="d-flex flex-wrap justify-content-center gap-2">
+                                            <button
+                                                class="btn btn-sm"
+                                                t-att-class="!formState.selectedGroupIds.length ? 'btn-primary' : 'btn-outline-secondary'"
+                                                t-att-disabled="isSearching"
+                                                t-on-click="() => this.formState.selectedGroupIds.splice(0, this.formState.selectedGroupIds.length)">
+                                                All tasks
+                                            </button>
+                                            <t t-foreach="props.taskGroups" t-as="group" t-key="group.id">
+                                                <button
+                                                    class="btn btn-sm"
+                                                    t-att-class="isGroupSelected(group.id) ? 'btn-primary' : 'btn-outline-secondary'"
+                                                    t-att-disabled="isSearching"
+                                                    t-att-title="group.available_task_count + ' tasks'"
+                                                    t-on-click="() => this.toggleGroup(group.id)">
+                                                    <t t-if="group.image_url">
+                                                        <img t-att-src="group.image_url" alt=""
+                                                            style="height:1.1em;width:1.1em;object-fit:contain;vertical-align:-2px;"
+                                                            class="me-1"/>
+                                                    </t>
+                                                    <t t-else=""><t t-esc="group.icon"/> </t>
+                                                    <t t-esc="group.name"/>
+                                                </button>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </t>
                                 <button class="btn btn-primary w-100"
                                     t-att-disabled="isSearching"
                                     t-on-click="onClickCreate">
@@ -204,6 +234,19 @@
                                             <t t-esc="props.game.total_rounds"/> round<t t-if="props.game.total_rounds > 1">s</t>
                                         </t>
                                     </span>
+                                    <t t-if="props.game.task_groups and props.game.task_groups.length">
+                                        <t t-foreach="props.game.task_groups" t-as="group" t-key="group.id">
+                                            <span class="ms-2 badge text-bg-light border">
+                                                <t t-if="group.image_url">
+                                                    <img t-att-src="group.image_url" alt=""
+                                                        style="height:1.1em;width:1.1em;object-fit:contain;vertical-align:-2px;"
+                                                        class="me-1"/>
+                                                </t>
+                                                <t t-else=""><t t-esc="group.icon"/> </t>
+                                                <t t-esc="group.name"/>
+                                            </span>
+                                        </t>
+                                    </t>
                                 </p>
                             </div>
                             <div class="text-end">

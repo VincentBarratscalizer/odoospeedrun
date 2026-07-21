@@ -113,3 +113,8 @@ msgstr "Créez une nouvelle commande de location dans l'application Location ave
 #: model:speedrun.task,name:speedrun_sale.task_create_rental_order
 msgid "Create a rental order"
 msgstr "Créer une commande de location"
+
+#. module: speedrun_sale
+#: model:speedrun.task.group,name:speedrun_sale.group_sale
+msgid "Sales"
+msgstr "Ventes"

@@ -113,3 +113,8 @@ msgstr "Créez un nouvel ordre de modification technique (ECO) dans l'applicatio
 #: model:speedrun.task,name:speedrun_mrp.task_create_eco
 msgid "Create an engineering change order"
 msgstr "Créer un ordre de modification technique"
+
+#. module: speedrun_mrp
+#: model:speedrun.task.group,name:speedrun_mrp.group_mrp
+msgid "Manufacturing"
+msgstr "Fabrication"

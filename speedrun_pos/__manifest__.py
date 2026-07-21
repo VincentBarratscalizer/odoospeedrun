@@ -11,6 +11,7 @@
     'depends': ['odoo_speedrun', 'point_of_sale', 'pos_restaurant'],
     'data': [
         'data/speedrun_task_data.xml',
+        'data/speedrun_task_group_data.xml',
     ],
     'installable': True,
     'application': False,

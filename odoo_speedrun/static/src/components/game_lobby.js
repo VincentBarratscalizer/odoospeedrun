@@ -7,6 +7,7 @@ export class GameLobby extends Component {
     static props = {
         game: { type: [Object, { value: null }] },
         stats: { type: [Object, { value: null }], optional: true },
+        taskGroups: { type: Array, optional: true },
         matchmaking: { type: Object, optional: true },
         onCreateGame: Function,
         onJoinGame: Function,
@@ -22,13 +23,29 @@ export class GameLobby extends Component {
             gameName: "",
             joinCode: "",
             totalRounds: 3,
+            selectedGroupIds: [],
         });
+    }
+
+    toggleGroup(groupId) {
+        const ids = this.formState.selectedGroupIds;
+        const idx = ids.indexOf(groupId);
+        if (idx === -1) {
+            ids.push(groupId);
+        } else {
+            ids.splice(idx, 1);
+        }
+    }
+
+    isGroupSelected(groupId) {
+        return this.formState.selectedGroupIds.includes(groupId);
     }
 
     onClickCreate() {
         this.props.onCreateGame(
             this.formState.gameName || null,
             this.formState.totalRounds,
+            [...this.formState.selectedGroupIds],
         );
     }
 

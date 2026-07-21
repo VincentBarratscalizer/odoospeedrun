@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="group_sale" model="speedrun.task.group">
+            <field name="name">Sales</field>
+            <field name="icon">💰</field>
+            <field name="sequence">20</field>
+            <field name="image_128" type="base64" file="sale/static/description/icon.png"/>
+            <field name="task_ids" eval="[(6, 0, [
+                ref('task_create_quotation'),
+                ref('task_create_quotation_3_lines'),
+                ref('task_confirm_sale_order'),
+                ref('task_sale_order_1000'),
+                ref('task_sale_order_invoice'),
+                ref('task_full_sale_flow'),
+                ref('task_create_subscription_plan'),
+                ref('task_create_subscription'),
+                ref('task_create_rental_product'),
+                ref('task_create_rental_order'),
+            ])]"/>
+        </record>
+    </data>
+</odoo>

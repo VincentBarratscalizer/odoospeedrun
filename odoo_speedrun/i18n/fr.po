@@ -1967,3 +1967,201 @@ msgstr "· Premier à"
 #: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
 msgid "· first to"
 msgstr "· premier à"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "All tasks"
+msgstr "Toutes les tâches"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__available_task_count
+msgid "Available Task Count"
+msgstr "Nombre de tâches disponibles"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task_group__icon
+msgid "Emoji shown next to the group."
+msgstr "Émoji affiché à côté du groupe."
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_group_view_form
+msgid "Group Name"
+msgstr "Nom du groupe"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task__group_ids
+msgid "Groups"
+msgstr "Groupes"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_game__task_group_ids
+msgid "If set, tasks are drawn only from these groups during the game."
+msgstr "Si renseigné, les tâches ne sont tirées que dans ces groupes pendant la partie."
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_task_group
+msgid "Speedrun Task Group"
+msgstr "Groupe de tâches Speedrun"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__task_count
+msgid "Task Count"
+msgstr "Nombre de tâches"
+
+#. module: odoo_speedrun
+#: model:ir.actions.act_window,name:odoo_speedrun.speedrun_task_group_action
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_game__task_group_ids
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_task_groups
+msgid "Task Groups"
+msgstr "Groupes de tâches"
+
+#. module: odoo_speedrun
+#. odoo-javascript
+#: code:addons/odoo_speedrun/static/src/components/game_lobby.xml:0
+msgid "Task groups"
+msgstr "Groupes de tâches"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task_group__icon
+msgid "Emoji shown next to the group (used when no image is set)."
+msgstr "Émoji affiché à côté du groupe (utilisé lorsqu'aucune image n'est définie)."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_group__image_128
+msgid "Image"
+msgstr "Image"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task_group__image_128
+msgid ""
+"Optional icon (PNG) shown for the group. Takes precedence over the emoji."
+msgstr "Icône (PNG) facultative affichée pour le groupe. Prioritaire sur l'émoji."
+
+#. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid " Modules to install manually: %s."
+msgstr " Modules à installer manuellement : %s."
+
+#. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid "%(groups)s group(s) and %(tasks)s task(s) imported."
+msgstr "%(groups)s groupe(s) et %(tasks)s tâche(s) importés."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task_import_wizard__auto_install_modules
+msgid ""
+"Automatically install the Odoo modules referenced by the imported tasks "
+"(requires Administration / Settings rights)."
+msgstr "Installer automatiquement les modules Odoo référencés par les tâches importées (nécessite les droits Administration / Configuration)."
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_import_wizard_form
+msgid "Cancel"
+msgstr "Annuler"
+
+#. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid "Could not read the file. Make sure it is a valid .xlsx workbook (%s)."
+msgstr "Impossible de lire le fichier. Assurez-vous qu'il s'agit d'un classeur .xlsx valide (%s)."
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_import_wizard_form
+msgid "Download template"
+msgstr "Télécharger le modèle"
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_import_wizard_form
+msgid ""
+"Download the template, fill in the <b>Tasks</b> and <b>Groups</b> sheets,\n"
+"                    then upload it here. Groups listed on the <b>Groups</b> sheet are created on\n"
+"                    import, and the modules required by the tasks can be installed automatically."
+msgstr "Téléchargez le modèle, remplissez les feuilles <b>Tasks</b> et <b>Groups</b>, puis importez-le ici. Les groupes listés dans la feuille <b>Groups</b> sont créés à l'import, et les modules requis par les tâches peuvent être installés automatiquement."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__existing_group_ids
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_import_wizard_form
+msgid "Existing groups"
+msgstr "Groupes existants"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__import_file
+msgid "File"
+msgstr "Fichier"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__import_filename
+msgid "File Name"
+msgstr "Nom du fichier"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,help:odoo_speedrun.field_speedrun_task_import_wizard__update_existing
+msgid ""
+"If a group with the same name already exists, update it instead of reusing "
+"it as-is."
+msgstr "Si un groupe du même nom existe déjà, le mettre à jour au lieu de le réutiliser tel quel."
+
+#. module: odoo_speedrun
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_import_wizard_form
+msgid "Import"
+msgstr "Importer"
+
+#. module: odoo_speedrun
+#: model:ir.actions.act_window,name:odoo_speedrun.speedrun_task_import_action
+#: model:ir.ui.menu,name:odoo_speedrun.menu_speedrun_task_import
+#: model_terms:ir.ui.view,arch_db:odoo_speedrun.speedrun_task_import_wizard_form
+msgid "Import Tasks"
+msgstr "Importer des tâches"
+
+#. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid "Import complete"
+msgstr "Import terminé"
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__auto_install_modules
+msgid "Install required modules"
+msgstr "Installer les modules requis"
+
+#. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid "Nothing to import: no valid rows found in the file."
+msgstr "Rien à importer : aucune ligne valide trouvée dans le fichier."
+
+#. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid "Please upload a file first."
+msgstr "Veuillez d'abord importer un fichier."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__result_info
+msgid "Result Info"
+msgstr "Résultat"
+
+#. module: odoo_speedrun
+#: model:ir.model,name:odoo_speedrun.model_speedrun_task_import_wizard
+msgid "Speedrun Task Import Wizard"
+msgstr "Assistant d'import de tâches Speedrun"
+
+#. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid "The 'openpyxl' library is required to import xlsx files."
+msgstr "La bibliothèque « openpyxl » est requise pour importer des fichiers xlsx."
+
+#. module: odoo_speedrun
+#. odoo-python
+#: code:addons/odoo_speedrun/wizard/speedrun_task_import.py:0
+msgid "The workbook must contain a 'Tasks' sheet."
+msgstr "Le classeur doit contenir une feuille « Tasks »."
+
+#. module: odoo_speedrun
+#: model:ir.model.fields,field_description:odoo_speedrun.field_speedrun_task_import_wizard__update_existing
+msgid "Update existing"
+msgstr "Mettre à jour l'existant"

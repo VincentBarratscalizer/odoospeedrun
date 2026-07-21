@@ -2,6 +2,11 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_speedrun_task_user,speedrun.task.user,model_speedrun_task,base.group_user,1,0,0,0
 access_speedrun_task_manager,speedrun.task.manager,model_speedrun_task,group_speedrun_manager,1,1,1,1
 access_speedrun_task_admin,speedrun.task.admin,model_speedrun_task,base.group_system,1,1,1,1
+access_speedrun_task_group_user,speedrun.task.group.user,model_speedrun_task_group,base.group_user,1,0,0,0
+access_speedrun_task_group_manager,speedrun.task.group.manager,model_speedrun_task_group,group_speedrun_manager,1,1,1,1
+access_speedrun_task_group_admin,speedrun.task.group.admin,model_speedrun_task_group,base.group_system,1,1,1,1
+access_speedrun_task_import_wizard_manager,speedrun.task.import.wizard.manager,model_speedrun_task_import_wizard,group_speedrun_manager,1,1,1,1
+access_speedrun_task_import_wizard_admin,speedrun.task.import.wizard.admin,model_speedrun_task_import_wizard,base.group_system,1,1,1,1
 access_speedrun_game_user,speedrun.game.user,model_speedrun_game,base.group_user,1,1,1,0
 access_speedrun_player_user,speedrun.player.user,model_speedrun_player,base.group_user,1,1,1,1
 access_speedrun_round_result_user,speedrun.round.result.user,model_speedrun_round_result,base.group_user,1,1,1,0

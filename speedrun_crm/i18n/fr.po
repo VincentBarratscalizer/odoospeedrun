@@ -43,3 +43,8 @@ msgstr "Créez une opportunité et marquez-la comme « Gagnée ». Vous pouvez l
 #: model:speedrun.task,name:speedrun_crm.task_win_opportunity
 msgid "Win an opportunity"
 msgstr "Gagner une opportunité"
+
+#. module: speedrun_crm
+#: model:speedrun.task.group,name:speedrun_crm.group_crm
+msgid "CRM"
+msgstr "CRM"

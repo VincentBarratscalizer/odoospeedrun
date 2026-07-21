@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="group_marketing" model="speedrun.task.group">
+            <field name="name">Marketing</field>
+            <field name="icon">📣</field>
+            <field name="sequence">100</field>
+            <field name="image_128" type="base64" file="mass_mailing/static/description/icon.png"/>
+            <field name="task_ids" eval="[(6, 0, [
+                ref('task_create_event'),
+                ref('task_event_3_registrations'),
+                ref('task_create_appointment_type'),
+                ref('task_create_survey'),
+                ref('task_survey_3_questions'),
+                ref('task_create_mailing_list'),
+                ref('task_create_mailing'),
+                ref('task_create_sms_mailing'),
+                ref('task_create_marketing_campaign'),
+            ])]"/>
+        </record>
+    </data>
+</odoo>

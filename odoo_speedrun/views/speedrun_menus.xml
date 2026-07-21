@@ -78,11 +78,23 @@
         action="speedrun_task_action"
         sequence="1"/>
 
+    <menuitem id="menu_speedrun_task_import"
+        name="Import Tasks"
+        parent="menu_speedrun_config"
+        action="speedrun_task_import_action"
+        sequence="4"/>
+
+    <menuitem id="menu_speedrun_task_groups"
+        name="Task Groups"
+        parent="menu_speedrun_config"
+        action="speedrun_task_group_action"
+        sequence="2"/>
+
     <menuitem id="menu_speedrun_badges"
         name="Badges"
         parent="menu_speedrun_config"
         action="speedrun_badge_action"
-        sequence="2"/>
+        sequence="3"/>
 
     <menuitem id="menu_speedrun_matchmaking"
         name="Matchmaking Queue"

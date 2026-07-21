@@ -34,6 +34,7 @@ export class SpeedrunClientAction extends Component {
             myPoints: 0,
             checkResult: null,
             stats: null,
+            taskGroups: [],
             matchmaking: { searching: false, waitSeconds: 0, queueSize: 0 },
             // Tournaments
             tournaments: null,
@@ -49,6 +50,7 @@ export class SpeedrunClientAction extends Component {
         onWillStart(async () => {
             await this._restoreActiveGame();
             await this._loadStats();
+            await this._loadTaskGroups();
             await this._restoreQueue();
         });
 
@@ -68,6 +70,14 @@ export class SpeedrunClientAction extends Component {
             this.state.stats = await rpc("/odoo_speedrun/my_stats", {});
         } catch {
             // Stats are optional, ignore failures
+        }
+    }
+
+    async _loadTaskGroups() {
+        try {
+            this.state.taskGroups = await rpc("/odoo_speedrun/task_groups", {});
+        } catch {
+            this.state.taskGroups = [];
         }
     }
 
@@ -614,10 +624,11 @@ export class SpeedrunClientAction extends Component {
         this._loadStats();
     }
 
-    async createGame(name, totalRounds) {
+    async createGame(name, totalRounds, groupIds) {
         const result = await rpc("/odoo_speedrun/create_game", {
             name,
             total_rounds: totalRounds || 3,
+            group_ids: groupIds || [],
         });
         if (result.error) {
             this.notification.add(result.error, { type: "danger" });

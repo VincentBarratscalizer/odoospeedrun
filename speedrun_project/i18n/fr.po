@@ -113,3 +113,8 @@ msgstr "Créez 3 créneaux dans l'application Planning. Soyez rapide !"
 #: model:speedrun.task,name:speedrun_project.task_create_3_shifts
 msgid "Create 3 planning shifts"
 msgstr "Créer 3 créneaux de planning"
+
+#. module: speedrun_project
+#: model:speedrun.task.group,name:speedrun_project.group_project
+msgid "Project"
+msgstr "Projet"

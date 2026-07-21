@@ -133,3 +133,8 @@ msgstr "Téléversez un document PDF dans l'application Signature pour créer un
 #: model:speedrun.task,name:speedrun_productivity.task_create_sign_template
 msgid "Upload a document to sign"
 msgstr "Téléverser un document à signer"
+
+#. module: speedrun_productivity
+#: model:speedrun.task.group,name:speedrun_productivity.group_productivity
+msgid "Productivity"
+msgstr "Productivité"

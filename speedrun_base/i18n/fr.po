@@ -133,3 +133,8 @@ msgstr "Créez 20 nouveaux contacts le plus vite possible ! Chaque contact n'a b
 #: model:speedrun.task,name:speedrun_base.task_create_20_contacts
 msgid "Create 20 contacts"
 msgstr "Créer 20 contacts"
+
+#. module: speedrun_base
+#: model:speedrun.task.group,name:speedrun_base.group_general
+msgid "General"
+msgstr "Général"

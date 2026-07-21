@@ -11,6 +11,7 @@
     'depends': ['odoo_speedrun', 'project', 'hr_timesheet', 'planning', 'industry_fsm', 'project_todo'],
     'data': [
         'data/speedrun_task_data.xml',
+        'data/speedrun_task_group_data.xml',
     ],
     'installable': True,
     'application': False,

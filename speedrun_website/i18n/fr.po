@@ -93,3 +93,8 @@ msgstr "Créez un cours eLearning et ajoutez-y au moins 2 contenus (leçons)."
 #: model:speedrun.task,name:speedrun_website.task_course_2_lessons
 msgid "Create a course with 2 lessons"
 msgstr "Créer un cours avec 2 leçons"
+
+#. module: speedrun_website
+#: model:speedrun.task.group,name:speedrun_website.group_website
+msgid "Website"
+msgstr "Site Web"

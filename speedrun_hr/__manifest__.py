@@ -11,6 +11,7 @@
     'depends': ['odoo_speedrun', 'hr', 'hr_holidays', 'hr_expense', 'hr_recruitment', 'hr_attendance', 'hr_appraisal', 'hr_skills', 'hr_payroll', 'fleet', 'lunch', 'approvals'],
     'data': [
         'data/speedrun_task_data.xml',
+        'data/speedrun_task_group_data.xml',
     ],
     'installable': True,
     'application': False,

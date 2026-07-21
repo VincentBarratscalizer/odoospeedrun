@@ -43,3 +43,8 @@ msgstr "Créez une facture fournisseur avec au moins une ligne. Elle peut rester
 #: model:speedrun.task,name:speedrun_account.task_create_vendor_bill
 msgid "Create a vendor bill"
 msgstr "Créer une facture fournisseur"
+
+#. module: speedrun_account
+#: model:speedrun.task.group,name:speedrun_account.group_account
+msgid "Accounting"
+msgstr "Comptabilité"

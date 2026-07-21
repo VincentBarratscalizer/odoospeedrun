@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="group_project" model="speedrun.task.group">
+            <field name="name">Project</field>
+            <field name="icon">📋</field>
+            <field name="sequence">80</field>
+            <field name="image_128" type="base64" file="project/static/description/icon.png"/>
+            <field name="task_ids" eval="[(6, 0, [
+                ref('task_create_project'),
+                ref('task_project_5_tasks'),
+                ref('task_create_7_tasks'),
+                ref('task_create_project_milestone'),
+                ref('task_log_timesheet'),
+                ref('task_log_3_timesheets'),
+                ref('task_create_3_todos'),
+                ref('task_create_fsm_task'),
+                ref('task_create_shift'),
+                ref('task_create_3_shifts'),
+            ])]"/>
+        </record>
+    </data>
+</odoo>

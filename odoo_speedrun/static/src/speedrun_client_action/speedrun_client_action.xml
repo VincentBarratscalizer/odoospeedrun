@@ -69,6 +69,7 @@
                     <GameLobby
                         game="state.game"
                         stats="state.stats"
+                        taskGroups="state.taskGroups"
                         matchmaking="state.matchmaking"
                         onCreateGame.bind="createGame"
                         onJoinGame.bind="joinGame"

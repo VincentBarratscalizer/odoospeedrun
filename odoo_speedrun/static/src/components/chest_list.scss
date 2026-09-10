@@ -1,0 +1,68 @@
+.o_gacha_chest_card {
+    border-radius: 12px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid;
+
+    &:hover {
+        transform: translateY(-4px);
+    }
+
+    &.o_gacha_card_common {
+        border-color: #9e9e9e;
+        background: rgba(158, 158, 158, 0.08);
+        box-shadow: 0 4px 15px rgba(158, 158, 158, 0.15);
+        &:hover { box-shadow: 0 8px 25px rgba(158, 158, 158, 0.3); }
+        .o_gacha_open_btn { background: #757575; color: white; border: none; }
+    }
+    &.o_gacha_card_rare {
+        border-color: #42a5f5;
+        background: rgba(66, 165, 245, 0.08);
+        box-shadow: 0 4px 15px rgba(66, 165, 245, 0.2);
+        &:hover { box-shadow: 0 8px 25px rgba(66, 165, 245, 0.4); }
+        .o_gacha_open_btn { background: #1976d2; color: white; border: none; }
+    }
+    &.o_gacha_card_epic {
+        border-color: #ab47bc;
+        background: rgba(171, 71, 188, 0.1);
+        box-shadow: 0 4px 15px rgba(171, 71, 188, 0.25);
+        &:hover { box-shadow: 0 8px 30px rgba(171, 71, 188, 0.5); }
+        .o_gacha_open_btn { background: #7b1fa2; color: white; border: none; }
+    }
+    &.o_gacha_card_legendary {
+        border-color: #ffd700;
+        background: rgba(255, 215, 0, 0.08);
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.25);
+        animation: cardLegendaryPulse 2s ease-in-out infinite;
+        &:hover { box-shadow: 0 8px 35px rgba(255, 215, 0, 0.5); }
+        .o_gacha_open_btn { background: linear-gradient(135deg, #ff9800, #ffd700); color: #1a1a00; border: none; font-weight: 700; }
+    }
+}
+
+.o_gacha_card_icon {
+    font-size: 3rem;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.o_gacha_card_rarity {
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.o_gacha_card_source {
+    font-size: 0.75rem;
+}
+
+.o_gacha_daily_card {
+    transition: border-color 0.3s;
+}
+
+@keyframes cardLegendaryPulse {
+    0%, 100% { box-shadow: 0 4px 15px rgba(255, 215, 0, 0.25); }
+    50%       { box-shadow: 0 4px 25px rgba(255, 215, 0, 0.5); }
+}

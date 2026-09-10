@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ===================== COMMON (14 items) ===================== -->
+    <record id="equip_notepad_pro" model="speedrun.equipment">
+        <field name="name">Notepad Pro</field>
+        <field name="rarity">common</field>
+        <field name="icon">📋</field>
+        <field name="category">peripheral</field>
+        <field name="description">A trusty notepad to jot down your speedrun strategies and task IDs.</field>
+    </record>
+    <record id="equip_coffee_cup" model="speedrun.equipment">
+        <field name="name">Coffee Cup</field>
+        <field name="rarity">common</field>
+        <field name="icon">☕</field>
+        <field name="category">cosmetic</field>
+        <field name="description">Fuel for the speedrunner. Never underestimate the power of caffeine.</field>
+    </record>
+    <record id="equip_basic_mouse" model="speedrun.equipment">
+        <field name="name">Basic Mouse</field>
+        <field name="rarity">common</field>
+        <field name="icon">🖱️</field>
+        <field name="category">peripheral</field>
+        <field name="description">A reliable entry-level mouse. Gets the job done without any fuss.</field>
+    </record>
+    <record id="equip_blue_pen" model="speedrun.equipment">
+        <field name="name">Blue Pen</field>
+        <field name="rarity">common</field>
+        <field name="icon">🖊️</field>
+        <field name="category">peripheral</field>
+        <field name="description">Classic blue ink pen. Perfect for signing off on those invoices you just created.</field>
+    </record>
+    <record id="equip_stapler" model="speedrun.equipment">
+        <field name="name">Stapler</field>
+        <field name="rarity">common</field>
+        <field name="icon">📎</field>
+        <field name="category">peripheral</field>
+        <field name="description">Keep your documents together as fast as you complete your tasks.</field>
+    </record>
+    <record id="equip_file_folder" model="speedrun.equipment">
+        <field name="name">File Folder</field>
+        <field name="rarity">common</field>
+        <field name="icon">🗂️</field>
+        <field name="category">peripheral</field>
+        <field name="description">Organize your records like a pro, even on a speedrun.</field>
+    </record>
+    <record id="equip_usb_hub" model="speedrun.equipment">
+        <field name="name">USB Hub</field>
+        <field name="rarity">common</field>
+        <field name="icon">🔌</field>
+        <field name="category">peripheral</field>
+        <field name="description">Connect all your peripherals at once. More ports, more power.</field>
+    </record>
+    <record id="equip_sticky_notes" model="speedrun.equipment">
+        <field name="name">Sticky Notes</field>
+        <field name="rarity">common</field>
+        <field name="icon">🗒️</field>
+        <field name="category">cosmetic</field>
+        <field name="description">Plaster your monitor with shortcuts and reminders to shave off precious seconds.</field>
+    </record>
+    <record id="equip_basic_printer" model="speedrun.equipment">
+        <field name="name">Basic Printer</field>
+        <field name="rarity">common</field>
+        <field name="icon">🖨️</field>
+        <field name="category">peripheral</field>
+        <field name="description">Print out your results as proof of your glorious speedrun victory.</field>
+    </record>
+    <record id="equip_phone_stand" model="speedrun.equipment">
+        <field name="name">Phone Stand</field>
+        <field name="rarity">common</field>
+        <field name="icon">📱</field>
+        <field name="category">peripheral</field>
+        <field name="description">Keep your phone at eye level to monitor notifications without breaking your flow.</field>
+    </record>
+    <record id="equip_power_bank" model="speedrun.equipment">
+        <field name="name">Power Bank</field>
+        <field name="rarity">common</field>
+        <field name="icon">🔋</field>
+        <field name="category">peripheral</field>
+        <field name="description">Never run out of juice during a marathon speedrun session.</field>
+    </record>
+    <record id="equip_wifi_pebble" model="speedrun.equipment">
+        <field name="name">WiFi Pebble</field>
+        <field name="rarity">common</field>
+        <field name="icon">📶</field>
+        <field name="category">peripheral</field>
+        <field name="description">A tiny WiFi booster that keeps your connection stable when the stakes are high.</field>
+    </record>
+    <record id="equip_cardboard_box" model="speedrun.equipment">
+        <field name="name">Cardboard Box</field>
+        <field name="rarity">common</field>
+        <field name="icon">📦</field>
+        <field name="category">cosmetic</field>
+        <field name="description">Delivered straight to your inventory. A humble origin for a speedrunner.</field>
+    </record>
+    <record id="equip_basic_webcam" model="speedrun.equipment">
+        <field name="name">Basic Webcam</field>
+        <field name="rarity">common</field>
+        <field name="icon">📷</field>
+        <field name="category">peripheral</field>
+        <field name="description">Stream your speedrun attempts live. Let the world witness your efficiency.</field>
+    </record>
+
+    <!-- ===================== RARE (12 items) ===================== -->
+    <record id="equip_laptop_stand" model="speedrun.equipment">
+        <field name="name">Laptop Stand</field>
+        <field name="rarity">rare</field>
+        <field name="icon">💻</field>
+        <field name="category">peripheral</field>
+        <field name="description">Elevate your laptop for better ergonomics and a speedrunner's posture.</field>
+    </record>
+    <record id="equip_gaming_mouse" model="speedrun.equipment">
+        <field name="name">Gaming Mouse</field>
+        <field name="rarity">rare</field>
+        <field name="icon">🎮</field>
+        <field name="category">peripheral</field>
+        <field name="description">High-DPI precision for clicking through Odoo menus at lightning speed.</field>
+    </record>
+    <record id="equip_mechanical_keyboard" model="speedrun.equipment">
+        <field name="name">Mechanical Keyboard</field>
+        <field name="rarity">rare</field>
+        <field name="icon">⌨️</field>
+        <field name="category">peripheral</field>
+        <field name="description">Every keystroke is satisfying clunk bringing you closer to the finish line.</field>
+    </record>
+    <record id="equip_second_monitor" model="speedrun.equipment">
+        <field name="name">Second Monitor</field>
+        <field name="rarity">rare</field>
+        <field name="icon">🖥️</field>
+        <field name="category">peripheral</field>
+        <field name="description">Dual screens for double the productivity. Keep the task on one, Odoo on the other.</field>
+    </record>
+    <record id="equip_nc_headphones" model="speedrun.equipment">
+        <field name="name">Noise-Canceling Headphones</field>
+        <field name="rarity">rare</field>
+        <field name="icon">🎧</field>
+        <field name="category">peripheral</field>
+        <field name="description">Block out the world and enter the zone. Pure focus, pure speed.</field>
+    </record>
+    <record id="equip_smart_lamp" model="speedrun.equipment">
+        <field name="name">Smart Lamp</field>
+        <field name="rarity">rare</field>
+        <field name="icon">💡</field>
+        <field name="category">cosmetic</field>
+        <field name="description">Set the perfect lighting mood for late-night speedrun grind sessions.</field>
+    </record>
+    <record id="equip_silver_badge" model="speedrun.equipment">
+        <field name="name">Silver Speedrun Badge</field>
+        <field name="rarity">rare</field>
+        <field name="icon">🏅</field>
+        <field name="category">badge</field>
+        <field name="description">A silver badge recognizing your dedication to the speedrun lifestyle.</field>
+    </record>
+    <record id="equip_module_key" model="speedrun.equipment">
+        <field name="name">Module Key</field>
+        <field name="rarity">rare</field>
+        <field name="icon">🔑</field>
+        <field name="category">module</field>
+        <field name="description">Unlocks deeper understanding of an Odoo module. Knowledge is speed.</field>
+    </record>
+    <record id="equip_gigabit_switch" model="speedrun.equipment">
+        <field name="name">Gigabit Switch</field>
+        <field name="rarity">rare</field>
+        <field name="icon">⚡</field>
+        <field name="category">peripheral</field>
+        <field name="description">Route your network traffic at gigabit speeds. Low latency, high glory.</field>
+    </record>
+    <record id="equip_cooling_pad" model="speedrun.equipment">
+        <field name="name">Cooling Pad</field>
+        <field name="rarity">rare</field>
+        <field name="icon">🧊</field>
+        <field name="category">peripheral</field>
+        <field name="description">Keep your hardware cool under pressure. Thermal throttling is not in a speedrunner's vocabulary.</field>
+    </record>
+    <record id="equip_custom_dashboard" model="speedrun.equipment">
+        <field name="name">Custom Dashboard</field>
+        <field name="rarity">rare</field>
+        <field name="icon">📊</field>
+        <field name="category">module</field>
+        <field name="description">A personalized Odoo dashboard configured for maximum task completion efficiency.</field>
+    </record>
+    <record id="equip_productivity_controller" model="speedrun.equipment">
+        <field name="name">Productivity Controller</field>
+        <field name="rarity">rare</field>
+        <field name="icon">🕹️</field>
+        <field name="category">cosmetic</field>
+        <field name="description">Navigate Odoo like a game controller. Because everything is a game to you.</field>
+    </record>
+
+    <!-- ===================== EPIC (10 items) ===================== -->
+    <record id="equip_expert_crown" model="speedrun.equipment">
+        <field name="name">Odoo Expert Crown</field>
+        <field name="rarity">epic</field>
+        <field name="icon">👑</field>
+        <field name="category">badge</field>
+        <field name="description">Worn only by those who have mastered the Odoo module ecosystem inside and out.</field>
+    </record>
+    <record id="equip_ultrawide_monitor" model="speedrun.equipment">
+        <field name="name">Ultrawide Monitor</field>
+        <field name="rarity">epic</field>
+        <field name="icon">🖥️</field>
+        <field name="category">peripheral</field>
+        <field name="description">An epic 34-inch curved ultrawide. See every field, every button, every shortcut at once.</field>
+    </record>
+    <record id="equip_rgb_keyboard" model="speedrun.equipment">
+        <field name="name">RGB Keyboard</field>
+        <field name="rarity">epic</field>
+        <field name="icon">⌨️</field>
+        <field name="category">peripheral</field>
+        <field name="description">Full RGB backlighting in speedrun colors. Type faster just by looking at it.</field>
+    </record>
+    <record id="equip_odoo_hoodie" model="speedrun.equipment">
+        <field name="name">Odoo Hoodie</field>
+        <field name="rarity">epic</field>
+        <field name="icon">🎯</field>
+        <field name="category">cosmetic</field>
+        <field name="description">The official Odoo hoodie. Wear it with pride as you crush the competition.</field>
+    </record>
+    <record id="equip_nvme_ssd" model="speedrun.equipment">
+        <field name="name">NVMe SSD</field>
+        <field name="rarity">epic</field>
+        <field name="icon">🚀</field>
+        <field name="category">peripheral</field>
+        <field name="description">7,000 MB/s read speeds. Your Odoo database loads before you even blink.</field>
+    </record>
+    <record id="equip_crystal_mousepad" model="speedrun.equipment">
+        <field name="name">Crystal Mouse Pad</field>
+        <field name="rarity">epic</field>
+        <field name="icon">💎</field>
+        <field name="category">peripheral</field>
+        <field name="description">An extra-large crystal-clear mouse pad that covers your entire desk. Glide at the speed of light.</field>
+    </record>
+    <record id="equip_crm_crystal_ball" model="speedrun.equipment">
+        <field name="name">CRM Crystal Ball</field>
+        <field name="rarity">epic</field>
+        <field name="icon">🔮</field>
+        <field name="category">module</field>
+        <field name="description">Predict your leads before they arrive. The future of CRM is now.</field>
+    </record>
+    <record id="equip_developer_license" model="speedrun.equipment">
+        <field name="name">Developer License</field>
+        <field name="rarity">epic</field>
+        <field name="icon">📜</field>
+        <field name="category">badge</field>
+        <field name="description">An official developer license granting you access to the deepest Odoo secrets.</field>
+    </record>
+    <record id="equip_devmode_toggle" model="speedrun.equipment">
+        <field name="name">DevMode Toggle</field>
+        <field name="rarity">epic</field>
+        <field name="icon">⚙️</field>
+        <field name="category">module</field>
+        <field name="description">A sacred artifact that activates Developer Mode with a single click. Power at your fingertips.</field>
+    </record>
+    <record id="equip_gold_medal" model="speedrun.equipment">
+        <field name="name">Gold Medal</field>
+        <field name="rarity">epic</field>
+        <field name="icon">🥇</field>
+        <field name="category">badge</field>
+        <field name="description">The gold medal of speedrunning. Reserved for those who consistently finish first.</field>
+    </record>
+
+    <!-- ===================== LEGENDARY (6 items) ===================== -->
+    <record id="equip_champion_trophy" model="speedrun.equipment">
+        <field name="name">Champion Trophy</field>
+        <field name="rarity">legendary</field>
+        <field name="icon">🏆</field>
+        <field name="category">badge</field>
+        <field name="description">The ultimate trophy, awarded to the undisputed champion of Odoo Speedrun. A legend in every sense.</field>
+    </record>
+    <record id="equip_admin_crown" model="speedrun.equipment">
+        <field name="name">Admin Crown</field>
+        <field name="rarity">legendary</field>
+        <field name="icon">👑</field>
+        <field name="category">badge</field>
+        <field name="description">The crown of the admin. With great power comes great responsibility — and great speed.</field>
+    </record>
+    <record id="equip_golden_admin_key" model="speedrun.equipment">
+        <field name="name">Golden Admin Key</field>
+        <field name="rarity">legendary</field>
+        <field name="icon">🗝️</field>
+        <field name="category">badge</field>
+        <field name="description">A golden key granting access to every corner of Odoo. There are no locked doors for a legend.</field>
+    </record>
+    <record id="equip_lightning_badge" model="speedrun.equipment">
+        <field name="name">Lightning Badge</field>
+        <field name="rarity">legendary</field>
+        <field name="icon">⚡</field>
+        <field name="category">badge</field>
+        <field name="description">Awarded to the fastest speedrunner alive. Your reaction time is measured in milliseconds.</field>
+    </record>
+    <record id="equip_legendary_laptop" model="speedrun.equipment">
+        <field name="name">Legendary Laptop</field>
+        <field name="rarity">legendary</field>
+        <field name="icon">💻</field>
+        <field name="category">peripheral</field>
+        <field name="description">A mythical machine said to never lag, never crash, and run Odoo at 1000 FPS. Legends only.</field>
+    </record>
+    <record id="equip_odoo_legend_badge" model="speedrun.equipment">
+        <field name="name">Odoo Legend Badge</field>
+        <field name="rarity">legendary</field>
+        <field name="icon">🌟</field>
+        <field name="category">badge</field>
+        <field name="description">The rarest badge in existence. Proof that you are not just a speedrunner — you are an Odoo Legend.</field>
+    </record>
+</odoo>

@@ -9,11 +9,13 @@ import { GameLobby } from "../components/game_lobby";
 import { GameTimer } from "../components/game_timer";
 import { GameResults } from "../components/game_results";
 import { TournamentPanel } from "../components/tournament_panel";
+import { ChestOpening } from "../components/chest_opening";
+import { ChestList } from "../components/chest_list";
 import { playSound, playCountdownBeep } from "../services/sound_service";
 
 export class SpeedrunClientAction extends Component {
     static template = "odoo_speedrun.SpeedrunClientAction";
-    static components = { GameLobby, GameTimer, GameResults, TournamentPanel };
+    static components = { GameLobby, GameTimer, GameResults, TournamentPanel, ChestOpening, ChestList };
     static props = ["*"];
 
     setup() {
@@ -39,6 +41,8 @@ export class SpeedrunClientAction extends Component {
             // Tournaments
             tournaments: null,
             tournament: null,
+            // Gacha chests
+            chests: { pendingCount: 0, currentChest: null },
         });
         // Id of a tournament to return to after a bracket match finishes
         this._returnTournamentId = null;
@@ -68,6 +72,7 @@ export class SpeedrunClientAction extends Component {
     async _loadStats() {
         try {
             this.state.stats = await rpc("/odoo_speedrun/my_stats", {});
+            this.state.chests.pendingCount = this.state.stats.pending_chest_count || 0;
         } catch {
             // Stats are optional, ignore failures
         }
@@ -267,6 +272,14 @@ export class SpeedrunClientAction extends Component {
                         { type: "success", sticky: true },
                     );
                     this._loadStats();
+                    break;
+                case "speedrun/chest_earned":
+                    playSound("taskComplete");
+                    this.notification.add(
+                        `🎁 You earned a ${payload.rarity} chest!`,
+                        { type: "success", sticky: false },
+                    );
+                    this.state.chests.pendingCount++;
                     break;
             }
         }
@@ -829,6 +842,33 @@ export class SpeedrunClientAction extends Component {
         const seconds = totalSeconds % 60;
         const millis = ms % 1000;
         return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(millis).padStart(3, "0")}`;
+    }
+
+    openChests() {
+        this.state.phase = "chests";
+    }
+
+    onChestOpen(chest) {
+        this.state.chests.currentChest = chest;
+        this.state.phase = "chest_opening";
+    }
+
+    onChestDone(equipment) {
+        this.state.chests.pendingCount = Math.max(0, this.state.chests.pendingCount - 1);
+        this.state.chests.currentChest = null;
+        // Go back to chest list to open the next one
+        this.state.phase = "chests";
+    }
+
+    onClaimDailyChest(chest) {
+        // Called when daily chest is claimed, open it directly
+        this.state.chests.currentChest = chest;
+        this.state.phase = "chest_opening";
+    }
+
+    backFromChests() {
+        this.state.chests.currentChest = null;
+        this.state.phase = "lobby";
     }
 
     playAgain() {

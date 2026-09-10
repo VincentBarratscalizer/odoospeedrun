@@ -25,3 +25,9 @@ access_speedrun_personal_best_user,speedrun.personal.best.user,model_speedrun_pe
 access_speedrun_tournament_user,speedrun.tournament.user,model_speedrun_tournament,base.group_user,1,1,1,1
 access_speedrun_tournament_reg_user,speedrun.tournament.registration.user,model_speedrun_tournament_registration,base.group_user,1,1,1,1
 access_speedrun_tournament_match_user,speedrun.tournament.match.user,model_speedrun_tournament_match,base.group_user,1,1,1,1
+access_speedrun_equipment_user,speedrun.equipment.user,model_speedrun_equipment,base.group_user,1,0,0,0
+access_speedrun_equipment_admin,speedrun.equipment.admin,model_speedrun_equipment,base.group_system,1,1,1,1
+access_speedrun_player_chest_user,speedrun.player.chest.user,model_speedrun_player_chest,base.group_user,1,0,0,0
+access_speedrun_player_chest_admin,speedrun.player.chest.admin,model_speedrun_player_chest,base.group_system,1,1,1,1
+access_speedrun_player_equipment_user,speedrun.player.equipment.user,model_speedrun_player_equipment,base.group_user,1,0,0,0
+access_speedrun_player_equipment_admin,speedrun.player.equipment.admin,model_speedrun_player_equipment,base.group_system,1,1,1,1

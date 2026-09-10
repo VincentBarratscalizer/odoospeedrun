@@ -413,3 +413,53 @@ class SpeedrunController(http.Controller):
         except Exception as e:
             return {'error': str(e)}
         return {'success': True}
+
+    # ------------------------------------------------------------------
+    # Gacha / Chests
+    # ------------------------------------------------------------------
+    @http.route('/odoo_speedrun/my_chests', type='jsonrpc', auth='user')
+    def my_chests(self):
+        profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
+        pending = request.env['speedrun.player.chest'].sudo().search([
+            ('user_id', '=', request.env.uid),
+            ('state', '=', 'pending'),
+        ], order='create_date desc')
+        from odoo import fields as F
+        today = F.Date.today()
+        return {
+            'chests': [{'id': c.id, 'rarity': c.rarity, 'source': c.source} for c in pending],
+            'daily_available': profile.last_daily_chest != today,
+        }
+
+    @http.route('/odoo_speedrun/open_chest', type='jsonrpc', auth='user')
+    def open_chest(self, chest_id):
+        profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
+        equipment = profile.sudo()._open_chest(chest_id)
+        if equipment is None:
+            return {'error': 'Chest not found or already opened.'}
+        return {'equipment': equipment}
+
+    @http.route('/odoo_speedrun/daily_chest', type='jsonrpc', auth='user')
+    def daily_chest(self):
+        from odoo import fields as F
+        profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
+        today = F.Date.today()
+        if profile.last_daily_chest == today:
+            return {'error': 'Daily chest already claimed today.'}
+        profile.sudo().write({'last_daily_chest': today})
+        chest = profile.sudo()._award_chest('common', source='daily')
+        return {'chest_id': chest.id, 'rarity': chest.rarity}
+
+    @http.route('/odoo_speedrun/my_equipment', type='jsonrpc', auth='user')
+    def my_equipment(self):
+        collection = request.env['speedrun.player.equipment'].sudo().search([
+            ('user_id', '=', request.env.uid),
+        ], order='rarity desc, create_date desc')
+        return [{
+            'id': e.equipment_id.id,
+            'name': e.equipment_id.name,
+            'rarity': e.rarity,
+            'icon': e.equipment_id.icon or '',
+            'description': e.equipment_id.description or '',
+            'count': e.count,
+        } for e in collection]

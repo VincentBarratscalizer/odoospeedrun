@@ -46,6 +46,10 @@ class SpeedrunProfile(models.Model):
     elo_history_ids = fields.One2many('speedrun.elo.history', 'profile_id', string='ELO History')
     badge_award_ids = fields.One2many('speedrun.badge.award', 'profile_id', string='Badges')
     badge_count = fields.Integer(compute='_compute_badge_count')
+    chest_ids = fields.One2many('speedrun.player.chest', 'profile_id', string='Chests')
+    equipment_collection_ids = fields.One2many('speedrun.player.equipment', 'profile_id')
+    last_daily_chest = fields.Date(string='Last Daily Chest')
+    pending_chest_count = fields.Integer(compute='_compute_pending_chest_count', store=False)
 
     _unique_user_profile = models.Constraint(
         'UNIQUE(user_id)',
@@ -74,6 +78,11 @@ class SpeedrunProfile(models.Model):
     def _compute_badge_count(self):
         for profile in self:
             profile.badge_count = len(profile.badge_award_ids)
+
+    @api.depends('chest_ids.state')
+    def _compute_pending_chest_count(self):
+        for profile in self:
+            profile.pending_chest_count = len(profile.chest_ids.filtered(lambda c: c.state == 'pending'))
 
     @api.model
     def _get_or_create(self, users):
@@ -192,7 +201,83 @@ class SpeedrunProfile(models.Model):
                     'level_title': profile.level_title,
                     'xp': profile.xp,
                 })
+
+        # --- Award gacha chests ---
+        from odoo.addons.odoo_speedrun.models.speedrun_gacha import CHEST_BY_RANK, DEFAULT_CHEST
+        if game.game_mode == 'best_of':
+            ranked_players = sorted(players, key=lambda p: (-p.round_wins, -p.score))
+        else:
+            ranked_players = sorted(players, key=lambda p: -p.score)
+        for i, player in enumerate(ranked_players):
+            uid = player.user_id.id
+            profile = profile_by_user[uid]
+            chest_rarity = CHEST_BY_RANK.get(i, DEFAULT_CHEST)
+            profile._award_chest(chest_rarity, game_id=game.id, source='game_win')
+
         return result
+
+    def _award_chest(self, rarity, game_id=None, source='game_win'):
+        self.ensure_one()
+        chest = self.env['speedrun.player.chest'].create({
+            'profile_id': self.id,
+            'rarity': rarity,
+            'game_id': game_id,
+            'source': source,
+        })
+        self.user_id._bus_send('speedrun/chest_earned', {
+            'chest_id': chest.id,
+            'rarity': rarity,
+            'source': source,
+        })
+        return chest
+
+    def _open_chest(self, chest_id):
+        """Open a chest, add item to collection, return equipment dict or None."""
+        chest = self.env['speedrun.player.chest'].browse(int(chest_id))
+        if not chest.exists() or chest.profile_id.id != self.id or chest.state != 'pending':
+            return None
+        equipment = self._roll_equipment(chest.rarity)
+        chest.write({'state': 'opened', 'equipment_id': equipment.id if equipment else False})
+        if equipment:
+            existing = self.env['speedrun.player.equipment'].search([
+                ('profile_id', '=', self.id),
+                ('equipment_id', '=', equipment.id),
+            ], limit=1)
+            if existing:
+                existing.count += 1
+            else:
+                self.env['speedrun.player.equipment'].create({
+                    'profile_id': self.id,
+                    'equipment_id': equipment.id,
+                })
+            return {
+                'id': equipment.id,
+                'name': equipment.name,
+                'rarity': equipment.rarity,
+                'icon': equipment.icon or '',
+                'description': equipment.description or '',
+                'category': equipment.category or '',
+            }
+        return None
+
+    def _roll_equipment(self, chest_rarity):
+        import random
+        from odoo.addons.odoo_speedrun.models.speedrun_gacha import CHEST_DROP_TABLES
+        weights = CHEST_DROP_TABLES.get(chest_rarity, CHEST_DROP_TABLES['common'])
+        roll = random.randint(1, 100)
+        cumulative = 0
+        rolled_rarity = 'common'
+        for rarity, w in weights.items():
+            cumulative += w
+            if roll <= cumulative:
+                rolled_rarity = rarity
+                break
+        items = self.env['speedrun.equipment'].search([('rarity', '=', rolled_rarity)])
+        if not items:
+            items = self.env['speedrun.equipment'].search([])
+        if not items:
+            return None
+        return self.env['speedrun.equipment'].browse(random.choice(items.ids))
 
     def _check_badges(self, game=None):
         """Award any newly-earned badges (+ their XP rewards)."""
@@ -256,6 +341,9 @@ class SpeedrunProfile(models.Model):
                 'elo_after': h.elo_after,
                 'elo_change': h.elo_change,
             } for h in history],
+            'pending_chest_count': self.pending_chest_count,
+            'last_daily_chest': fields.Date.to_string(self.last_daily_chest) if self.last_daily_chest else None,
+            'equipment_count': len(self.equipment_collection_ids),
         }
 
 

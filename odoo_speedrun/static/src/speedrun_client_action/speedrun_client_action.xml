@@ -60,9 +60,17 @@
                  t-att-style="(state.phase === 'tournaments' || state.phase === 'tournament') ? 'max-width: 1200px;' : 'max-width: 900px;'">
                 <t t-if="state.phase === 'lobby'">
                     <t t-if="!state.game">
-                        <div class="text-center mb-4">
+                        <div class="text-center mb-4 d-flex justify-content-center gap-3">
                             <button class="btn btn-outline-warning btn-lg px-4" t-on-click="openTournaments">
                                 <i class="fa fa-trophy me-2"/>Tournaments
+                            </button>
+                            <button class="btn btn-outline-info btn-lg px-4 position-relative" t-on-click="openChests">
+                                📦 Chests
+                                <t t-if="state.chests.pendingCount > 0">
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        <t t-esc="state.chests.pendingCount"/>
+                                    </span>
+                                </t>
                             </button>
                         </div>
                     </t>
@@ -183,6 +191,20 @@
                         mode="'final'"
                         onNextRound.bind="nextRound"
                         onPlayAgain.bind="playAgain"
+                    />
+                </t>
+                <t t-if="state.phase === 'chests'">
+                    <ChestList
+                        onOpenChest.bind="onChestOpen"
+                        onClaimDaily.bind="onClaimDailyChest"
+                        onBack.bind="backFromChests"
+                    />
+                </t>
+                <t t-if="state.phase === 'chest_opening' and state.chests.currentChest">
+                    <ChestOpening
+                        chest="state.chests.currentChest"
+                        onDone.bind="onChestDone"
+                        onSkip.bind="backFromChests"
                     />
                 </t>
             </div>

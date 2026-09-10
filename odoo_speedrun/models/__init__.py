@@ -9,5 +9,6 @@ from . import speedrun_badge
 from . import speedrun_matchmaking
 from . import speedrun_tournament
 from . import speedrun_personal_best
+from . import speedrun_gacha
 from . import ir_websocket
 from . import res_users

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.ChestList">
+        <div class="o_gacha_chest_list">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    📦 My Chests
+                    <span class="badge text-bg-secondary ms-2">
+                        <t t-esc="state.chests.length"/>
+                    </span>
+                </h2>
+                <button class="btn btn-outline-secondary" t-on-click="props.onBack">
+                    ← Back to Arena
+                </button>
+            </div>
+
+            <!-- Daily chest -->
+            <div class="card mb-4 o_gacha_daily_card" t-att-class="state.dailyAvailable ? 'border-warning' : 'border-secondary opacity-75'">
+                <div class="card-body d-flex align-items-center justify-content-between p-3">
+                    <div>
+                        <div class="fw-bold">
+                            🎁 Daily Chest
+                        </div>
+                        <div class="text-muted small">
+                            <t t-if="state.dailyAvailable">Available now! Come back tomorrow for the next one.</t>
+                            <t t-else="">Already claimed today. Come back tomorrow!</t>
+                        </div>
+                    </div>
+                    <button class="btn btn-warning btn-sm"
+                        t-att-disabled="!state.dailyAvailable or undefined"
+                        t-on-click="claimDaily">
+                        <t t-if="state.dailyAvailable">Open Daily</t>
+                        <t t-else="">Claimed ✓</t>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pending chests grid -->
+            <t t-if="state.loading">
+                <div class="text-center text-muted py-5">
+                    <i class="fa fa-spinner fa-spin me-2"/>Loading chests...
+                </div>
+            </t>
+            <t t-elif="!state.chests.length">
+                <div class="text-center text-muted py-5">
+                    <div class="display-4 mb-3">📭</div>
+                    <p>No pending chests. Win games to earn more!</p>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="row g-3">
+                    <t t-foreach="state.chests" t-as="chest" t-key="chest.id">
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="o_gacha_chest_card"
+                                 t-att-class="'o_gacha_card_' + chest.rarity"
+                                 t-on-click="() => props.onOpenChest(chest)">
+                                <div class="o_gacha_card_icon">
+                                    <t t-esc="chestEmoji(chest.rarity)"/>
+                                </div>
+                                <div class="o_gacha_card_rarity">
+                                    <t t-esc="rarityLabel(chest.rarity)"/>
+                                </div>
+                                <div class="o_gacha_card_source text-muted">
+                                    <t t-if="chest.source === 'game_win'">🏆 Win reward</t>
+                                    <t t-else="">🎁 Daily</t>
+                                </div>
+                                <button class="btn btn-sm o_gacha_open_btn mt-2">
+                                    Open!
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

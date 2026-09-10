@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.ChestOpening">
+        <div class="o_gacha_overlay" t-att-class="'o_gacha_rarity_' + props.chest.rarity">
+            <!-- Particle container (absolute positioned) -->
+            <div class="o_gacha_particles" t-ref="particles"/>
+
+            <!-- Content -->
+            <div class="o_gacha_content">
+                <!-- Chest phase -->
+                <t t-if="state.phase !== 'revealed'">
+                    <!-- Rarity label -->
+                    <div class="o_gacha_chest_rarity mb-3" t-att-class="'o_gacha_badge_' + props.chest.rarity">
+                        <t t-esc="rarityLabel"/> Chest
+                    </div>
+
+                    <!-- Chest icon -->
+                    <div class="o_gacha_chest_wrapper" t-att-class="'o_gacha_chest_' + state.phase">
+                        <div class="o_gacha_chest_icon" t-on-click="openChest">
+                            <t t-esc="chestEmoji"/>
+                        </div>
+                    </div>
+
+                    <t t-if="state.phase === 'idle'">
+                        <div class="o_gacha_hint mt-4">
+                            <span class="o_gacha_pulse">Click to open!</span>
+                        </div>
+                        <button class="btn btn-outline-light btn-sm mt-3" t-on-click="props.onSkip">
+                            Skip
+                        </button>
+                    </t>
+                    <t t-if="state.phase === 'shaking' or state.phase === 'opening'">
+                        <div class="o_gacha_hint mt-4 text-muted">Opening...</div>
+                    </t>
+                    <t t-if="state.error">
+                        <div class="text-danger mt-2"><t t-esc="state.error"/></div>
+                    </t>
+                </t>
+
+                <!-- Revealed item -->
+                <t t-if="state.phase === 'revealed' and state.equipment">
+                    <div class="o_gacha_item_reveal" t-att-class="'o_gacha_rarity_item_' + state.equipment.rarity">
+                        <div class="o_gacha_item_glow"/>
+                        <div class="o_gacha_item_icon">
+                            <t t-esc="state.equipment.icon || '🎁'"/>
+                        </div>
+                        <div class="o_gacha_item_rarity_badge mt-2" t-att-class="'o_gacha_badge_' + state.equipment.rarity">
+                            <t t-esc="itemRarityLabel"/>
+                        </div>
+                        <h2 class="o_gacha_item_name mt-3">
+                            <t t-esc="state.equipment.name"/>
+                        </h2>
+                        <p class="o_gacha_item_description text-muted">
+                            <t t-esc="state.equipment.description"/>
+                        </p>
+                        <button class="btn btn-primary btn-lg mt-4 px-5" t-on-click="onContinue">
+                            Continue
+                        </button>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -51,6 +51,37 @@ class SpeedrunProfile(models.Model):
     last_daily_chest = fields.Date(string='Last Daily Chest')
     pending_chest_count = fields.Integer(compute='_compute_pending_chest_count', store=False)
 
+    # Equipment slots (one per category)
+    equipped_peripheral_id = fields.Many2one(
+        'speedrun.player.equipment',
+        domain="[('profile_id', '=', id), ('equipment_id.category', '=', 'peripheral')]",
+        ondelete='set null', string='Equipped Peripheral',
+    )
+    equipped_badge_id = fields.Many2one(
+        'speedrun.player.equipment',
+        domain="[('profile_id', '=', id), ('equipment_id.category', '=', 'badge')]",
+        ondelete='set null', string='Equipped Badge',
+    )
+    equipped_module_id = fields.Many2one(
+        'speedrun.player.equipment',
+        domain="[('profile_id', '=', id), ('equipment_id.category', '=', 'module')]",
+        ondelete='set null', string='Equipped Module',
+    )
+    equipped_cosmetic_id = fields.Many2one(
+        'speedrun.player.equipment',
+        domain="[('profile_id', '=', id), ('equipment_id.category', '=', 'cosmetic')]",
+        ondelete='set null', string='Equipped Cosmetic',
+    )
+
+    # Gear score and sets
+    gear_score = fields.Integer(compute='_compute_gear_score', store=True)
+    unlocked_set_ids = fields.Many2many(
+        'speedrun.equipment.set', 'speedrun_profile_unlocked_set_rel', 'profile_id', 'set_id',
+        compute='_compute_unlocked_sets', store=True,
+        string='Unlocked Sets',
+    )
+    active_title = fields.Char(compute='_compute_active_title', store=True)
+
     _unique_user_profile = models.Constraint(
         'UNIQUE(user_id)',
         'A user can only have one speedrun profile.',
@@ -83,6 +114,27 @@ class SpeedrunProfile(models.Model):
     def _compute_pending_chest_count(self):
         for profile in self:
             profile.pending_chest_count = len(profile.chest_ids.filtered(lambda c: c.state == 'pending'))
+
+    @api.depends('equipment_collection_ids.item_score')
+    def _compute_gear_score(self):
+        for profile in self:
+            profile.gear_score = sum(profile.equipment_collection_ids.mapped('item_score'))
+
+    @api.depends('equipment_collection_ids.equipment_id')
+    def _compute_unlocked_sets(self):
+        all_sets = self.env['speedrun.equipment.set'].search([])
+        for profile in self:
+            owned_ids = set(profile.equipment_collection_ids.mapped('equipment_id').ids)
+            unlocked = all_sets.filtered(
+                lambda s: s.item_ids and all(item.id in owned_ids for item in s.item_ids)
+            )
+            profile.unlocked_set_ids = [(6, 0, unlocked.ids)]
+
+    @api.depends('unlocked_set_ids')
+    def _compute_active_title(self):
+        for profile in self:
+            titles = profile.unlocked_set_ids.sorted('sequence').mapped('title')
+            profile.active_title = ' · '.join(titles) if titles else ''
 
     @api.model
     def _get_or_create(self, users):
@@ -301,6 +353,71 @@ class SpeedrunProfile(models.Model):
                         'xp_reward': badge.xp_reward,
                     })
 
+    def _slot_payload(self, player_equip):
+        if not player_equip:
+            return None
+        return {
+            'id': player_equip.id,
+            'equipment_id': player_equip.equipment_id.id,
+            'name': player_equip.equipment_id.name,
+            'icon': player_equip.equipment_id.icon or '',
+            'rarity': player_equip.rarity,
+            'fusion_level': player_equip.fusion_level,
+            'item_score': player_equip.item_score,
+        }
+
+    def _equip_item(self, player_equip_id):
+        """Equip an item to its category slot. Returns dict with result."""
+        self.ensure_one()
+        item = self.env['speedrun.player.equipment'].browse(int(player_equip_id))
+        if not item.exists() or item.profile_id.id != self.id:
+            return {'error': 'Item not found.'}
+        slot_field = {
+            'peripheral': 'equipped_peripheral_id',
+            'badge': 'equipped_badge_id',
+            'module': 'equipped_module_id',
+            'cosmetic': 'equipped_cosmetic_id',
+        }.get(item.equipment_id.category)
+        if not slot_field:
+            return {'error': 'Unknown item category.'}
+        self.write({slot_field: item.id})
+        return {'success': True, 'slot': item.equipment_id.category}
+
+    def _unequip_slot(self, slot):
+        """Unequip the item from a slot."""
+        self.ensure_one()
+        slot_field = {
+            'peripheral': 'equipped_peripheral_id',
+            'badge': 'equipped_badge_id',
+            'module': 'equipped_module_id',
+            'cosmetic': 'equipped_cosmetic_id',
+        }.get(slot)
+        if not slot_field:
+            return {'error': 'Unknown slot.'}
+        self.write({slot_field: False})
+        return {'success': True}
+
+    def _fuse_equipment(self, player_equip_id):
+        """Fuse 3 copies of an item to increase fusion level by 1 (max 3)."""
+        self.ensure_one()
+        item = self.env['speedrun.player.equipment'].browse(int(player_equip_id))
+        if not item.exists() or item.profile_id.id != self.id:
+            return {'error': 'Item not found.'}
+        if item.count < 3:
+            return {'error': 'Need at least 3 copies to fuse.'}
+        if item.fusion_level >= 3:
+            return {'error': 'This item is already at maximum fusion level (★★★).'}
+        item.write({
+            'count': item.count - 2,
+            'fusion_level': item.fusion_level + 1,
+        })
+        return {
+            'success': True,
+            'fusion_level': item.fusion_level,
+            'count': item.count,
+            'item_score': item.item_score,
+        }
+
     def _get_stats_payload(self):
         """Return a dict with all personal stats for the frontend."""
         self.ensure_one()
@@ -344,6 +461,17 @@ class SpeedrunProfile(models.Model):
             'pending_chest_count': self.pending_chest_count,
             'last_daily_chest': fields.Date.to_string(self.last_daily_chest) if self.last_daily_chest else None,
             'equipment_count': len(self.equipment_collection_ids),
+            # Gear score and sets
+            'gear_score': self.gear_score,
+            'active_title': self.active_title or '',
+            'unlocked_sets': [{'id': s.id, 'name': s.name, 'icon': s.icon or '', 'title': s.title} for s in self.unlocked_set_ids],
+            # Equipped slots
+            'equipped': {
+                'peripheral': self._slot_payload(self.equipped_peripheral_id),
+                'badge': self._slot_payload(self.equipped_badge_id),
+                'module': self._slot_payload(self.equipped_module_id),
+                'cosmetic': self._slot_payload(self.equipped_cosmetic_id),
+            },
         }
 
 

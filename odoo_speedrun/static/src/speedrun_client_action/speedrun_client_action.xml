@@ -72,6 +72,9 @@
                                     </span>
                                 </t>
                             </button>
+                            <button class="btn btn-outline-secondary btn-lg px-4" t-on-click="openEquipment">
+                                ⚔️ Équipements
+                            </button>
                         </div>
                     </t>
                     <GameLobby
@@ -206,6 +209,9 @@
                         onDone.bind="onChestDone"
                         onSkip.bind="backFromChests"
                     />
+                </t>
+                <t t-if="state.phase === 'equipment'">
+                    <EquipmentManager onBack.bind="backFromEquipment" />
                 </t>
             </div>
         </div>

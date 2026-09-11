@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.EquipmentManager">
+        <div class="o_equipment_manager">
+
+            <!-- Header -->
+            <div class="o_equip_header d-flex justify-content-between align-items-center mb-4">
+                <button class="btn btn-outline-secondary" t-on-click="props.onBack">
+                    ← Retour
+                </button>
+                <div class="text-center">
+                    <h3 class="mb-0">⚔️ Mes Équipements</h3>
+                    <t t-if="state.activeTitle">
+                        <span class="badge text-bg-warning mt-1">
+                            <t t-esc="state.activeTitle"/>
+                        </span>
+                    </t>
+                </div>
+                <div class="text-end">
+                    <div class="o_gear_score">
+                        <span class="o_gear_score_value"><t t-esc="state.gearScore"/></span>
+                        <span class="o_gear_score_label">⚡ GS</span>
+                    </div>
+                </div>
+            </div>
+
+            <t t-if="state.loading">
+                <div class="text-center py-5 text-muted">
+                    <i class="fa fa-spinner fa-spin fa-2x"/>
+                </div>
+            </t>
+
+            <t t-else="">
+                <!-- Panoplies -->
+                <div class="card mb-4">
+                    <div class="card-header fw-bold">🧩 Panoplies</div>
+                    <div class="card-body">
+                        <div class="o_sets_grid">
+                            <t t-foreach="state.sets" t-as="set" t-key="set.id">
+                                <div class="o_set_card" t-att-class="set.complete ? 'o_set_complete' : ''">
+                                    <div class="o_set_icon"><t t-esc="set.icon"/></div>
+                                    <div class="o_set_name"><t t-esc="set.name"/></div>
+                                    <div class="o_set_progress">
+                                        <div class="o_set_progress_bar">
+                                            <div class="o_set_progress_fill"
+                                                 t-att-style="'width:' + setCompletionPercent(set) + '%'"/>
+                                        </div>
+                                        <span class="o_set_count">
+                                            <t t-esc="set.owned_count"/>/<t t-esc="set.item_count"/>
+                                        </span>
+                                    </div>
+                                    <t t-if="set.complete">
+                                        <div class="o_set_title_reward">
+                                            ✨ <t t-esc="set.title"/>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Equipment Slots -->
+                <div class="card mb-4">
+                    <div class="card-header fw-bold">🎮 Slots Équipés</div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <t t-foreach="['peripheral', 'badge', 'module', 'cosmetic']" t-as="slot" t-key="slot">
+                                <div class="col-6 col-md-3">
+                                    <div class="o_slot_card" t-att-class="state.equipped[slot] ? 'o_slot_filled o_rarity_' + state.equipped[slot].rarity : 'o_slot_empty'">
+                                        <div class="o_slot_label"><t t-esc="slotLabel(slot)"/></div>
+                                        <t t-if="state.equipped[slot]">
+                                            <div class="o_slot_icon"><t t-esc="state.equipped[slot].icon"/></div>
+                                            <div class="o_slot_item_name"><t t-esc="state.equipped[slot].name"/></div>
+                                            <div class="o_slot_stars"><t t-esc="fusionStars(state.equipped[slot].fusion_level)"/></div>
+                                            <div class="o_slot_score">+<t t-esc="state.equipped[slot].item_score"/> GS</div>
+                                            <button class="btn btn-sm btn-outline-danger mt-1"
+                                                    t-on-click="() => this.unequipSlot(slot)">
+                                                Retirer
+                                            </button>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="o_slot_empty_icon">+</div>
+                                            <div class="text-muted small">Vide</div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collection -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="fw-bold">📦 Collection (<t t-esc="state.items.length"/> items)</span>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <!-- Rarity filter -->
+                            <t t-foreach="[['all','Tous'],['common','Commun'],['rare','Rare'],['epic','Épique'],['legendary','Légendaire']]" t-as="f" t-key="f[0]">
+                                <button class="btn btn-sm"
+                                        t-att-class="state.filter === f[0] ? 'btn-primary' : 'btn-outline-secondary'"
+                                        t-on-click="() => this.state.filter = f[0]">
+                                    <t t-esc="f[1]"/>
+                                </button>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <t t-if="!filteredItems.length">
+                            <div class="text-center text-muted py-4">
+                                <t t-if="state.items.length">Aucun item dans ce filtre.</t>
+                                <t t-else="">Aucun item dans votre collection. Ouvrez des coffres !</t>
+                            </div>
+                        </t>
+                        <div class="o_collection_grid">
+                            <t t-foreach="filteredItems" t-as="item" t-key="item.id">
+                                <div class="o_item_card" t-att-class="'o_rarity_' + item.rarity + (item.is_equipped ? ' o_item_equipped' : '')">
+                                    <div class="o_item_card_icon"><t t-esc="item.icon"/></div>
+                                    <div class="o_item_card_name"><t t-esc="item.name"/></div>
+                                    <div class="o_item_card_rarity o_badge_rarity" t-att-class="'o_badge_' + item.rarity">
+                                        <t t-esc="rarityLabel(item.rarity)"/>
+                                    </div>
+                                    <div class="o_item_card_stars" t-att-class="item.fusion_level > 0 ? 'text-warning' : 'text-muted'">
+                                        <t t-esc="fusionStars(item.fusion_level)"/>
+                                    </div>
+                                    <div class="o_item_card_meta">
+                                        <span class="o_item_score">⚡<t t-esc="item.item_score"/></span>
+                                        <t t-if="item.count > 1">
+                                            <span class="o_item_count">×<t t-esc="item.count"/></span>
+                                        </t>
+                                    </div>
+                                    <t t-if="item.is_equipped">
+                                        <div class="o_item_equipped_badge">✓ Équipé</div>
+                                    </t>
+                                    <div class="o_item_card_actions">
+                                        <t t-if="!item.is_equipped">
+                                            <button class="btn btn-sm btn-primary"
+                                                    t-on-click="() => this.equipItem(item)">
+                                                Équiper
+                                            </button>
+                                        </t>
+                                        <t t-if="canFuse(item)">
+                                            <button class="btn btn-sm btn-warning"
+                                                    t-att-disabled="state.fusingId === item.id"
+                                                    t-on-click="() => this.fuseItem(item)">
+                                                <t t-if="state.fusingId === item.id">
+                                                    <i class="fa fa-spinner fa-spin"/>
+                                                </t>
+                                                <t t-else="">⚗️ Fusionner</t>
+                                            </button>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

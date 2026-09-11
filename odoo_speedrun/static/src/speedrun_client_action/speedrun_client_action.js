@@ -11,11 +11,12 @@ import { GameResults } from "../components/game_results";
 import { TournamentPanel } from "../components/tournament_panel";
 import { ChestOpening } from "../components/chest_opening";
 import { ChestList } from "../components/chest_list";
+import { EquipmentManager } from "../components/equipment_manager";
 import { playSound, playCountdownBeep } from "../services/sound_service";
 
 export class SpeedrunClientAction extends Component {
     static template = "odoo_speedrun.SpeedrunClientAction";
-    static components = { GameLobby, GameTimer, GameResults, TournamentPanel, ChestOpening, ChestList };
+    static components = { GameLobby, GameTimer, GameResults, TournamentPanel, ChestOpening, ChestList, EquipmentManager };
     static props = ["*"];
 
     setup() {
@@ -868,6 +869,14 @@ export class SpeedrunClientAction extends Component {
 
     backFromChests() {
         this.state.chests.currentChest = null;
+        this.state.phase = "lobby";
+    }
+
+    openEquipment() {
+        this.state.phase = "equipment";
+    }
+
+    backFromEquipment() {
         this.state.phase = "lobby";
     }
 

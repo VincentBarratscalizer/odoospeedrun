@@ -31,3 +31,5 @@ access_speedrun_player_chest_user,speedrun.player.chest.user,model_speedrun_play
 access_speedrun_player_chest_admin,speedrun.player.chest.admin,model_speedrun_player_chest,base.group_system,1,1,1,1
 access_speedrun_player_equipment_user,speedrun.player.equipment.user,model_speedrun_player_equipment,base.group_user,1,0,0,0
 access_speedrun_player_equipment_admin,speedrun.player.equipment.admin,model_speedrun_player_equipment,base.group_system,1,1,1,1
+access_speedrun_equipment_set_user,speedrun.equipment.set.user,model_speedrun_equipment_set,base.group_user,1,0,0,0
+access_speedrun_equipment_set_admin,speedrun.equipment.set.admin,model_speedrun_equipment_set,base.group_system,1,1,1,1

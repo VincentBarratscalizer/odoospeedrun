@@ -1,0 +1,336 @@
+// Rarity color variables
+$rarity-common: #9e9e9e;
+$rarity-common-bg: rgba(158, 158, 158, 0.12);
+$rarity-rare: #42a5f5;
+$rarity-rare-bg: rgba(66, 165, 245, 0.12);
+$rarity-epic: #ab47bc;
+$rarity-epic-bg: rgba(171, 71, 188, 0.12);
+$rarity-legendary: #ffd700;
+$rarity-legendary-bg: rgba(255, 215, 0, 0.12);
+
+.o_equipment_manager {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding-bottom: 2rem;
+}
+
+// ─── Header / Gear Score ─────────────────────────────────────────────────────
+
+.o_equip_header {
+    padding: 1rem 0;
+}
+
+.o_gear_score {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+    .o_gear_score_value {
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        color: #ffd700;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    }
+
+    .o_gear_score_label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted, #6c757d);
+    }
+}
+
+// ─── Panoplies / Sets ─────────────────────────────────────────────────────────
+
+.o_sets_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.o_set_card {
+    border: 2px solid var(--border-color, #dee2e6);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    text-align: center;
+    background: var(--card-bg, #fff);
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &.o_set_complete {
+        border-color: $rarity-legendary;
+        box-shadow: 0 0 14px rgba(255, 215, 0, 0.35);
+        background: $rarity-legendary-bg;
+    }
+
+    .o_set_icon {
+        font-size: 2rem;
+        line-height: 1.2;
+        margin-bottom: 0.25rem;
+    }
+
+    .o_set_name {
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .o_set_progress {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .o_set_progress_bar {
+        flex: 1;
+        height: 6px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .o_set_progress_fill {
+        height: 100%;
+        background: #42a5f5;
+        border-radius: 3px;
+        transition: width 0.3s ease;
+
+        .o_set_complete & {
+            background: $rarity-legendary;
+        }
+    }
+
+    .o_set_count {
+        font-size: 0.75rem;
+        color: var(--text-muted, #6c757d);
+        white-space: nowrap;
+    }
+
+    .o_set_title_reward {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: darken($rarity-legendary, 20%);
+        margin-top: 0.25rem;
+    }
+}
+
+// ─── Equipment Slots ──────────────────────────────────────────────────────────
+
+.o_slot_card {
+    border: 2px solid var(--border-color, #dee2e6);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    text-align: center;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+
+    .o_slot_label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted, #6c757d);
+        margin-bottom: 0.4rem;
+    }
+
+    .o_slot_icon {
+        font-size: 1.75rem;
+        line-height: 1.2;
+        margin-bottom: 0.25rem;
+    }
+
+    .o_slot_item_name {
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 0.15rem;
+    }
+
+    .o_slot_stars {
+        font-size: 0.75rem;
+        color: $rarity-legendary;
+        margin-bottom: 0.15rem;
+    }
+
+    .o_slot_score {
+        font-size: 0.75rem;
+        color: $rarity-legendary;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+
+    &.o_slot_empty {
+        border-style: dashed;
+        opacity: 0.6;
+
+        .o_slot_empty_icon {
+            font-size: 2rem;
+            color: var(--text-muted, #6c757d);
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+    }
+
+    &.o_slot_filled {
+        &.o_rarity_common {
+            border-color: $rarity-common;
+            background: $rarity-common-bg;
+        }
+        &.o_rarity_rare {
+            border-color: $rarity-rare;
+            background: $rarity-rare-bg;
+        }
+        &.o_rarity_epic {
+            border-color: $rarity-epic;
+            background: $rarity-epic-bg;
+        }
+        &.o_rarity_legendary {
+            border-color: $rarity-legendary;
+            background: $rarity-legendary-bg;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.25);
+        }
+    }
+}
+
+// ─── Collection Grid ──────────────────────────────────────────────────────────
+
+.o_collection_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.75rem;
+
+    @media (max-width: 480px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.o_item_card {
+    border: 2px solid var(--border-color, #dee2e6);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    text-align: center;
+    background: var(--card-bg, #fff);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    position: relative;
+
+    &.o_rarity_common {
+        border-color: $rarity-common;
+        background: $rarity-common-bg;
+    }
+    &.o_rarity_rare {
+        border-color: $rarity-rare;
+        background: $rarity-rare-bg;
+    }
+    &.o_rarity_epic {
+        border-color: $rarity-epic;
+        background: $rarity-epic-bg;
+    }
+    &.o_rarity_legendary {
+        border-color: $rarity-legendary;
+        background: $rarity-legendary-bg;
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+    }
+
+    &.o_item_equipped {
+        box-shadow: inset 0 0 0 2px rgba(40, 167, 69, 0.6), 0 2px 8px rgba(40, 167, 69, 0.2);
+    }
+
+    .o_item_card_icon {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+
+    .o_item_card_name {
+        font-size: 0.78rem;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    .o_item_card_stars {
+        font-size: 0.7rem;
+        letter-spacing: 0.05em;
+    }
+
+    .o_item_card_meta {
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .o_item_score {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: $rarity-legendary;
+    }
+
+    .o_item_count {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--text-muted, #6c757d);
+        background: rgba(0, 0, 0, 0.08);
+        border-radius: 4px;
+        padding: 1px 4px;
+    }
+
+    .o_item_equipped_badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: #28a745;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .o_item_card_actions {
+        display: flex;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 0.25rem;
+    }
+}
+
+// ─── Rarity Badges ────────────────────────────────────────────────────────────
+
+.o_badge_rarity {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 2px 6px;
+    border-radius: 4px;
+
+    &.o_badge_common {
+        background: rgba(158, 158, 158, 0.2);
+        color: darken($rarity-common, 20%);
+    }
+    &.o_badge_rare {
+        background: rgba(66, 165, 245, 0.2);
+        color: darken($rarity-rare, 25%);
+    }
+    &.o_badge_epic {
+        background: rgba(171, 71, 188, 0.2);
+        color: darken($rarity-epic, 15%);
+    }
+    &.o_badge_legendary {
+        background: rgba(255, 215, 0, 0.25);
+        color: darken($rarity-legendary, 30%);
+    }
+}

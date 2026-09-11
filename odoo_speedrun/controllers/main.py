@@ -452,14 +452,71 @@ class SpeedrunController(http.Controller):
 
     @http.route('/odoo_speedrun/my_equipment', type='jsonrpc', auth='user')
     def my_equipment(self):
+        profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
+        equipped_ids = {
+            profile.equipped_peripheral_id.id,
+            profile.equipped_badge_id.id,
+            profile.equipped_module_id.id,
+            profile.equipped_cosmetic_id.id,
+        } - {False}
         collection = request.env['speedrun.player.equipment'].sudo().search([
             ('user_id', '=', request.env.uid),
         ], order='rarity desc, create_date desc')
-        return [{
-            'id': e.equipment_id.id,
-            'name': e.equipment_id.name,
-            'rarity': e.rarity,
-            'icon': e.equipment_id.icon or '',
-            'description': e.equipment_id.description or '',
-            'count': e.count,
-        } for e in collection]
+        # Load all sets with completion info
+        all_sets = request.env['speedrun.equipment.set'].sudo().search([], order='sequence')
+        owned_equipment_ids = set(collection.mapped('equipment_id').ids)
+        sets_data = []
+        for s in all_sets:
+            s_item_ids = s.item_ids.ids
+            owned_count = sum(1 for iid in s_item_ids if iid in owned_equipment_ids)
+            sets_data.append({
+                'id': s.id,
+                'name': s.name,
+                'icon': s.icon or '',
+                'title': s.title,
+                'description': s.description or '',
+                'item_count': len(s_item_ids),
+                'owned_count': owned_count,
+                'complete': owned_count == len(s_item_ids) and len(s_item_ids) > 0,
+                'item_ids': s_item_ids,
+            })
+        return {
+            'items': [{
+                'id': e.id,
+                'equipment_id': e.equipment_id.id,
+                'name': e.equipment_id.name,
+                'rarity': e.rarity,
+                'icon': e.equipment_id.icon or '',
+                'description': e.equipment_id.description or '',
+                'category': e.equipment_id.category or '',
+                'count': e.count,
+                'fusion_level': e.fusion_level,
+                'item_score': e.item_score,
+                'is_equipped': e.id in equipped_ids,
+                'set_ids': e.equipment_id.set_ids.ids,
+            } for e in collection],
+            'sets': sets_data,
+            'gear_score': profile.gear_score,
+            'active_title': profile.active_title or '',
+            'equipped': {
+                'peripheral': profile._slot_payload(profile.equipped_peripheral_id),
+                'badge': profile._slot_payload(profile.equipped_badge_id),
+                'module': profile._slot_payload(profile.equipped_module_id),
+                'cosmetic': profile._slot_payload(profile.equipped_cosmetic_id),
+            },
+        }
+
+    @http.route('/odoo_speedrun/equip_item', type='jsonrpc', auth='user')
+    def equip_item(self, player_equip_id):
+        profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
+        return profile.sudo()._equip_item(player_equip_id)
+
+    @http.route('/odoo_speedrun/unequip_slot', type='jsonrpc', auth='user')
+    def unequip_slot(self, slot):
+        profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
+        return profile.sudo()._unequip_slot(slot)
+
+    @http.route('/odoo_speedrun/fuse_equipment', type='jsonrpc', auth='user')
+    def fuse_equipment(self, player_equip_id):
+        profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
+        return profile.sudo()._fuse_equipment(player_equip_id)

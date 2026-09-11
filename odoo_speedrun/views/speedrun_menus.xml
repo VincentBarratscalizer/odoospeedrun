@@ -101,4 +101,16 @@
         parent="menu_speedrun_config"
         action="speedrun_matchmaking_action"
         sequence="3"/>
+
+    <menuitem id="menu_speedrun_equipment"
+        name="Equipment"
+        parent="menu_speedrun_config"
+        action="speedrun_equipment_action"
+        sequence="5"/>
+
+    <menuitem id="menu_speedrun_equipment_sets"
+        name="Panoplies"
+        parent="menu_speedrun_config"
+        action="speedrun_equipment_set_action"
+        sequence="6"/>
 </odoo>

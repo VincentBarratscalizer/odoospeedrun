@@ -6,6 +6,7 @@
         <field name="title">L'Apprenti</field>
         <field name="description">Les outils du parfait stagiaire Odoo.</field>
         <field name="sequence">1</field>
+        <field name="score_bonus">50</field>
         <field name="item_ids" eval="[Command.link(ref('equip_coffee_cup')), Command.link(ref('equip_notepad_pro')), Command.link(ref('equip_basic_mouse')), Command.link(ref('equip_basic_webcam'))]"/>
     </record>
     <record id="set_bureau_pro" model="speedrun.equipment.set">
@@ -14,6 +15,7 @@
         <field name="title">Workstation Master</field>
         <field name="description">L'équipement d'un vrai professionnel du speedrun.</field>
         <field name="sequence">2</field>
+        <field name="score_bonus">300</field>
         <field name="item_ids" eval="[Command.link(ref('equip_mechanical_keyboard')), Command.link(ref('equip_second_monitor')), Command.link(ref('equip_nc_headphones')), Command.link(ref('equip_gaming_mouse'))]"/>
     </record>
     <record id="set_analyste" model="speedrun.equipment.set">
@@ -22,6 +24,7 @@
         <field name="title">Business Analyst</field>
         <field name="description">Maîtrisez la data et les modules Odoo. La CRM Crystal Ball est aussi convoitée par Le Développeur...</field>
         <field name="sequence">3</field>
+        <field name="score_bonus">1000</field>
         <field name="item_ids" eval="[Command.link(ref('equip_crm_crystal_ball')), Command.link(ref('equip_custom_dashboard')), Command.link(ref('equip_module_key')), Command.link(ref('equip_silver_badge'))]"/>
     </record>
     <record id="set_developpeur" model="speedrun.equipment.set">
@@ -30,6 +33,7 @@
         <field name="title">Odoo Dev</field>
         <field name="description">Le setup ultime du développeur Odoo. La CRM Crystal Ball est aussi dans L'Analyste !</field>
         <field name="sequence">4</field>
+        <field name="score_bonus">2500</field>
         <field name="item_ids" eval="[Command.link(ref('equip_crm_crystal_ball')), Command.link(ref('equip_devmode_toggle')), Command.link(ref('equip_developer_license')), Command.link(ref('equip_legendary_laptop'))]"/>
     </record>
     <record id="set_speed_king" model="speedrun.equipment.set">
@@ -38,6 +42,7 @@
         <field name="title">Speed King</field>
         <field name="description">Équipé pour la vitesse absolue. Chaque milliseconde compte.</field>
         <field name="sequence">5</field>
+        <field name="score_bonus">5000</field>
         <field name="item_ids" eval="[Command.link(ref('equip_lightning_badge')), Command.link(ref('equip_rgb_keyboard')), Command.link(ref('equip_nvme_ssd')), Command.link(ref('equip_crystal_mousepad'))]"/>
     </record>
     <record id="set_royaute" model="speedrun.equipment.set">
@@ -46,6 +51,7 @@
         <field name="title">Odoo Royalty</field>
         <field name="description">Réservée à l'élite absolue. Cinq artefacts légendaires pour régner sur Odoo.</field>
         <field name="sequence">6</field>
+        <field name="score_bonus">15000</field>
         <field name="item_ids" eval="[Command.link(ref('equip_admin_crown')), Command.link(ref('equip_golden_admin_key')), Command.link(ref('equip_expert_crown')), Command.link(ref('equip_odoo_legend_badge')), Command.link(ref('equip_champion_trophy'))]"/>
     </record>
 </odoo>

@@ -455,9 +455,11 @@ class SpeedrunController(http.Controller):
         profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
         equipped_ids = {
             profile.equipped_peripheral_id.id,
+            profile.equipped_display_id.id,
+            profile.equipped_tech_id.id,
             profile.equipped_badge_id.id,
             profile.equipped_module_id.id,
-            profile.equipped_cosmetic_id.id,
+            profile.equipped_desk_id.id,
         } - {False}
         collection = request.env['speedrun.player.equipment'].sudo().search([
             ('user_id', '=', request.env.uid),
@@ -475,6 +477,7 @@ class SpeedrunController(http.Controller):
                 'icon': s.icon or '',
                 'title': s.title,
                 'description': s.description or '',
+                'score_bonus': s.score_bonus,
                 'item_count': len(s_item_ids),
                 'owned_count': owned_count,
                 'complete': owned_count == len(s_item_ids) and len(s_item_ids) > 0,
@@ -500,9 +503,11 @@ class SpeedrunController(http.Controller):
             'active_title': profile.active_title or '',
             'equipped': {
                 'peripheral': profile._slot_payload(profile.equipped_peripheral_id),
-                'badge': profile._slot_payload(profile.equipped_badge_id),
-                'module': profile._slot_payload(profile.equipped_module_id),
-                'cosmetic': profile._slot_payload(profile.equipped_cosmetic_id),
+                'display':    profile._slot_payload(profile.equipped_display_id),
+                'tech':       profile._slot_payload(profile.equipped_tech_id),
+                'badge':      profile._slot_payload(profile.equipped_badge_id),
+                'module':     profile._slot_payload(profile.equipped_module_id),
+                'desk':       profile._slot_payload(profile.equipped_desk_id),
             },
         }
 

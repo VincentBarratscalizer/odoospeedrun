@@ -29,9 +29,13 @@ class SpeedrunEquipment(models.Model):
     icon = fields.Char(string='Icon (emoji)')
     description = fields.Char()
     category = fields.Selection([
-        ('peripheral', 'Peripheral'), ('badge', 'Badge'),
-        ('module', 'Odoo Module'), ('cosmetic', 'Cosmetic'),
-    ], default='cosmetic')
+        ('peripheral', 'Périphérique'),  # keyboard, mouse, headphones, controller, mousepad
+        ('display', 'Écran'),            # monitors, webcam, phone stand
+        ('tech', 'Hardware'),            # SSD, cooling, USB, power, WiFi, laptop, printer, lamp, stand
+        ('badge', 'Badge'),              # medals, trophies, crowns, achievement badges
+        ('module', 'Module Odoo'),       # CRM ball, DevMode, dashboard, module key
+        ('desk', 'Bureau'),              # office supplies + cosmetics: notepad, pen, coffee, hoodie, etc.
+    ], default='desk')
     set_ids = fields.Many2many(
         'speedrun.equipment.set',
         'speedrun_equipment_set_item_rel', 'equipment_id', 'set_id',
@@ -54,6 +58,7 @@ class SpeedrunEquipmentSet(models.Model):
         'speedrun_equipment_set_item_rel', 'set_id', 'equipment_id',
         string='Items',
     )
+    score_bonus = fields.Integer(default=0, string='GS Bonus')
     item_count = fields.Integer(compute='_compute_item_count')
 
     @api.depends('item_ids')

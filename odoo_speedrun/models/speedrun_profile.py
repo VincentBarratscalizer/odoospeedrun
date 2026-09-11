@@ -55,22 +55,32 @@ class SpeedrunProfile(models.Model):
     equipped_peripheral_id = fields.Many2one(
         'speedrun.player.equipment',
         domain="[('profile_id', '=', id), ('equipment_id.category', '=', 'peripheral')]",
-        ondelete='set null', string='Equipped Peripheral',
+        ondelete='set null', string='Équipé : Périphérique',
+    )
+    equipped_display_id = fields.Many2one(
+        'speedrun.player.equipment',
+        domain="[('profile_id', '=', id), ('equipment_id.category', '=', 'display')]",
+        ondelete='set null', string='Équipé : Écran',
+    )
+    equipped_tech_id = fields.Many2one(
+        'speedrun.player.equipment',
+        domain="[('profile_id', '=', id), ('equipment_id.category', '=', 'tech')]",
+        ondelete='set null', string='Équipé : Hardware',
     )
     equipped_badge_id = fields.Many2one(
         'speedrun.player.equipment',
         domain="[('profile_id', '=', id), ('equipment_id.category', '=', 'badge')]",
-        ondelete='set null', string='Equipped Badge',
+        ondelete='set null', string='Équipé : Badge',
     )
     equipped_module_id = fields.Many2one(
         'speedrun.player.equipment',
         domain="[('profile_id', '=', id), ('equipment_id.category', '=', 'module')]",
-        ondelete='set null', string='Equipped Module',
+        ondelete='set null', string='Équipé : Module',
     )
-    equipped_cosmetic_id = fields.Many2one(
+    equipped_desk_id = fields.Many2one(
         'speedrun.player.equipment',
-        domain="[('profile_id', '=', id), ('equipment_id.category', '=', 'cosmetic')]",
-        ondelete='set null', string='Equipped Cosmetic',
+        domain="[('profile_id', '=', id), ('equipment_id.category', '=', 'desk')]",
+        ondelete='set null', string='Équipé : Bureau',
     )
 
     # Gear score and sets
@@ -115,10 +125,12 @@ class SpeedrunProfile(models.Model):
         for profile in self:
             profile.pending_chest_count = len(profile.chest_ids.filtered(lambda c: c.state == 'pending'))
 
-    @api.depends('equipment_collection_ids.item_score')
+    @api.depends('equipment_collection_ids.item_score', 'unlocked_set_ids.score_bonus')
     def _compute_gear_score(self):
         for profile in self:
-            profile.gear_score = sum(profile.equipment_collection_ids.mapped('item_score'))
+            item_score = sum(profile.equipment_collection_ids.mapped('item_score'))
+            set_bonus = sum(profile.unlocked_set_ids.mapped('score_bonus'))
+            profile.gear_score = item_score + set_bonus
 
     @api.depends('equipment_collection_ids.equipment_id')
     def _compute_unlocked_sets(self):
@@ -374,9 +386,11 @@ class SpeedrunProfile(models.Model):
             return {'error': 'Item not found.'}
         slot_field = {
             'peripheral': 'equipped_peripheral_id',
-            'badge': 'equipped_badge_id',
-            'module': 'equipped_module_id',
-            'cosmetic': 'equipped_cosmetic_id',
+            'display':    'equipped_display_id',
+            'tech':       'equipped_tech_id',
+            'badge':      'equipped_badge_id',
+            'module':     'equipped_module_id',
+            'desk':       'equipped_desk_id',
         }.get(item.equipment_id.category)
         if not slot_field:
             return {'error': 'Unknown item category.'}
@@ -388,9 +402,11 @@ class SpeedrunProfile(models.Model):
         self.ensure_one()
         slot_field = {
             'peripheral': 'equipped_peripheral_id',
-            'badge': 'equipped_badge_id',
-            'module': 'equipped_module_id',
-            'cosmetic': 'equipped_cosmetic_id',
+            'display':    'equipped_display_id',
+            'tech':       'equipped_tech_id',
+            'badge':      'equipped_badge_id',
+            'module':     'equipped_module_id',
+            'desk':       'equipped_desk_id',
         }.get(slot)
         if not slot_field:
             return {'error': 'Unknown slot.'}
@@ -468,9 +484,11 @@ class SpeedrunProfile(models.Model):
             # Equipped slots
             'equipped': {
                 'peripheral': self._slot_payload(self.equipped_peripheral_id),
-                'badge': self._slot_payload(self.equipped_badge_id),
-                'module': self._slot_payload(self.equipped_module_id),
-                'cosmetic': self._slot_payload(self.equipped_cosmetic_id),
+                'display':    self._slot_payload(self.equipped_display_id),
+                'tech':       self._slot_payload(self.equipped_tech_id),
+                'badge':      self._slot_payload(self.equipped_badge_id),
+                'module':     self._slot_payload(self.equipped_module_id),
+                'desk':       self._slot_payload(self.equipped_desk_id),
             },
         }
 

@@ -54,6 +54,12 @@
                                             ✨ <t t-esc="set.title"/>
                                         </div>
                                     </t>
+                                    <t t-if="set.complete and set.score_bonus">
+                                        <div class="o_set_score_bonus">+<t t-esc="set.score_bonus"/> GS</div>
+                                    </t>
+                                    <t t-elif="set.score_bonus">
+                                        <div class="text-muted small">Bonus: +<t t-esc="set.score_bonus"/> GS</div>
+                                    </t>
                                 </div>
                             </t>
                         </div>
@@ -65,8 +71,8 @@
                     <div class="card-header fw-bold">🎮 Slots Équipés</div>
                     <div class="card-body">
                         <div class="row g-3">
-                            <t t-foreach="['peripheral', 'badge', 'module', 'cosmetic']" t-as="slot" t-key="slot">
-                                <div class="col-6 col-md-3">
+                            <t t-foreach="['peripheral', 'display', 'tech', 'badge', 'module', 'desk']" t-as="slot" t-key="slot">
+                                <div class="col-6 col-md-4 col-lg-2">
                                     <div class="o_slot_card" t-att-class="state.equipped[slot] ? 'o_slot_filled o_rarity_' + state.equipped[slot].rarity : 'o_slot_empty'">
                                         <div class="o_slot_label"><t t-esc="slotLabel(slot)"/></div>
                                         <t t-if="state.equipped[slot]">

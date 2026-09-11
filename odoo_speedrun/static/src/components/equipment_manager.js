@@ -17,7 +17,7 @@ export class EquipmentManager extends Component {
             sets: [],
             gearScore: 0,
             activeTitle: '',
-            equipped: { peripheral: null, badge: null, module: null, cosmetic: null },
+            equipped: { peripheral: null, display: null, tech: null, badge: null, module: null, desk: null },
             filter: 'all',  // all | common | rare | epic | legendary
             categoryFilter: 'all',  // all | peripheral | badge | module | cosmetic
             fusingId: null,
@@ -33,7 +33,7 @@ export class EquipmentManager extends Component {
             this.state.sets = data.sets || [];
             this.state.gearScore = data.gear_score || 0;
             this.state.activeTitle = data.active_title || '';
-            this.state.equipped = data.equipped || { peripheral: null, badge: null, module: null, cosmetic: null };
+            this.state.equipped = data.equipped || { peripheral: null, display: null, tech: null, badge: null, module: null, desk: null };
         } catch {
             this.notification.add('Failed to load equipment.', { type: 'danger' });
         } finally {
@@ -58,7 +58,14 @@ export class EquipmentManager extends Component {
     }
 
     slotLabel(slot) {
-        return { peripheral: '🖥️ Périphérique', badge: '🏅 Badge', module: '🔮 Module', cosmetic: '👔 Style' }[slot] || slot;
+        return {
+            peripheral: '🎮 Périphérique',
+            display:    '🖥️ Écran',
+            tech:       '🔧 Hardware',
+            badge:      '🏅 Badge',
+            module:     '🔮 Module',
+            desk:       '📋 Bureau',
+        }[slot] || slot;
     }
 
     canFuse(item) {

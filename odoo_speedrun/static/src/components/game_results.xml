@@ -21,14 +21,19 @@
             <t t-else="">
                 <div class="mb-4">
                     <h2 class="mb-1">
-                        Round <t t-esc="props.game.current_round"/> Complete!
+                        <t t-if="props.game.game_mode === 'time_attack'">
+                            ⏱ Time Attack — Time's Up!
+                        </t>
+                        <t t-else="">
+                            Round <t t-esc="props.game.current_round"/> Complete!
+                        </t>
                     </h2>
                     <p class="text-muted">
                         <t t-if="props.game.game_mode === 'best_of'">
                             First to <t t-esc="props.game.rounds_to_win"/> round wins —
                             up to <t t-esc="props.game.total_rounds - props.game.current_round"/> round<t t-if="props.game.total_rounds - props.game.current_round > 1">s</t> left
                         </t>
-                        <t t-else="">
+                        <t t-elif="props.game.game_mode !== 'time_attack'">
                             <t t-esc="props.game.total_rounds - props.game.current_round"/> round<t t-if="props.game.total_rounds - props.game.current_round > 1">s</t> remaining
                         </t>
                     </p>
@@ -87,6 +92,35 @@
                 </div>
             </t>
 
+            <!-- Battle Royale: life changes this round -->
+            <t t-if="!isFinal and props.game.game_mode === 'battle_royale' and lifeChanges.length">
+                <div class="card mb-4 border-danger" style="max-width: 600px; margin: 0 auto;">
+                    <div class="card-header fw-bold text-danger">
+                        💔 Lives Lost This Round
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            <t t-foreach="lifeChanges" t-as="lc" t-key="lc.user_id">
+                                <div class="list-group-item d-flex justify-content-between align-items-center"
+                                    t-att-class="lc.user_id === props.userId ? 'list-group-item-warning' : ''">
+                                    <span class="fw-bold"><t t-esc="lc.user_name"/></span>
+                                    <span>
+                                        <t t-if="lc.eliminated">
+                                            <span class="badge text-bg-dark">💀 Eliminated</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge text-bg-danger">
+                                                💔 −1 life · <t t-esc="lc.lives_remaining"/> left
+                                            </span>
+                                        </t>
+                                    </span>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
             <!-- Overall standings -->
             <div class="card mb-4" style="max-width: 600px; margin: 0 auto;">
                 <div class="card-header fw-bold">
@@ -99,15 +133,22 @@
                             <tr>
                                 <th class="text-center" style="width: 60px;">Rank</th>
                                 <th>Player</th>
+                                <th t-if="props.game.game_mode === 'battle_royale'" class="text-center">Lives</th>
                                 <th t-if="props.game.game_mode === 'best_of'" class="text-center">Wins</th>
-                                <th class="text-center">Score</th>
+                                <th t-if="props.game.game_mode === 'time_attack'" class="text-center">Tasks ✓</th>
+                                <th t-if="props.game.game_mode !== 'time_attack'" class="text-center">Score</th>
                             </tr>
                         </thead>
                         <tbody>
                             <t t-foreach="standings" t-as="s" t-key="s.user_id">
-                                <tr t-att-class="s.user_id === props.userId ? 'table-active' : ''">
+                                <tr t-att-class="s.user_id === props.userId ? 'table-active' : (s.lives_remaining === 0 and props.game.game_mode === 'battle_royale' ? 'text-muted' : '')">
                                     <td class="text-center">
-                                        <t t-esc="getRankEmoji(s_index)"/>
+                                        <t t-if="props.game.game_mode === 'battle_royale' and s.lives_remaining === 0">
+                                            💀
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="getRankEmoji(s_index)"/>
+                                        </t>
                                     </td>
                                     <td class="align-middle">
                                         <span class="fw-bold"><t t-esc="s.user_name"/></span>
@@ -115,11 +156,27 @@
                                             <span class="badge text-bg-primary ms-1">You</span>
                                         </t>
                                     </td>
+                                    <td t-if="props.game.game_mode === 'battle_royale'" class="text-center align-middle">
+                                        <t t-if="s.lives_remaining > 0">
+                                            <span class="fw-bold text-danger">
+                                                <t t-esc="'❤️'.repeat(Math.min(s.lives_remaining, 5))"/>
+                                                <t t-if="s.lives_remaining > 5">×<t t-esc="s.lives_remaining"/></t>
+                                            </span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="text-muted">—</span>
+                                        </t>
+                                    </td>
                                     <td t-if="props.game.game_mode === 'best_of'" class="text-center align-middle">
                                         <span class="fw-bold"><t t-esc="s.round_wins || 0"/></span>
                                         <span class="text-muted ms-1">/ <t t-esc="props.game.rounds_to_win"/></span>
                                     </td>
-                                    <td class="text-center align-middle">
+                                    <td t-if="props.game.game_mode === 'time_attack'" class="text-center align-middle">
+                                        <span class="badge text-bg-success fs-6">
+                                            <t t-esc="s.ta_completed_count || 0"/>
+                                        </span>
+                                    </td>
+                                    <td t-if="props.game.game_mode !== 'time_attack'" class="text-center align-middle">
                                         <span class="fw-bold"><t t-esc="s.score"/></span>
                                         <span class="text-muted ms-1">pts</span>
                                     </td>

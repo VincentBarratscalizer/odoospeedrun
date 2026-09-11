@@ -22,7 +22,11 @@ export class GameLobby extends Component {
         this.formState = useState({
             gameName: "",
             joinCode: "",
+            gameMode: "points",   // "points" | "best_of" | "battle_royale" | "time_attack"
             totalRounds: 3,
+            brLives: 3,
+            brCutoff: 1,
+            taDuration: 120,      // Time Attack duration in seconds
             selectedGroupIds: [],
         });
     }
@@ -46,7 +50,24 @@ export class GameLobby extends Component {
             this.formState.gameName || null,
             this.formState.totalRounds,
             [...this.formState.selectedGroupIds],
+            this.formState.gameMode,
+            this.formState.brLives,
+            this.formState.brCutoff,
+            this.formState.taDuration,
         );
+    }
+
+    get isBattleRoyale() {
+        return this.formState.gameMode === "battle_royale";
+    }
+
+    get isTimeAttack() {
+        return this.formState.gameMode === "time_attack";
+    }
+
+    livesDisplay(n) {
+        if (n <= 0) return "💀";
+        return "❤️".repeat(Math.min(n, 5));
     }
 
     onClickJoin() {

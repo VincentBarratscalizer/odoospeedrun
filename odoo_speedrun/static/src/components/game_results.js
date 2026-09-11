@@ -45,4 +45,8 @@ export class GameResults extends Component {
         const emojis = ["\u{1F947}", "\u{1F948}", "\u{1F949}"];
         return emojis[index] || `#${index + 1}`;
     }
+
+    get lifeChanges() {
+        return this.props.game?.life_changes || [];
+    }
 }

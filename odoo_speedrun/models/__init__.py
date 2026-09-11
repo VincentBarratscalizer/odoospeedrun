@@ -9,5 +9,7 @@ from . import speedrun_badge
 from . import speedrun_matchmaking
 from . import speedrun_tournament
 from . import speedrun_personal_best
+from . import speedrun_daily_task
+from . import speedrun_game_task_seq
 from . import ir_websocket
 from . import res_users

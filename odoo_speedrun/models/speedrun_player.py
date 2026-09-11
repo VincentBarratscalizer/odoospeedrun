@@ -23,6 +23,21 @@ class SpeedrunPlayer(models.Model):
         string='Dismissed', default=False,
         help="Set when the player leaves the final results screen (Play again). "
              "Dismissed games are no longer restored on refresh.")
+    lives_remaining = fields.Integer(
+        string='Lives Remaining', default=0,
+        help="Battle Royale mode: number of lives left. 0 = eliminated.")
+
+    # Time Attack fields
+    ta_task_index = fields.Integer(
+        string='TA Task Index', default=0,
+        help="Time Attack: 0-based index of the player's current task in the shared sequence.")
+    ta_completed_count = fields.Integer(
+        string='TA Tasks Completed', default=0,
+        help="Time Attack: number of tasks completed so far.")
+    ta_last_task_time = fields.Datetime(
+        string='TA Last Task Time',
+        help="Time Attack: server time when the player last completed a task. "
+             "Used as the start_time reference for verifying the next task.")
 
     _unique_player_per_game = models.Constraint(
         'UNIQUE(game_id, user_id)',

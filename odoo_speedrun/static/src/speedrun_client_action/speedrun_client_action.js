@@ -9,11 +9,13 @@ import { GameLobby } from "../components/game_lobby";
 import { GameTimer } from "../components/game_timer";
 import { GameResults } from "../components/game_results";
 import { TournamentPanel } from "../components/tournament_panel";
+import { DailyChallenge } from "../components/daily_challenge";
+import { GameTimeAttack } from "../components/game_time_attack";
 import { playSound, playCountdownBeep } from "../services/sound_service";
 
 export class SpeedrunClientAction extends Component {
     static template = "odoo_speedrun.SpeedrunClientAction";
-    static components = { GameLobby, GameTimer, GameResults, TournamentPanel };
+    static components = { GameLobby, GameTimer, GameResults, TournamentPanel, DailyChallenge, GameTimeAttack };
     static props = ["*"];
 
     setup() {
@@ -23,7 +25,7 @@ export class SpeedrunClientAction extends Component {
         this.user = user;
 
         this.state = useState({
-            // lobby | countdown | playing | waiting_others | round_results | final_results
+            // lobby | countdown | playing | waiting_others | round_results | final_results | time_attack
             phase: "lobby",
             game: null,
             countdown: 0,
@@ -62,6 +64,7 @@ export class SpeedrunClientAction extends Component {
             if (this._roundEndPoll) clearInterval(this._roundEndPoll);
             if (this._queuePoll) clearInterval(this._queuePoll);
             if (this._tournamentPoll) clearInterval(this._tournamentPoll);
+            // ta_end is handled client-side inside GameTimeAttack
         });
     }
 
@@ -122,6 +125,11 @@ export class SpeedrunClientAction extends Component {
                 this._startCountdown(result.countdown_remaining || 5);
                 break;
             case "running": {
+                // Time Attack: dedicated phase — no redirect to home
+                if (result.game_mode === "time_attack") {
+                    this.state.phase = "time_attack";
+                    break;
+                }
                 // Check if current user already finished this round
                 const me = result.players?.find(p => p.user_id === this.user.userId);
                 if (me && (me.state === "finished" || me.state === "dnf")) {
@@ -239,6 +247,12 @@ export class SpeedrunClientAction extends Component {
                     break;
                 case "speedrun/game_over":
                     this.onGameOver(payload);
+                    break;
+                case "speedrun/ta_game_started":
+                    this.onTAGameStarted(payload);
+                    break;
+                case "speedrun/ta_score_update":
+                    this.onTAScoreUpdate(payload);
                     break;
                 case "speedrun/match_found":
                     this._onMatchFound(payload.game_info);
@@ -550,18 +564,22 @@ export class SpeedrunClientAction extends Component {
             try {
                 const result = await rpc("/odoo_speedrun/game_info", { game_id: gameId });
                 if (result && !result.error && result.state === "running") {
-                    // Game started! Update state and redirect
                     for (const key of Object.keys(result)) {
                         this.state.game[key] = result[key];
                     }
-                    this.state.phase = "playing";
-                    this.state.myFinished = false;
-                    this.state.mySurrendered = false;
-                    this.state.checkResult = null;
-                    window.dispatchEvent(new CustomEvent("speedrun-update", {
-                        detail: { type: "game_started", data: result },
-                    }));
-                    this.actionService.doAction("menu");
+                    if (result.game_mode === "time_attack") {
+                        // Time Attack: stay in the speedrun UI
+                        this.state.phase = "time_attack";
+                    } else {
+                        this.state.phase = "playing";
+                        this.state.myFinished = false;
+                        this.state.mySurrendered = false;
+                        this.state.checkResult = null;
+                        window.dispatchEvent(new CustomEvent("speedrun-update", {
+                            detail: { type: "game_started", data: result },
+                        }));
+                        this.actionService.doAction("menu");
+                    }
                 } else {
                     // Not yet running, try again in 500ms
                     setTimeout(poll, 500);
@@ -607,6 +625,14 @@ export class SpeedrunClientAction extends Component {
             this.state.game.round_results = payload.round_results;
             this.state.game.current_round = payload.current_round;
             this.state.game.state = "round_finished";
+            // Battle Royale: carry life changes and sync players' lives from standings
+            this.state.game.life_changes = payload.life_changes || [];
+            if (payload.standings) {
+                for (const s of payload.standings) {
+                    const p = this.state.game.players?.find(pl => pl.user_id === s.user_id);
+                    if (p) p.lives_remaining = s.lives_remaining || 0;
+                }
+            }
         }
         this.state.phase = "round_results";
     }
@@ -619,16 +645,80 @@ export class SpeedrunClientAction extends Component {
             this.state.game.winner_id = payload.winner_id;
             this.state.game.winner_name = payload.winner_name;
             this.state.game.standings = payload.standings;
+            this.state.game.life_changes = payload.life_changes || [];
         }
         this.state.phase = "final_results";
         this._loadStats();
     }
 
-    async createGame(name, totalRounds, groupIds) {
+    onTAGameStarted(payload) {
+        if (this.state.game) {
+            this.state.game.start_time = payload.start_time;
+            this.state.game.state = "running";
+            this.state.game.ta_duration = payload.ta_duration;
+            this.state.game.ta_current_task_name = payload.task_name;
+            this.state.game.ta_current_task_description = payload.task_description;
+        }
+        this.state.phase = "time_attack";
+    }
+
+    onTAScoreUpdate(payload) {
+        if (!this.state.game) return;
+        const p = this.state.game.players?.find(pl => pl.user_id === payload.user_id);
+        if (p) {
+            p.ta_completed_count = payload.ta_completed_count;
+        }
+        // The GameTimeAttack component handles its own current-task display
+        // via the check result, but we also update game state for restoration.
+        if (payload.user_id === this.user.userId && this.state.game) {
+            this.state.game.ta_current_task_name = payload.next_task_name;
+            this.state.game.ta_current_task_description = payload.next_task_description;
+        }
+    }
+
+    async endTimeAttack() {
+        if (!this.state.game) return;
+        try {
+            const result = await rpc("/odoo_speedrun/time_attack/end", {
+                game_id: this.state.game.id,
+            });
+            if (result && result.error) {
+                // Not an error worth showing — server may have already ended it
+                // or there's a slight timing difference; game_over bus will arrive
+            }
+        } catch {
+            // Ignore; game_over bus event will handle transition
+        }
+    }
+
+    // Battle Royale helpers used by the template
+    get brActivePlayers() {
+        if (!this.state.game || this.state.game.game_mode !== "battle_royale") return 0;
+        return (this.state.game.players || []).filter(p => (p.lives_remaining || 0) > 0).length;
+    }
+
+    get myLivesRemaining() {
+        if (!this.state.game || this.state.game.game_mode !== "battle_royale") return null;
+        const me = (this.state.game.players || []).find(p => p.user_id === this.user.userId);
+        return me !== undefined ? (me.lives_remaining ?? 0) : null;
+    }
+
+    livesDisplay(n) {
+        if (n === null || n === undefined) return "";
+        if (n <= 0) return "💀 Éliminé";
+        const hearts = "❤️".repeat(Math.min(n, 5));
+        return n > 5 ? `❤️×${n}` : hearts;
+    }
+
+    async createGame(name, totalRounds, groupIds, gameMode, brLives, brCutoff, taDuration) {
         const result = await rpc("/odoo_speedrun/create_game", {
             name,
             total_rounds: totalRounds || 3,
             group_ids: groupIds || [],
+            game_mode: gameMode || "points",
+            br_lives: brLives || 3,
+            br_cutoff: brCutoff || 1,
+            ta_duration: taDuration || 120,
         });
         if (result.error) {
             this.notification.add(result.error, { type: "danger" });
@@ -704,16 +794,21 @@ export class SpeedrunClientAction extends Component {
             for (const key of Object.keys(result)) {
                 this.state.game[key] = result[key];
             }
-            this.state.phase = "playing";
-            this.state.myFinished = false;
-            this.state.mySurrendered = false;
-            this.state.checkResult = null;
-            // Notify systray directly (bus notifications don't reach the sender)
-            window.dispatchEvent(new CustomEvent("speedrun-update", {
-                detail: { type: "game_started", data: result },
-            }));
-            // Navigate to Odoo home so user can work on the task
-            this.actionService.doAction("menu");
+            if (result.game_mode === "time_attack") {
+                // Time Attack: stay in the speedrun UI, no redirect
+                this.state.phase = "time_attack";
+            } else {
+                this.state.phase = "playing";
+                this.state.myFinished = false;
+                this.state.mySurrendered = false;
+                this.state.checkResult = null;
+                // Notify systray directly (bus notifications don't reach the sender)
+                window.dispatchEvent(new CustomEvent("speedrun-update", {
+                    detail: { type: "game_started", data: result },
+                }));
+                // Navigate to Odoo home so user can work on the task
+                this.actionService.doAction("menu");
+            }
         }
     }
 

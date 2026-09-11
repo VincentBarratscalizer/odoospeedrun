@@ -101,4 +101,10 @@
         parent="menu_speedrun_config"
         action="speedrun_matchmaking_action"
         sequence="3"/>
+
+    <menuitem id="menu_speedrun_daily"
+        name="Daily Challenges"
+        parent="menu_speedrun_config"
+        action="speedrun_daily_task_action"
+        sequence="5"/>
 </odoo>

@@ -58,19 +58,103 @@
                                         t-on-keydown="(ev) => ev.key === 'Enter' and this.onClickCreate()"
                                     />
                                 </div>
+                                <!-- Game Mode selector -->
                                 <div class="mb-3">
-                                    <label class="form-label text-muted">Number of Rounds</label>
-                                    <div class="d-flex justify-content-center gap-2">
-                                        <t t-foreach="[1, 3, 5, 7]" t-as="n" t-key="n">
-                                            <button
-                                                class="btn"
-                                                t-att-class="formState.totalRounds === n ? 'btn-primary' : 'btn-outline-secondary'"
-                                                t-on-click="() => this.formState.totalRounds = n">
-                                                <t t-esc="n"/>
-                                            </button>
-                                        </t>
+                                    <label class="form-label text-muted">Game Mode</label>
+                                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                        <button class="btn btn-sm"
+                                            t-att-class="formState.gameMode === 'points' ? 'btn-primary' : 'btn-outline-secondary'"
+                                            t-att-disabled="isSearching"
+                                            t-on-click="() => this.formState.gameMode = 'points'">
+                                            🏁 Points
+                                        </button>
+                                        <button class="btn btn-sm"
+                                            t-att-class="formState.gameMode === 'best_of' ? 'btn-primary' : 'btn-outline-secondary'"
+                                            t-att-disabled="isSearching"
+                                            t-on-click="() => this.formState.gameMode = 'best_of'">
+                                            🏆 Best Of
+                                        </button>
+                                        <button class="btn btn-sm"
+                                            t-att-class="formState.gameMode === 'battle_royale' ? 'btn-danger' : 'btn-outline-danger'"
+                                            t-att-disabled="isSearching"
+                                            t-on-click="() => this.formState.gameMode = 'battle_royale'">
+                                            💀 Battle Royale
+                                        </button>
+                                        <button class="btn btn-sm"
+                                            t-att-class="formState.gameMode === 'time_attack' ? 'btn-info' : 'btn-outline-info'"
+                                            t-att-disabled="isSearching"
+                                            t-on-click="() => this.formState.gameMode = 'time_attack'">
+                                            ⏱ Time Attack
+                                        </button>
                                     </div>
                                 </div>
+
+                                <!-- Rounds (Points / Best Of) -->
+                                <t t-if="!isBattleRoyale and !isTimeAttack">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">
+                                            <t t-if="formState.gameMode === 'best_of'">Best of</t>
+                                            <t t-else="">Number of Rounds</t>
+                                        </label>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <t t-foreach="[1, 3, 5, 7]" t-as="n" t-key="n">
+                                                <button
+                                                    class="btn"
+                                                    t-att-class="formState.totalRounds === n ? 'btn-primary' : 'btn-outline-secondary'"
+                                                    t-on-click="() => this.formState.totalRounds = n">
+                                                    <t t-esc="n"/>
+                                                </button>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </t>
+
+                                <!-- Time Attack settings -->
+                                <t t-if="isTimeAttack">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Duration</label>
+                                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                            <t t-foreach="[[60,'1 min'],[90,'90s'],[120,'2 min'],[180,'3 min'],[300,'5 min']]" t-as="opt" t-key="opt[0]">
+                                                <button class="btn btn-sm"
+                                                    t-att-class="formState.taDuration === opt[0] ? 'btn-info' : 'btn-outline-secondary'"
+                                                    t-on-click="() => this.formState.taDuration = opt[0]">
+                                                    <t t-esc="opt[1]"/>
+                                                </button>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </t>
+
+                                <!-- Battle Royale settings -->
+                                <t t-if="isBattleRoyale">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Lives per player</label>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <t t-foreach="[1, 2, 3, 4, 5]" t-as="n" t-key="n">
+                                                <button class="btn btn-sm"
+                                                    t-att-class="formState.brLives === n ? 'btn-danger' : 'btn-outline-danger'"
+                                                    t-on-click="() => this.formState.brLives = n">
+                                                    <t t-esc="livesDisplay(n)"/>
+                                                </button>
+                                            </t>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted"
+                                            title="Number of last-place players who lose a life each round">
+                                            Losers per round
+                                        </label>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <t t-foreach="[1, 2, 3]" t-as="n" t-key="n">
+                                                <button class="btn btn-sm"
+                                                    t-att-class="formState.brCutoff === n ? 'btn-warning' : 'btn-outline-secondary'"
+                                                    t-on-click="() => this.formState.brCutoff = n">
+                                                    Bottom <t t-esc="n"/>
+                                                </button>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </t>
                                 <t t-if="props.taskGroups and props.taskGroups.length">
                                     <div class="mb-3">
                                         <label class="form-label text-muted">Task groups</label>
@@ -226,14 +310,26 @@
                                 </h3>
                                 <p class="text-muted mb-0">
                                     Host: <span class="fw-bold"><t t-esc="props.game.host_name"/></span>
-                                    <span class="ms-3 badge text-bg-secondary">
-                                        <t t-if="props.game.game_mode === 'best_of'">
+                                    <t t-if="props.game.game_mode === 'battle_royale'">
+                                        <span class="ms-3 badge text-bg-danger">
+                                            💀 Battle Royale · <t t-esc="props.game.br_lives"/> lives · bottom <t t-esc="props.game.br_cutoff"/> lose a life
+                                        </span>
+                                    </t>
+                                    <t t-elif="props.game.game_mode === 'time_attack'">
+                                        <span class="ms-3 badge text-bg-info">
+                                            ⏱ Time Attack · <t t-esc="props.game.ta_duration"/>s
+                                        </span>
+                                    </t>
+                                    <t t-elif="props.game.game_mode === 'best_of'">
+                                        <span class="ms-3 badge text-bg-secondary">
                                             Best of <t t-esc="props.game.total_rounds"/> · first to <t t-esc="props.game.rounds_to_win"/> wins
-                                        </t>
-                                        <t t-else="">
+                                        </span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="ms-3 badge text-bg-secondary">
                                             <t t-esc="props.game.total_rounds"/> round<t t-if="props.game.total_rounds > 1">s</t>
-                                        </t>
-                                    </span>
+                                        </span>
+                                    </t>
                                     <t t-if="props.game.task_groups and props.game.task_groups.length">
                                         <t t-foreach="props.game.task_groups" t-as="group" t-key="group.id">
                                             <span class="ms-2 badge text-bg-light border">

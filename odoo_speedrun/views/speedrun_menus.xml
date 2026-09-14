@@ -140,4 +140,10 @@
         parent="menu_speedrun_config"
         action="speedrun_equipment_set_action"
         sequence="6"/>
+
+    <menuitem id="menu_speedrun_daily"
+        name="Daily Challenges"
+        parent="menu_speedrun_config"
+        action="speedrun_daily_task_action"
+        sequence="7"/>
 </odoo>

@@ -23,6 +23,7 @@
         'views/speedrun_tournament_views.xml',
         'views/speedrun_leaderboard_views.xml',
         'views/speedrun_profile_views.xml',
+        'views/speedrun_daily_views.xml',
         'wizard/speedrun_task_import_views.xml',
         'views/speedrun_equipment_views.xml',
         'views/speedrun_battle_views.xml',

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Daily Task list -->
+    <record id="speedrun_daily_task_view_list" model="ir.ui.view">
+        <field name="name">speedrun.daily.task.list</field>
+        <field name="model">speedrun.daily.task</field>
+        <field name="arch" type="xml">
+            <list default_order="date desc">
+                <field name="date"/>
+                <field name="task_id"/>
+                <field name="completion_count" string="Completions"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Daily Task form -->
+    <record id="speedrun_daily_task_view_form" model="ir.ui.view">
+        <field name="name">speedrun.daily.task.form</field>
+        <field name="model">speedrun.daily.task</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="date"/>
+                        <field name="task_id"/>
+                        <field name="completion_count" string="Completions"/>
+                    </group>
+                    <notebook>
+                        <page string="Results">
+                            <field name="result_ids">
+                                <list>
+                                    <field name="user_id"/>
+                                    <field name="start_time"/>
+                                    <field name="finish_time"/>
+                                    <field name="duration_ms" string="Duration (ms)"/>
+                                    <field name="completed" widget="boolean"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="speedrun_daily_task_action" model="ir.actions.act_window">
+        <field name="name">Daily Challenges</field>
+        <field name="res_model">speedrun.daily.task</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

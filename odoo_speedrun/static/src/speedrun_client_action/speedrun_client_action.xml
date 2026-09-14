@@ -11,13 +11,36 @@
 
             <!-- Round indicator -->
             <t t-if="state.game and state.game.current_round > 0 and state.phase !== 'lobby'">
-                <div class="mb-3">
-                    <span class="badge text-bg-primary">
-                        Round <t t-esc="state.game.current_round"/> / <t t-esc="state.game.total_rounds"/>
-                    </span>
-                    <span t-if="state.game.game_mode === 'best_of'" class="badge text-bg-secondary ms-1">
-                        First to <t t-esc="state.game.rounds_to_win"/> wins
-                    </span>
+                <div class="mb-3 d-flex flex-wrap justify-content-center gap-1">
+                    <t t-if="state.game.game_mode === 'battle_royale'">
+                        <span class="badge text-bg-danger">
+                            💀 Battle Royale · Round <t t-esc="state.game.current_round"/>
+                        </span>
+                        <span class="badge text-bg-secondary">
+                            <t t-esc="brActivePlayers"/> alive
+                        </span>
+                        <t t-if="myLivesRemaining !== null">
+                            <span t-att-class="myLivesRemaining > 0 ? 'badge text-bg-warning' : 'badge text-bg-dark'">
+                                <t t-esc="livesDisplay(myLivesRemaining)"/>
+                            </span>
+                        </t>
+                    </t>
+                    <t t-elif="state.game.game_mode === 'time_attack'">
+                        <span class="badge text-bg-info">
+                            ⏱ Time Attack
+                        </span>
+                        <span class="badge text-bg-secondary">
+                            <t t-esc="state.game.ta_duration"/>s
+                        </span>
+                    </t>
+                    <t t-else="">
+                        <span class="badge text-bg-primary">
+                            Round <t t-esc="state.game.current_round"/> / <t t-esc="state.game.total_rounds"/>
+                        </span>
+                        <span t-if="state.game.game_mode === 'best_of'" class="badge text-bg-secondary">
+                            First to <t t-esc="state.game.rounds_to_win"/> wins
+                        </span>
+                    </t>
                 </div>
             </t>
 
@@ -91,6 +114,10 @@
             <div class="o_speedrun_content w-100"
                  t-att-style="(state.phase === 'tournaments' || state.phase === 'tournament') ? 'max-width: 1200px;' : 'max-width: 900px;'">
                 <t t-if="state.phase === 'lobby'">
+                    <t t-if="!state.game">
+                        <!-- Daily Challenge card -->
+                        <DailyChallenge/>
+                    </t>
                     <GameLobby
                         game="state.game"
                         stats="state.stats"
@@ -171,20 +198,30 @@
                             <div class="card-body p-0">
                                 <div class="list-group list-group-flush">
                                     <t t-foreach="state.game.players" t-as="player" t-key="player.user_id">
-                                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                                            <span class="fw-bold"><t t-esc="player.user_name"/></span>
-                                            <t t-if="player.state === 'finished'">
-                                                <span class="badge text-bg-success">
-                                                    <i class="fa fa-check me-1"/>
-                                                    <t t-esc="formatTime(player.duration_ms)"/>
+                                        <!-- In BR, skip eliminated players who don't participate this round -->
+                                        <t t-if="state.game.game_mode !== 'battle_royale' or (player.lives_remaining || 0) > 0">
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span class="fw-bold">
+                                                    <t t-esc="player.user_name"/>
+                                                    <t t-if="state.game.game_mode === 'battle_royale'">
+                                                        <span class="ms-1 small text-muted">
+                                                            <t t-esc="livesDisplay(player.lives_remaining || 0)"/>
+                                                        </span>
+                                                    </t>
                                                 </span>
-                                            </t>
-                                            <t t-else="">
-                                                <span class="badge text-bg-secondary">
-                                                    <i class="fa fa-spinner fa-spin me-1"/>Playing...
-                                                </span>
-                                            </t>
-                                        </div>
+                                                <t t-if="player.state === 'finished'">
+                                                    <span class="badge text-bg-success">
+                                                        <i class="fa fa-check me-1"/>
+                                                        <t t-esc="formatTime(player.duration_ms)"/>
+                                                    </span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="badge text-bg-secondary">
+                                                        <i class="fa fa-spinner fa-spin me-1"/>Playing...
+                                                    </span>
+                                                </t>
+                                            </div>
+                                        </t>
                                     </t>
                                 </div>
                             </div>
@@ -192,6 +229,14 @@
                     </div>
                 </t>
 
+                <t t-if="state.phase === 'time_attack' and state.game">
+                    <GameTimeAttack
+                        game="state.game"
+                        userId="user.userId"
+                        isHost="state.game.host_id === user.userId"
+                        onEnd.bind="endTimeAttack"
+                    />
+                </t>
                 <t t-if="state.phase === 'round_results'">
                     <GameResults
                         game="state.game"

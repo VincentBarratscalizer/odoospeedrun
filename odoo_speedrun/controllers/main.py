@@ -81,8 +81,17 @@ class SpeedrunController(http.Controller):
         )
 
     @http.route('/odoo_speedrun/create_game', type='jsonrpc', auth='user')
-    def create_game(self, name=None, max_players=8, total_rounds=3, group_ids=None):
-        vals = {'max_players': max_players, 'total_rounds': int(total_rounds)}
+    def create_game(self, name=None, max_players=8, total_rounds=3, group_ids=None,
+                    game_mode='points', br_lives=3, br_cutoff=1, ta_duration=120):
+        valid_modes = ('points', 'best_of', 'battle_royale', 'time_attack')
+        vals = {
+            'max_players': max_players,
+            'total_rounds': int(total_rounds),
+            'game_mode': game_mode if game_mode in valid_modes else 'points',
+            'br_lives': max(1, int(br_lives or 3)),
+            'br_cutoff': max(1, int(br_cutoff or 1)),
+            'ta_duration': max(30, int(ta_duration or 120)),
+        }
         if name:
             vals['name'] = name
         if group_ids:
@@ -245,6 +254,65 @@ class SpeedrunController(http.Controller):
                 'points': r.points,
             } for r in rr]
         return info
+
+    # ------------------------------------------------------------------
+    # Time Attack
+    # ------------------------------------------------------------------
+
+    @http.route('/odoo_speedrun/time_attack/check', type='jsonrpc', auth='user')
+    def time_attack_check(self, game_id):
+        """Check whether the player completed their current Time Attack task."""
+        game = request.env['speedrun.game'].browse(int(game_id))
+        if not game.exists():
+            return {'error': 'Game not found.'}
+        return game.action_ta_check_completion()
+
+    @http.route('/odoo_speedrun/time_attack/end', type='jsonrpc', auth='user')
+    def time_attack_end(self, game_id):
+        """End a Time Attack game (host only — called when the client timer expires)."""
+        game = request.env['speedrun.game'].browse(int(game_id))
+        if not game.exists():
+            return {'error': 'Game not found.'}
+        try:
+            return game.action_ta_end()
+        except Exception as e:
+            return {'error': str(e)}
+
+    # ------------------------------------------------------------------
+    # Daily Challenge
+    # ------------------------------------------------------------------
+
+    @http.route('/odoo_speedrun/daily/today', type='jsonrpc', auth='user')
+    def daily_today(self):
+        """Return today's daily task and the current user's status."""
+        daily = request.env['speedrun.daily.task']._get_or_create_today()
+        if not daily:
+            return {'error': 'No tasks available for today.'}
+        return daily._get_info(request.env.uid)
+
+    @http.route('/odoo_speedrun/daily/start', type='jsonrpc', auth='user')
+    def daily_start(self):
+        """Record the start of the daily challenge for the current user."""
+        daily = request.env['speedrun.daily.task']._get_or_create_today()
+        if not daily:
+            return {'error': 'No tasks available for today.'}
+        return daily._start_for_user(request.env.uid)
+
+    @http.route('/odoo_speedrun/daily/check', type='jsonrpc', auth='user')
+    def daily_check(self):
+        """Check whether the user completed the daily task."""
+        daily = request.env['speedrun.daily.task']._get_or_create_today()
+        if not daily:
+            return {'error': 'No tasks available for today.'}
+        return daily._check_completion(request.env.uid)
+
+    @http.route('/odoo_speedrun/daily/leaderboard', type='jsonrpc', auth='user')
+    def daily_leaderboard(self):
+        """Return the full daily leaderboard."""
+        daily = request.env['speedrun.daily.task']._get_or_create_today()
+        if not daily:
+            return []
+        return daily._get_leaderboard_data(limit=100)
 
     # ------------------------------------------------------------------
     # Matchmaking

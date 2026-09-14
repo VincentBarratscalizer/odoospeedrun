@@ -37,7 +37,13 @@ class SpeedrunGame(models.Model):
     game_mode = fields.Selection([
         ('points', 'Points (fixed rounds)'),
         ('best_of', 'Best Of (first to win a majority of rounds)'),
+        ('battle_royale', 'Battle Royale (last player standing)'),
+        ('time_attack', 'Time Attack (most tasks in fixed time)'),
     ], default='points', required=True, string='Game Mode')
+    br_lives = fields.Integer(string='Lives per Player', default=3,
+                              help="Battle Royale: number of lives each player starts with.")
+    br_cutoff = fields.Integer(string='Losers per Round', default=1,
+                               help="Battle Royale: number of last-place players who lose a life each round.")
     total_rounds = fields.Integer(default=3, string='Number of Rounds',
                                   help="In Best Of mode, this is the maximum number of rounds.")
     rounds_to_win = fields.Integer(compute='_compute_rounds_to_win', string='Rounds to Win')
@@ -53,6 +59,14 @@ class SpeedrunGame(models.Model):
     tournament_match_id = fields.Many2one('speedrun.tournament.match', readonly=True,
                                           ondelete='set null',
                                           help="Set when this game backs a tournament match.")
+
+    # Time Attack fields
+    ta_duration = fields.Integer(
+        string='Time Attack Duration (s)', default=120,
+        help="Time Attack mode: total play time in seconds (default 2 minutes).")
+    ta_task_seq_ids = fields.One2many(
+        'speedrun.game.task.seq', 'game_id', string='Task Sequence',
+        help="Ordered list of tasks for Time Attack mode (shared by all players).")
 
     @api.depends('player_ids')
     def _compute_player_count(self):
@@ -166,6 +180,12 @@ class SpeedrunGame(models.Model):
             raise UserError("Game has already started.")
         if len(self.player_ids) < 1:
             raise UserError("Need at least 1 player to start.")
+        # Initialise lives for Battle Royale mode
+        if self.game_mode == 'battle_royale':
+            self.player_ids.write({'lives_remaining': self.br_lives})
+        # Time Attack: generate task sequence and use dedicated start logic
+        if self.game_mode == 'time_attack':
+            return self._start_ta_game()
         return self._start_round()
 
     def action_next_round(self):
@@ -175,7 +195,10 @@ class SpeedrunGame(models.Model):
             raise AccessError("Only the host can start the next round.")
         if self.state != 'round_finished':
             raise UserError("Current round is not finished yet.")
-        if self.current_round >= self.total_rounds:
+        if self.game_mode == 'time_attack':
+            raise UserError("Time Attack has no rounds — use the time attack end action.")
+        # Battle Royale has no fixed round limit — game ends by elimination
+        if self.game_mode != 'battle_royale' and self.current_round >= self.total_rounds:
             raise UserError("All rounds are already completed.")
         return self._start_round()
 
@@ -195,8 +218,13 @@ class SpeedrunGame(models.Model):
             'start_time': False,
             'end_time': False,
         })
-        # Reset player states for the new round
-        self.player_ids.write({
+        # Reset player states for the new round.
+        # In Battle Royale, only reset players who still have lives.
+        if self.game_mode == 'battle_royale':
+            active_players = self.player_ids.filtered(lambda p: p.lives_remaining > 0)
+        else:
+            active_players = self.player_ids
+        active_players.write({
             'state': 'playing',
             'finish_time': False,
             'duration_ms': 0,
@@ -222,14 +250,26 @@ class SpeedrunGame(models.Model):
             'state': 'running',
             'start_time': now,
         })
-        self._bus_send('speedrun/game_started', {
-            'game_id': self.id,
-            'task_name': self.task_id.name,
-            'task_description': self.task_id.description or '',
-            'start_time': fields.Datetime.to_string(now),
-            'current_round': self.current_round,
-            'total_rounds': self.total_rounds,
-        })
+        if self.game_mode == 'time_attack':
+            # Time Attack: broadcast a dedicated start event (no shared task — each
+            # player progresses through the sequence independently).
+            first_seq = self.ta_task_seq_ids.filtered(lambda s: s.sequence == 0)
+            self._bus_send('speedrun/ta_game_started', {
+                'game_id': self.id,
+                'ta_duration': self.ta_duration,
+                'start_time': fields.Datetime.to_string(now),
+                'task_name': first_seq.task_id.name if first_seq else '',
+                'task_description': first_seq.task_id.description or '' if first_seq else '',
+            })
+        else:
+            self._bus_send('speedrun/game_started', {
+                'game_id': self.id,
+                'task_name': self.task_id.name,
+                'task_description': self.task_id.description or '',
+                'start_time': fields.Datetime.to_string(now),
+                'current_round': self.current_round,
+                'total_rounds': self.total_rounds,
+            })
         return True
 
     def action_check_completion(self, user_id=None):
@@ -360,6 +400,11 @@ class SpeedrunGame(models.Model):
 
     def _end_round(self, now):
         """End the current round and determine if game is over."""
+        # Battle Royale has its own end-of-round logic
+        if self.game_mode == 'battle_royale':
+            self._end_round_br(now)
+            return
+
         # Mark remaining players as DNF with 0 points
         dnf_players = self.player_ids.filtered(lambda p: p.state == 'playing')
         for p in dnf_players:
@@ -407,6 +452,258 @@ class SpeedrunGame(models.Model):
             self.write({'state': 'round_finished'})
             self._bus_send('speedrun/round_over', self._build_round_over_payload())
 
+    # ------------------------------------------------------------------
+    # Battle Royale helpers
+    # ------------------------------------------------------------------
+
+    def _end_round_br(self, now):
+        """End a Battle Royale round: deduct lives, check for survivors."""
+        # Force-DNF players still playing (they ran out of time / everyone else finished)
+        for p in self.player_ids.filtered(lambda p: p.state == 'playing'):
+            p.write({'state': 'dnf'})
+            self.env['speedrun.round.result'].create({
+                'game_id': self.id,
+                'round_number': self.current_round,
+                'task_id': self.task_id.id,
+                'user_id': p.user_id.id,
+                'rank': 0,
+                'duration_ms': 0,
+                'points': 0,
+            })
+
+        self.write({'end_time': now})
+
+        # Deduct lives from the last-place players
+        life_changes = self._apply_br_life_deduction()
+
+        # Count survivors (players still with lives > 0)
+        active = self.player_ids.filtered(lambda p: p.lives_remaining > 0)
+
+        if len(active) <= 1:
+            # Game over: last survivor wins; if simultaneous elimination pick best last round
+            winner = active[0] if active else self._br_last_round_best_player()
+            self.write({'state': 'finished', 'winner_id': winner.user_id.id})
+            elo_changes = self.env['speedrun.profile'].sudo()._process_game_results(self.sudo())
+            payload = self._build_game_over_payload()
+            payload['elo_changes'] = elo_changes
+            payload['life_changes'] = life_changes
+            self._bus_send('speedrun/game_over', payload)
+            if self.tournament_match_id:
+                self.tournament_match_id.sudo()._on_game_over()
+        else:
+            self.write({'state': 'round_finished'})
+            payload = self._build_round_over_payload()
+            payload['life_changes'] = life_changes
+            self._bus_send('speedrun/round_over', payload)
+
+    def _apply_br_life_deduction(self):
+        """Deduct one life from the last `br_cutoff` players this round.
+
+        Ordering: finishers by rank (fastest first), then DNF players.
+        The tail of this list loses a life.  Returns a list of dicts
+        describing each life change, to be sent on the bus.
+        """
+        round_results = self.round_result_ids.filtered(
+            lambda r: r.round_number == self.current_round
+        )
+        finishers = round_results.filtered(lambda r: r.rank > 0).sorted('rank')
+        dnfs = round_results.filtered(lambda r: r.rank == 0).sorted('id')
+
+        ordered = list(finishers) + list(dnfs)   # best → worst
+        cutoff = min(self.br_cutoff, len(ordered))
+        loser_user_ids = {r.user_id.id for r in ordered[-cutoff:]} if cutoff else set()
+
+        life_changes = []
+        for player in self.player_ids:
+            if player.user_id.id in loser_user_ids:
+                player.lives_remaining = max(0, player.lives_remaining - 1)
+                life_changes.append({
+                    'user_id': player.user_id.id,
+                    'user_name': player.user_id.name,
+                    'lives_remaining': player.lives_remaining,
+                    'eliminated': player.lives_remaining <= 0,
+                })
+        return life_changes
+
+    def _br_last_round_best_player(self):
+        """Fallback winner when all players are eliminated in the same round.
+
+        Returns the player who performed best in the final round (lowest rank
+        among finishers; arbitrary among DNFs).
+        """
+        round_results = self.round_result_ids.filtered(
+            lambda r: r.round_number == self.current_round and r.rank > 0
+        ).sorted('rank')
+        if round_results:
+            best_uid = round_results[0].user_id.id
+            player = self.player_ids.filtered(lambda p: p.user_id.id == best_uid)
+            if player:
+                return player[0]
+        return self.player_ids[0]
+
+    # ------------------------------------------------------------------
+    # Time Attack
+    # ------------------------------------------------------------------
+
+    def _generate_ta_sequence(self, count=20):
+        """Pre-generate ``count`` distinct tasks for the Time Attack sequence."""
+        used_ids = []
+        for i in range(count):
+            task = self._pick_random_task(exclude_ids=used_ids)
+            self.env['speedrun.game.task.seq'].create({
+                'game_id': self.id,
+                'task_id': task.id,
+                'sequence': i,
+            })
+            # Avoid picking the same task again (best-effort; falls back if pool exhausted)
+            used_ids.append(task.id)
+
+    def _start_ta_game(self):
+        """Kick off a Time Attack game: generate the task sequence and send countdown."""
+        self._generate_ta_sequence(count=20)
+        self.write({
+            'state': 'countdown',
+            'current_round': 1,
+            'start_time': False,
+            'end_time': False,
+        })
+        self.player_ids.write({
+            'state': 'playing',
+            'finish_time': False,
+            'duration_ms': 0,
+            'ta_task_index': 0,
+            'ta_completed_count': 0,
+            'ta_last_task_time': False,
+        })
+        minutes = self.ta_duration // 60
+        self._bus_send('speedrun/countdown_start', {
+            'countdown_seconds': 5,
+            'game_id': self.id,
+            'current_round': 1,
+            'total_rounds': 1,
+            'task_name': '⏱ Time Attack',
+            'task_description': (
+                f'Complete as many tasks as you can in {minutes} minute'
+                f'{"s" if minutes != 1 else ""}! '
+                'Everyone gets the same task order — the most tasks wins.'
+            ),
+            'game_mode': 'time_attack',
+            'ta_duration': self.ta_duration,
+        })
+        return True
+
+    def action_ta_check_completion(self, user_id=None):
+        """Verify that a Time Attack player completed their current task.
+
+        On success: advances the player to the next task, broadcasts a score
+        update on the bus, and returns the next task info so the client can
+        immediately display it.
+        """
+        self.ensure_one()
+        user_id = user_id or self.env.uid
+        if self.state != 'running' or self.game_mode != 'time_attack':
+            return {'success': False, 'error': 'Game is not in Time Attack mode.'}
+
+        player = self.player_ids.filtered(lambda p: p.user_id.id == user_id)
+        if not player:
+            return {'success': False, 'error': 'You are not in this game.'}
+
+        # Get the player's current task from the shared sequence
+        current_seq = self.ta_task_seq_ids.filtered(lambda s: s.sequence == player.ta_task_index)
+        if not current_seq:
+            return {'success': False, 'error': 'No task available — please contact the host.'}
+
+        # Reference time: when the previous task was finished (game start for task 0)
+        start_ref = player.ta_last_task_time or self.start_time
+        completed = current_seq.task_id.sudo()._verify_completion(user_id, start_ref)
+        if not completed:
+            return {'success': False, 'error': 'Task not completed yet. Keep going!'}
+
+        now = fields.Datetime.now()
+        next_index = player.ta_task_index + 1
+
+        # Ensure the next task exists in the sequence (auto-extend if needed)
+        next_seq = self.ta_task_seq_ids.filtered(lambda s: s.sequence == next_index)
+        if not next_seq:
+            used_ids = self.ta_task_seq_ids.mapped('task_id').ids
+            next_task = self._pick_random_task(exclude_ids=used_ids)
+            next_seq = self.sudo().env['speedrun.game.task.seq'].create({
+                'game_id': self.id,
+                'task_id': next_task.id,
+                'sequence': next_index,
+            })
+
+        new_count = player.ta_completed_count + 1
+        player.sudo().write({
+            'ta_task_index': next_index,
+            'ta_completed_count': new_count,
+            'ta_last_task_time': now,
+        })
+
+        user = self.env['res.users'].browse(user_id)
+        self._bus_send('speedrun/ta_score_update', {
+            'user_id': user_id,
+            'user_name': user.name,
+            'ta_completed_count': new_count,
+            'next_task_name': next_seq.task_id.name,
+            'next_task_description': next_seq.task_id.description or '',
+        })
+
+        return {
+            'success': True,
+            'ta_completed_count': new_count,
+            'next_task_name': next_seq.task_id.name,
+            'next_task_description': next_seq.task_id.description or '',
+        }
+
+    def action_ta_end(self):
+        """End a Time Attack game (host only, called when the client-side timer expires).
+
+        Validates that at least ``ta_duration - 5`` seconds have elapsed (5 s
+        grace period to absorb network latency), syncs ``score`` for ELO
+        compatibility, then fires the standard ``game_over`` bus event.
+        """
+        self.ensure_one()
+        if self.env.uid != self.host_id.id:
+            raise AccessError("Only the host can end the Time Attack.")
+        if self.state != 'running' or self.game_mode != 'time_attack':
+            return {'success': False, 'error': 'Game is not running in Time Attack mode.'}
+
+        now = fields.Datetime.now()
+        elapsed = (now - self.start_time).total_seconds()
+        if elapsed < self.ta_duration - 5:
+            return {'success': False, 'error': 'Time has not expired yet.'}
+
+        # Sync ta_completed_count → score for ELO / profile pipeline
+        for p in self.player_ids:
+            p.score = p.ta_completed_count
+
+        # Mark all still-playing players as finished
+        for p in self.player_ids.filtered(lambda p: p.state == 'playing'):
+            p.write({'state': 'finished', 'finish_time': now})
+
+        # Winner: most tasks; lower id breaks ties deterministically
+        winner = max(self.player_ids, key=lambda p: (p.ta_completed_count, -p.id))
+        self.write({
+            'state': 'finished',
+            'winner_id': winner.user_id.id,
+            'end_time': now,
+        })
+
+        elo_changes = self.env['speedrun.profile'].sudo()._process_game_results(self.sudo())
+        payload = self._build_game_over_payload()
+        payload['elo_changes'] = elo_changes
+        self._bus_send('speedrun/game_over', payload)
+
+        if self.tournament_match_id:
+            self.tournament_match_id.sudo()._on_game_over()
+
+        return {'success': True}
+
+    # ------------------------------------------------------------------
+    # Payload builders
+    # ------------------------------------------------------------------
+
     def _build_round_over_payload(self):
         """Build payload for round_over bus notification."""
         round_results = self.round_result_ids.filtered(
@@ -439,9 +736,14 @@ class SpeedrunGame(models.Model):
         }
 
     def _build_standings(self):
-        """Build current standings (round wins first in best-of mode)."""
-        if self.game_mode == 'best_of':
+        """Build current standings sorted by game mode priority."""
+        if self.game_mode == 'battle_royale':
+            # Most lives remaining wins; score breaks ties
+            players = self.player_ids.sorted(lambda p: (-p.lives_remaining, -p.score))
+        elif self.game_mode == 'best_of':
             players = self.player_ids.sorted(lambda p: (-p.round_wins, -p.score))
+        elif self.game_mode == 'time_attack':
+            players = self.player_ids.sorted(lambda p: -p.ta_completed_count)
         else:
             players = self.player_ids.sorted(lambda p: -p.score)
         return [{
@@ -449,20 +751,32 @@ class SpeedrunGame(models.Model):
             'user_name': p.user_id.name,
             'score': p.score,
             'round_wins': p.round_wins,
+            'lives_remaining': p.lives_remaining,
+            'ta_completed_count': p.ta_completed_count,
         } for p in players]
 
     def _get_game_info(self):
         """Return game info dict for the frontend."""
         self.ensure_one()
         players = []
-        for p in self.player_ids.sorted(lambda p: (-p.round_wins, -p.score)
-                                        if self.game_mode == 'best_of' else -p.score):
+        if self.game_mode == 'battle_royale':
+            sorted_players = self.player_ids.sorted(lambda p: (-p.lives_remaining, -p.score))
+        elif self.game_mode == 'best_of':
+            sorted_players = self.player_ids.sorted(lambda p: (-p.round_wins, -p.score))
+        elif self.game_mode == 'time_attack':
+            sorted_players = self.player_ids.sorted(lambda p: -p.ta_completed_count)
+        else:
+            sorted_players = self.player_ids.sorted(lambda p: -p.score)
+        for p in sorted_players:
             players.append({
                 'user_id': p.user_id.id,
                 'user_name': p.user_id.name,
                 'state': p.state,
                 'score': p.score,
                 'round_wins': p.round_wins,
+                'lives_remaining': p.lives_remaining,
+                'ta_completed_count': p.ta_completed_count,
+                'ta_task_index': p.ta_task_index,
                 'duration_ms': p.duration_ms if p.state == 'finished' else None,
             })
 
@@ -481,6 +795,18 @@ class SpeedrunGame(models.Model):
                     'points': r.points,
                 } for r in rnd_results],
             })
+
+        # For Time Attack: task_name/description are mode-level labels, not round tasks
+        if self.game_mode == 'time_attack':
+            task_name = '⏱ Time Attack'
+            minutes = self.ta_duration // 60
+            task_description = (
+                f'Complete as many tasks as you can in {minutes} minute'
+                f'{"s" if minutes != 1 else ""}!'
+            )
+        else:
+            task_name = self.task_id.name if self.task_id else None
+            task_description = self.task_id.description if self.task_id else None
 
         info = {
             'id': self.id,
@@ -504,9 +830,12 @@ class SpeedrunGame(models.Model):
             'game_mode': self.game_mode,
             'total_rounds': self.total_rounds,
             'rounds_to_win': self.rounds_to_win,
+            'br_lives': self.br_lives,
+            'br_cutoff': self.br_cutoff,
+            'ta_duration': self.ta_duration,
             'current_round': self.current_round,
-            'task_name': self.task_id.name if self.task_id else None,
-            'task_description': self.task_id.description if self.task_id else None,
+            'task_name': task_name,
+            'task_description': task_description,
             'start_time': fields.Datetime.to_string(self.start_time) if self.start_time else None,
             'end_time': fields.Datetime.to_string(self.end_time) if self.end_time else None,
             'winner_id': self.winner_id.id if self.winner_id else None,
@@ -517,4 +846,13 @@ class SpeedrunGame(models.Model):
         if self.state == 'countdown':
             elapsed = (fields.Datetime.now() - self.write_date).total_seconds()
             info['countdown_remaining'] = max(1, int(5 - elapsed))
+        # For Time Attack: include the requesting user's current task
+        if self.game_mode == 'time_attack' and self.state == 'running':
+            uid = self.env.uid
+            my_player = self.player_ids.filtered(lambda p: p.user_id.id == uid)
+            if my_player:
+                idx = my_player.ta_task_index
+                seq = self.ta_task_seq_ids.filtered(lambda s: s.sequence == idx)
+                info['ta_current_task_name'] = seq.task_id.name if seq else ''
+                info['ta_current_task_description'] = seq.task_id.description or '' if seq else ''
         return info

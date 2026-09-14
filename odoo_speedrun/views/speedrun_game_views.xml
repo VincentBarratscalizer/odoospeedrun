@@ -39,8 +39,11 @@
                             <field name="host_id"/>
                             <field name="max_players"/>
                             <field name="game_mode"/>
-                            <field name="total_rounds"/>
+                            <field name="total_rounds" invisible="game_mode == 'battle_royale'"/>
                             <field name="rounds_to_win" invisible="game_mode != 'best_of'"/>
+                            <field name="br_lives" invisible="game_mode != 'battle_royale'"/>
+                            <field name="br_cutoff" invisible="game_mode != 'battle_royale'"/>
+                            <field name="ta_duration" invisible="game_mode != 'time_attack'"/>
                             <field name="current_round"/>
                         </group>
                         <group>
@@ -62,6 +65,7 @@
                                         decoration-danger="state == 'dnf'"/>
                                     <field name="score"/>
                                     <field name="round_wins"/>
+                                    <field name="lives_remaining"/>
                                     <field name="finish_time"/>
                                     <field name="duration_ms"/>
                                 </list>

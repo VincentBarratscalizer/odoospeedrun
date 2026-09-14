@@ -111,6 +111,13 @@ export class GameTimeAttack extends Component {
         return "text-primary";
     }
 
+    get timerStyle() {
+        const t = this.localState.timeLeft;
+        if (t <= 10) return "background: #fff5f5;";
+        if (t <= 30) return "background: #fffbf0;";
+        return "";
+    }
+
     get sortedPlayers() {
         return [...(this.props.game.players || [])].sort(
             (a, b) => (b.ta_completed_count || 0) - (a.ta_completed_count || 0),

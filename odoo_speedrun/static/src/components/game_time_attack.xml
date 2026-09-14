@@ -5,7 +5,7 @@
 
             <!-- Timer banner -->
             <div class="card mb-4 text-center border-0 shadow-sm"
-                 t-att-style="localState.timeLeft <= 10 ? 'background: #fff5f5;' : localState.timeLeft <= 30 ? 'background: #fffbf0;' : ''">
+                 t-att-style="timerStyle">
                 <div class="card-body py-3">
                     <div class="small text-uppercase text-muted mb-1 fw-bold">Time Remaining</div>
                     <div class="display-3 fw-bold font-monospace" t-att-class="timerClass">

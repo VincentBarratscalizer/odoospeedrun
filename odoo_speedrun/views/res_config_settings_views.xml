@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_speedrun" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.speedrun</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Speedrun" string="Speedrun" name="odoo_speedrun"
+                     logo="/odoo_speedrun/static/description/icon.png">
+                    <block title="Chest Pity" name="speedrun_pity_block"
+                           help="Reward unlucky streaks: after several chest openings without a good drop, the odds ramp up and eventually a high-rarity item is guaranteed.">
+                        <setting id="speedrun_pity_enabled_setting"
+                                 title="Enable the pity system on chests."
+                                 help="Turn the whole pity mechanic on or off.">
+                            <field name="speedrun_pity_enabled"/>
+                        </setting>
+                        <setting id="speedrun_pity_legendary_hard_setting"
+                                 invisible="not speedrun_pity_enabled"
+                                 string="Guaranteed Legendary"
+                                 help="Openings without a legendary before one is guaranteed (0 = off).">
+                            <field name="speedrun_pity_legendary_hard"/>
+                            <span class="text-muted ms-2">openings</span>
+                        </setting>
+                        <setting id="speedrun_pity_soft_start_setting"
+                                 invisible="not speedrun_pity_enabled"
+                                 string="Legendary Soft Pity"
+                                 help="Openings after which the legendary chance starts ramping up (0 = off).">
+                            <field name="speedrun_pity_soft_start"/>
+                            <span class="text-muted ms-2">openings, then +</span>
+                            <field name="speedrun_pity_soft_step" class="oe_inline"/>
+                            <span class="text-muted ms-1">weight / opening</span>
+                        </setting>
+                        <setting id="speedrun_pity_epic_hard_setting"
+                                 invisible="not speedrun_pity_enabled"
+                                 string="Guaranteed Epic+"
+                                 help="Openings without an epic-or-better before one is guaranteed (0 = off).">
+                            <field name="speedrun_pity_epic_hard"/>
+                            <span class="text-muted ms-2">openings</span>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="speedrun_config_settings_action" model="ir.actions.act_window">
+        <field name="name">Speedrun Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="context">{'module': 'odoo_speedrun'}</field>
+    </record>
+</odoo>

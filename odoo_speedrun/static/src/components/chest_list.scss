@@ -66,3 +66,21 @@
     0%, 100% { box-shadow: 0 4px 15px rgba(255, 215, 0, 0.25); }
     50%       { box-shadow: 0 4px 25px rgba(255, 215, 0, 0.5); }
 }
+
+.o_gacha_pity {
+    .o_pity_row { display: flex; flex-direction: column; gap: 4px; }
+    .o_pity_label { font-weight: 600; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .o_pity_bar {
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    .o_pity_fill {
+        height: 100%;
+        border-radius: 999px;
+        transition: width .3s ease;
+    }
+    .o_pity_legendary { background: linear-gradient(90deg, #ffcf3f, #ff8a00); }
+    .o_pity_epic { background: linear-gradient(90deg, #b06bff, #7a2fff); }
+}

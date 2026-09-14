@@ -1,5 +1,75 @@
 // Speedrun — minimal custom styling, everything else uses Odoo standard classes.
 
+// ─── Coins wallet pill ──────────────────────────────────────────────────────
+.o_speedrun_coins {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+    .o_coins_pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-weight: 800;
+        font-size: 1rem;
+        color: #7a5c00;
+        background: linear-gradient(135deg, #ffe89e, #ffcf3f);
+        border: 1px solid #e0ad2e;
+        border-radius: 999px;
+        padding: 0.25rem 0.9rem;
+        box-shadow: 0 2px 6px rgba(224, 173, 46, 0.35);
+
+        .o_coins_label { font-weight: 600; font-size: 0.8rem; opacity: 0.8; }
+    }
+}
+
+// ─── Unified hub navigation ─────────────────────────────────────────────────
+.o_speedrun_nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 720px;
+
+    .o_nav_item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        border: 2px solid var(--border-color, #dee2e6);
+        background: var(--card-bg, #fff);
+        border-radius: 999px;
+        padding: 0.5rem 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        color: var(--text-color, #334155);
+
+        .o_nav_icon { font-size: 1.15rem; line-height: 1; }
+        .o_nav_label { font-size: 0.9rem; }
+
+        &:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary, #714b67);
+        }
+
+        &.active {
+            border-color: var(--primary, #714b67);
+            background: var(--primary, #714b67);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(113, 75, 103, 0.3);
+        }
+    }
+
+    @media (max-width: 560px) {
+        .o_nav_item {
+            padding: 0.45rem 0.7rem;
+            .o_nav_label { display: none; }
+            .o_nav_icon { font-size: 1.35rem; }
+        }
+    }
+}
+
 .o_speedrun_countdown_number {
     animation: o-speedrun-pulse 0.8s ease-in-out infinite;
 }

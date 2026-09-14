@@ -22,6 +22,8 @@ access_speedrun_badge_award_user,speedrun.badge.award.user,model_speedrun_badge_
 access_speedrun_badge_award_admin,speedrun.badge.award.admin,model_speedrun_badge_award,base.group_system,1,1,1,1
 access_speedrun_matchmaking_queue_user,speedrun.matchmaking.queue.user,model_speedrun_matchmaking_queue,base.group_user,1,1,1,1
 access_speedrun_personal_best_user,speedrun.personal.best.user,model_speedrun_personal_best,base.group_user,1,0,0,0
+access_speedrun_task_score_user,speedrun.task.score.user,model_speedrun_task_score,base.group_user,1,0,0,0
+access_speedrun_task_score_admin,speedrun.task.score.admin,model_speedrun_task_score,base.group_system,1,1,1,1
 access_speedrun_tournament_user,speedrun.tournament.user,model_speedrun_tournament,base.group_user,1,1,1,1
 access_speedrun_tournament_reg_user,speedrun.tournament.registration.user,model_speedrun_tournament_registration,base.group_user,1,1,1,1
 access_speedrun_tournament_match_user,speedrun.tournament.match.user,model_speedrun_tournament_match,base.group_user,1,1,1,1
@@ -33,3 +35,5 @@ access_speedrun_player_equipment_user,speedrun.player.equipment.user,model_speed
 access_speedrun_player_equipment_admin,speedrun.player.equipment.admin,model_speedrun_player_equipment,base.group_system,1,1,1,1
 access_speedrun_equipment_set_user,speedrun.equipment.set.user,model_speedrun_equipment_set,base.group_user,1,0,0,0
 access_speedrun_equipment_set_admin,speedrun.equipment.set.admin,model_speedrun_equipment_set,base.group_system,1,1,1,1
+access_speedrun_battle_user,speedrun.battle.user,model_speedrun_battle,base.group_user,1,0,0,0
+access_speedrun_battle_admin,speedrun.battle.admin,model_speedrun_battle,base.group_system,1,1,1,1

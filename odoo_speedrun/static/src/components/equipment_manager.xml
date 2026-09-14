@@ -21,6 +21,7 @@
                         <span class="o_gear_score_value"><t t-esc="state.gearScore"/></span>
                         <span class="o_gear_score_label">⚡ GS</span>
                     </div>
+                    <div class="o_equip_coins mt-1">💰 <t t-esc="state.coins"/> pièces</div>
                 </div>
             </div>
 
@@ -80,6 +81,13 @@
                                             <div class="o_slot_item_name"><t t-esc="state.equipped[slot].name"/></div>
                                             <div class="o_slot_stars"><t t-esc="fusionStars(state.equipped[slot].fusion_level)"/></div>
                                             <div class="o_slot_score">+<t t-esc="state.equipped[slot].item_score"/> GS</div>
+                                            <div class="o_item_stats">
+                                                <t t-foreach="statChips(state.equipped[slot].stats)" t-as="st" t-key="st.key">
+                                                    <span class="o_stat_chip" t-att-title="st.label">
+                                                        <t t-esc="st.icon"/><t t-esc="st.value"/><t t-if="st.key === 'crit'">%</t>
+                                                    </span>
+                                                </t>
+                                            </div>
                                             <button class="btn btn-sm btn-outline-danger mt-1"
                                                     t-on-click="() => this.unequipSlot(slot)">
                                                 Retirer
@@ -135,6 +143,13 @@
                                             <span class="o_item_count">×<t t-esc="item.count"/></span>
                                         </t>
                                     </div>
+                                    <div class="o_item_stats">
+                                        <t t-foreach="statChips(item.stats)" t-as="st" t-key="st.key">
+                                            <span class="o_stat_chip" t-att-title="st.label">
+                                                <t t-esc="st.icon"/><t t-esc="st.value"/><t t-if="st.key === 'crit'">%</t>
+                                            </span>
+                                        </t>
+                                    </div>
                                     <t t-if="item.is_equipped">
                                         <div class="o_item_equipped_badge">✓ Équipé</div>
                                     </t>
@@ -147,12 +162,13 @@
                                         </t>
                                         <t t-if="canFuse(item)">
                                             <button class="btn btn-sm btn-warning"
-                                                    t-att-disabled="state.fusingId === item.id"
+                                                    t-att-disabled="state.fusingId === item.id or !canAffordFuse(item)"
+                                                    t-att-title="canAffordFuse(item) ? '' : 'Pas assez de pièces'"
                                                     t-on-click="() => this.fuseItem(item)">
                                                 <t t-if="state.fusingId === item.id">
                                                     <i class="fa fa-spinner fa-spin"/>
                                                 </t>
-                                                <t t-else="">⚗️ Fusionner</t>
+                                                <t t-else="">⚗️ Fusionner <span class="o_fuse_cost">💰<t t-esc="item.fusion_cost"/></span></t>
                                             </button>
                                         </t>
                                     </div>

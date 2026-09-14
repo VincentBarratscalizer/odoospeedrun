@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.LeaderboardPanel">
+        <div class="o_leaderboard_panel">
+
+            <!-- Header -->
+            <div class="o_lb_header d-flex justify-content-between align-items-center mb-3">
+                <button class="btn btn-outline-secondary" t-on-click="props.onBack">
+                    ← Retour
+                </button>
+                <h3 class="mb-0">🏅 Classements</h3>
+                <div style="width: 80px;"/>
+            </div>
+
+            <!-- Category tabs -->
+            <div class="o_lb_tabs mb-3">
+                <t t-foreach="tabs" t-as="tab" t-key="tab.key">
+                    <button class="o_lb_tab"
+                            t-att-class="state.kind === tab.key ? 'active' : ''"
+                            t-on-click="() => this.switchTab(tab.key)">
+                        <span class="o_lb_tab_icon"><t t-esc="tab.icon"/></span>
+                        <span class="o_lb_tab_label"><t t-esc="tab.label"/></span>
+                    </button>
+                </t>
+            </div>
+
+            <!-- Task selector (tasks tab only) -->
+            <t t-if="state.kind === 'tasks' and state.tasks.length">
+                <div class="o_lb_task_picker mb-3">
+                    <label class="me-2 text-muted small">Tâche :</label>
+                    <select class="form-select form-select-sm d-inline-block" style="width: auto;"
+                            t-on-change="onSelectTask">
+                        <t t-foreach="state.tasks" t-as="task" t-key="task.id">
+                            <option t-att-value="task.id"
+                                    t-att-selected="task.id === state.selectedTaskId">
+                                <t t-esc="task.name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+            </t>
+
+            <t t-if="state.loading">
+                <div class="text-center py-5 text-muted">
+                    <i class="fa fa-spinner fa-spin fa-2x"/>
+                </div>
+            </t>
+
+            <t t-elif="!state.rows.length">
+                <div class="text-center py-5 text-muted">
+                    <div class="display-6 mb-2">🏜️</div>
+                    <p class="mb-0">Aucun classement pour l'instant. Jouez pour apparaître ici !</p>
+                </div>
+            </t>
+
+            <t t-else="">
+                <div class="o_lb_table">
+                    <t t-foreach="state.rows" t-as="row" t-key="row.user_id">
+                        <div class="o_lb_row" t-att-class="row.is_me ? 'o_lb_me' : ''">
+                            <div class="o_lb_rank" t-att-class="row_index &lt; 3 ? 'o_lb_top' : ''">
+                                <t t-esc="medal(row_index)"/>
+                            </div>
+                            <img class="o_lb_avatar" t-att-src="row.avatar_url" alt=""/>
+                            <div class="o_lb_name">
+                                <span class="fw-bold"><t t-esc="row.name"/></span>
+                                <t t-if="row.is_me"><span class="badge text-bg-primary ms-1">Vous</span></t>
+                                <div class="o_lb_sub text-muted small">
+                                    <t t-if="state.kind === 'elo'">
+                                        Niv. <t t-esc="row.level"/> · <t t-esc="row.games"/> parties · <t t-esc="row.win_rate"/>% V
+                                    </t>
+                                    <t t-elif="state.kind === 'gear'">
+                                        <t t-if="row.title"><t t-esc="row.title"/> · </t>Puissance <t t-esc="row.power"/>
+                                    </t>
+                                    <t t-elif="state.kind === 'arena'">
+                                        <t t-esc="row.wins"/>V / <t t-esc="row.losses"/>D · <t t-esc="row.win_rate"/>% · Puiss. <t t-esc="row.power"/>
+                                    </t>
+                                    <t t-elif="state.kind === 'tasks'">
+                                        Best <t t-esc="formatTime(row.best_time_ms)"/> · <t t-esc="row.rounds"/> manches · <t t-esc="row.wins"/> 🥇
+                                    </t>
+                                </div>
+                            </div>
+                            <div class="o_lb_value">
+                                <span class="o_lb_value_num"><t t-esc="row.value"/></span>
+                                <span class="o_lb_value_unit"><t t-esc="unit"/></span>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

@@ -429,6 +429,7 @@ class SpeedrunController(http.Controller):
         return {
             'chests': [{'id': c.id, 'rarity': c.rarity, 'source': c.source} for c in pending],
             'daily_available': profile.last_daily_chest != today,
+            'pity': profile._pity_payload(),
         }
 
     @http.route('/odoo_speedrun/open_chest', type='jsonrpc', auth='user')
@@ -495,11 +496,14 @@ class SpeedrunController(http.Controller):
                 'count': e.count,
                 'fusion_level': e.fusion_level,
                 'item_score': e.item_score,
+                'fusion_cost': profile._fusion_cost(e),
+                'stats': e._stat_contribution(),
                 'is_equipped': e.id in equipped_ids,
                 'set_ids': e.equipment_id.set_ids.ids,
             } for e in collection],
             'sets': sets_data,
             'gear_score': profile.gear_score,
+            'coins': profile.coins,
             'active_title': profile.active_title or '',
             'equipped': {
                 'peripheral': profile._slot_payload(profile.equipped_peripheral_id),
@@ -525,3 +529,134 @@ class SpeedrunController(http.Controller):
     def fuse_equipment(self, player_equip_id):
         profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
         return profile.sudo()._fuse_equipment(player_equip_id)
+
+    # ------------------------------------------------------------------
+    # Arena (avatar PvP battles)
+    # ------------------------------------------------------------------
+    @http.route('/odoo_speedrun/my_combat_stats', type='jsonrpc', auth='user')
+    def my_combat_stats(self):
+        profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
+        return profile._self_combat_payload()
+
+    @http.route('/odoo_speedrun/arena_opponents', type='jsonrpc', auth='user')
+    def arena_opponents(self, limit=24):
+        Profile = request.env['speedrun.profile'].sudo()
+        me = Profile._get_or_create(request.env.user)
+        # Ensure every real (internal) user has a profile so there's someone to fight.
+        users = request.env['res.users'].sudo().search([
+            ('share', '=', False),
+            ('active', '=', True),
+            ('id', 'not in', [request.env.uid, request.env.ref('base.user_root').id]),
+        ])
+        Profile._get_or_create(users)
+        opponents = Profile.search([('id', '!=', me.id), ('user_id', 'in', users.ids)])
+        # Closest arena rating first (more interesting matchups).
+        opponents = opponents.sorted(key=lambda p: abs(p.arena_rating - me.arena_rating))[:int(limit)]
+        return {
+            'me': me._self_combat_payload(),
+            'opponents': [p._combat_payload() for p in opponents],
+        }
+
+    @http.route('/odoo_speedrun/arena_fight', type='jsonrpc', auth='user')
+    def arena_fight(self, opponent_profile_id):
+        Profile = request.env['speedrun.profile'].sudo()
+        me = Profile._get_or_create(request.env.user)
+        opponent = Profile.browse(int(opponent_profile_id)).exists()
+        if not opponent:
+            return {'error': 'Opponent not found.'}
+        if opponent.id == me.id:
+            return {'error': 'You cannot challenge yourself.'}
+        quota = me._arena_quota()
+        if quota['remaining'] <= 0:
+            return {
+                'error': 'Quota de combats journalier atteint. Revenez demain !',
+                'quota_reached': True,
+                'arena_quota': quota,
+            }
+        try:
+            result = request.env['speedrun.battle'].sudo()._fight(me, opponent)
+        except Exception as e:
+            return {'error': str(e)}
+        me._consume_fight()
+        result['arena_quota'] = me._arena_quota()
+        return result
+
+    # ------------------------------------------------------------------
+    # Unified leaderboards (ELO / Equipment / Arena / Tasks)
+    # ------------------------------------------------------------------
+    @http.route('/odoo_speedrun/leaderboard_data', type='jsonrpc', auth='user')
+    def leaderboard_data(self, kind='elo', task_id=None, limit=25):
+        uid = request.env.uid
+        Profile = request.env['speedrun.profile'].sudo()
+        limit = int(limit)
+
+        def base(p):
+            return {
+                'user_id': p.user_id.id,
+                'name': p.user_id.name,
+                'avatar_url': f'/web/image/res.users/{p.user_id.id}/avatar_128',
+                'level': p.level,
+                'is_me': p.user_id.id == uid,
+            }
+
+        if kind == 'gear':
+            profiles = Profile.search([('gear_score', '>', 0)],
+                                      order='gear_score desc', limit=limit)
+            rows = [{**base(p), 'value': p.gear_score, 'title': p.active_title or '',
+                     'power': p.power} for p in profiles]
+            return {'kind': kind, 'rows': rows}
+
+        if kind == 'arena':
+            profiles = Profile.search([('arena_battles', '>', 0)],
+                                      order='arena_rating desc, arena_wins desc', limit=limit)
+            rows = [{**base(p), 'value': p.arena_rating, 'wins': p.arena_wins,
+                     'losses': p.arena_losses, 'win_rate': round(p.arena_win_rate, 1),
+                     'power': p.power} for p in profiles]
+            return {'kind': kind, 'rows': rows}
+
+        if kind == 'tasks':
+            Score = request.env['speedrun.task.score'].sudo()
+            tasks = [{'id': t.id, 'name': t.name}
+                     for t in Score.search([]).task_id.sorted('name')]
+            selected = int(task_id) if task_id else (tasks[0]['id'] if tasks else None)
+            rows = []
+            if selected:
+                scores = Score.search([('task_id', '=', selected)],
+                                      order='elo desc, best_time_ms asc', limit=limit)
+                rows = [{
+                    'user_id': s.user_id.id,
+                    'name': s.user_id.name,
+                    'avatar_url': f'/web/image/res.users/{s.user_id.id}/avatar_128',
+                    'value': s.elo,
+                    'peak': s.peak_elo,
+                    'rounds': s.rounds_played,
+                    'wins': s.rounds_won,
+                    'best_time_ms': s.best_time_ms,
+                    'is_me': s.user_id.id == uid,
+                } for s in scores]
+            return {'kind': kind, 'rows': rows, 'tasks': tasks, 'selected_task_id': selected}
+
+        # default: global ELO
+        profiles = Profile.search([('games_played', '>', 0)],
+                                  order='elo desc, peak_elo desc', limit=limit)
+        rows = [{**base(p), 'value': p.elo, 'peak': p.peak_elo,
+                 'games': p.games_played, 'wins': p.games_won,
+                 'win_rate': round(p.win_rate, 1)} for p in profiles]
+        return {'kind': 'elo', 'rows': rows}
+
+    @http.route('/odoo_speedrun/arena_leaderboard', type='jsonrpc', auth='user')
+    def arena_leaderboard(self, limit=20):
+        profiles = request.env['speedrun.profile'].sudo().search(
+            [('arena_battles', '>', 0)], order='arena_rating desc, arena_wins desc', limit=int(limit))
+        return [{
+            'user_id': p.user_id.id,
+            'name': p.user_id.name,
+            'avatar_url': f'/web/image/res.users/{p.user_id.id}/avatar_128',
+            'arena_rating': p.arena_rating,
+            'arena_wins': p.arena_wins,
+            'arena_losses': p.arena_losses,
+            'arena_win_rate': round(p.arena_win_rate, 1),
+            'power': p.power,
+            'level': p.level,
+            'is_me': p.user_id.id == request.env.uid,
+        } for p in profiles]

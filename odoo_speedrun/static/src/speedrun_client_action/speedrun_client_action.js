@@ -12,11 +12,14 @@ import { TournamentPanel } from "../components/tournament_panel";
 import { ChestOpening } from "../components/chest_opening";
 import { ChestList } from "../components/chest_list";
 import { EquipmentManager } from "../components/equipment_manager";
+import { ArenaPanel } from "../components/arena_panel";
+import { BattleArena } from "../components/battle_arena";
+import { LeaderboardPanel } from "../components/leaderboard_panel";
 import { playSound, playCountdownBeep } from "../services/sound_service";
 
 export class SpeedrunClientAction extends Component {
     static template = "odoo_speedrun.SpeedrunClientAction";
-    static components = { GameLobby, GameTimer, GameResults, TournamentPanel, ChestOpening, ChestList, EquipmentManager };
+    static components = { GameLobby, GameTimer, GameResults, TournamentPanel, ChestOpening, ChestList, EquipmentManager, ArenaPanel, BattleArena, LeaderboardPanel };
     static props = ["*"];
 
     setup() {
@@ -37,6 +40,7 @@ export class SpeedrunClientAction extends Component {
             myPoints: 0,
             checkResult: null,
             stats: null,
+            coins: 0,
             taskGroups: [],
             matchmaking: { searching: false, waitSeconds: 0, queueSize: 0 },
             // Tournaments
@@ -44,6 +48,8 @@ export class SpeedrunClientAction extends Component {
             tournament: null,
             // Gacha chests
             chests: { pendingCount: 0, currentChest: null },
+            // Arena battles
+            battleReplay: null,
         });
         // Id of a tournament to return to after a bracket match finishes
         this._returnTournamentId = null;
@@ -74,6 +80,7 @@ export class SpeedrunClientAction extends Component {
         try {
             this.state.stats = await rpc("/odoo_speedrun/my_stats", {});
             this.state.chests.pendingCount = this.state.stats.pending_chest_count || 0;
+            this.state.coins = this.state.stats.coins || 0;
         } catch {
             // Stats are optional, ignore failures
         }
@@ -281,6 +288,17 @@ export class SpeedrunClientAction extends Component {
                         { type: "success", sticky: false },
                     );
                     this.state.chests.pendingCount++;
+                    break;
+                case "speedrun/coins_changed":
+                    this.state.coins = payload.coins;
+                    break;
+                case "speedrun/arena_attacked":
+                    this.notification.add(
+                        payload.challenger_won
+                            ? `🥊 ${payload.challenger_name} vous a vaincu en arène ! (${payload.rating_change} 🏆)`
+                            : `🛡️ Vous avez repoussé ${payload.challenger_name} en arène ! (+${payload.rating_change} 🏆)`,
+                        { type: payload.challenger_won ? "warning" : "success", sticky: false },
+                    );
                     break;
             }
         }
@@ -878,6 +896,89 @@ export class SpeedrunClientAction extends Component {
 
     backFromEquipment() {
         this.state.phase = "lobby";
+    }
+
+    // ------------------------------------------------------------------
+    // Arena (avatar PvP battles)
+    // ------------------------------------------------------------------
+    openArena() {
+        this.state.phase = "arena";
+    }
+
+    openLeaderboards() {
+        this.state.phase = "leaderboard";
+    }
+
+    backFromLeaderboard() {
+        this.state.phase = "lobby";
+    }
+
+    // ------------------------------------------------------------------
+    // Unified hub navigation (Play / Tournaments / Arena / Equipment / Chests)
+    // ------------------------------------------------------------------
+    get isHub() {
+        return !this.state.game && [
+            "lobby", "tournaments", "tournament", "arena", "equipment", "chests", "leaderboard",
+        ].includes(this.state.phase);
+    }
+
+    navActive(target) {
+        const p = this.state.phase;
+        return {
+            lobby: p === "lobby",
+            tournaments: p === "tournaments" || p === "tournament",
+            arena: p === "arena",
+            equipment: p === "equipment",
+            chests: p === "chests" || p === "chest_opening",
+            leaderboard: p === "leaderboard",
+        }[target] || false;
+    }
+
+    navTo(target) {
+        if (this.navActive(target)) return;
+        switch (target) {
+            case "lobby": this.state.phase = "lobby"; break;
+            case "tournaments": this.openTournaments(); break;
+            case "arena": this.openArena(); break;
+            case "equipment": this.openEquipment(); break;
+            case "chests": this.openChests(); break;
+            case "leaderboard": this.openLeaderboards(); break;
+        }
+    }
+
+    backFromArena() {
+        this.state.battleReplay = null;
+        this.state.phase = "lobby";
+        this._loadStats();
+    }
+
+    async startBattle(opponentProfileId) {
+        const result = await rpc("/odoo_speedrun/arena_fight", {
+            opponent_profile_id: opponentProfileId,
+        });
+        if (result.error) {
+            this.notification.add(result.error, { type: "danger" });
+            return;
+        }
+        playSound("playerJoined");
+        this.state.battleReplay = result;
+        this.state.phase = "battle";
+        if (result.reward_chest) {
+            this.state.chests.pendingCount++;
+        }
+    }
+
+    onBattleDone() {
+        this.state.battleReplay = null;
+        this.state.phase = "arena";
+        this._loadStats();
+    }
+
+    onBattleReward(chest) {
+        // Jump straight into the animated chest-opening flow.
+        this.state.battleReplay = null;
+        this.state.chests.currentChest = chest;
+        this.state.phase = "chest_opening";
     }
 
     playAgain() {

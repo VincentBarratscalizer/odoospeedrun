@@ -15,6 +15,7 @@ export class ChestList extends Component {
             chests: [],
             dailyAvailable: false,
             loading: true,
+            pity: null,
         });
         onWillStart(async () => {
             await this.loadChests();
@@ -26,11 +27,34 @@ export class ChestList extends Component {
             const result = await rpc("/odoo_speedrun/my_chests", {});
             this.state.chests = result.chests || [];
             this.state.dailyAvailable = result.daily_available || false;
+            this.state.pity = result.pity || null;
         } catch {
             this.state.chests = [];
         } finally {
             this.state.loading = false;
         }
+    }
+
+    /** Openings left before the next guaranteed legendary (or null). */
+    get legendaryPity() {
+        const p = this.state.pity;
+        if (!p || !p.enabled || !p.legendary_hard) return null;
+        const remaining = Math.max(0, p.legendary_hard - p.legendary_counter);
+        return {
+            remaining,
+            percent: Math.min(100, Math.round((p.legendary_counter / p.legendary_hard) * 100)),
+            soft: p.soft_start && p.legendary_counter >= p.soft_start,
+        };
+    }
+
+    get epicPity() {
+        const p = this.state.pity;
+        if (!p || !p.enabled || !p.epic_hard) return null;
+        const remaining = Math.max(0, p.epic_hard - p.epic_counter);
+        return {
+            remaining,
+            percent: Math.min(100, Math.round((p.epic_counter / p.epic_hard) * 100)),
+        };
     }
 
     rarityLabel(rarity) {

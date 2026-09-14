@@ -55,28 +55,42 @@
                 </div>
             </t>
 
+            <!-- Unified hub navigation -->
+            <t t-if="isHub">
+                <div class="o_speedrun_coins mb-2">
+                    <span class="o_coins_pill">💰 <t t-esc="state.coins"/> <span class="o_coins_label">pièces</span></span>
+                </div>
+                <div class="o_speedrun_nav mb-4">
+                    <button class="o_nav_item" t-att-class="navActive('lobby') ? 'active' : ''" t-on-click="() => this.navTo('lobby')">
+                        <span class="o_nav_icon">🎮</span><span class="o_nav_label">Jeu</span>
+                    </button>
+                    <button class="o_nav_item" t-att-class="navActive('tournaments') ? 'active' : ''" t-on-click="() => this.navTo('tournaments')">
+                        <span class="o_nav_icon">🏆</span><span class="o_nav_label">Tournois</span>
+                    </button>
+                    <button class="o_nav_item" t-att-class="navActive('leaderboard') ? 'active' : ''" t-on-click="() => this.navTo('leaderboard')">
+                        <span class="o_nav_icon">🏅</span><span class="o_nav_label">Classement</span>
+                    </button>
+                    <button class="o_nav_item" t-att-class="navActive('arena') ? 'active' : ''" t-on-click="() => this.navTo('arena')">
+                        <span class="o_nav_icon">🥊</span><span class="o_nav_label">Arène</span>
+                    </button>
+                    <button class="o_nav_item" t-att-class="navActive('equipment') ? 'active' : ''" t-on-click="() => this.navTo('equipment')">
+                        <span class="o_nav_icon">⚔️</span><span class="o_nav_label">Équipements</span>
+                    </button>
+                    <button class="o_nav_item position-relative" t-att-class="navActive('chests') ? 'active' : ''" t-on-click="() => this.navTo('chests')">
+                        <span class="o_nav_icon">📦</span><span class="o_nav_label">Coffres</span>
+                        <t t-if="state.chests.pendingCount > 0">
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                <t t-esc="state.chests.pendingCount"/>
+                            </span>
+                        </t>
+                    </button>
+                </div>
+            </t>
+
             <!-- Main content -->
             <div class="o_speedrun_content w-100"
                  t-att-style="(state.phase === 'tournaments' || state.phase === 'tournament') ? 'max-width: 1200px;' : 'max-width: 900px;'">
                 <t t-if="state.phase === 'lobby'">
-                    <t t-if="!state.game">
-                        <div class="text-center mb-4 d-flex justify-content-center gap-3">
-                            <button class="btn btn-outline-warning btn-lg px-4" t-on-click="openTournaments">
-                                <i class="fa fa-trophy me-2"/>Tournaments
-                            </button>
-                            <button class="btn btn-outline-info btn-lg px-4 position-relative" t-on-click="openChests">
-                                📦 Chests
-                                <t t-if="state.chests.pendingCount > 0">
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                        <t t-esc="state.chests.pendingCount"/>
-                                    </span>
-                                </t>
-                            </button>
-                            <button class="btn btn-outline-secondary btn-lg px-4" t-on-click="openEquipment">
-                                ⚔️ Équipements
-                            </button>
-                        </div>
-                    </t>
                     <GameLobby
                         game="state.game"
                         stats="state.stats"
@@ -212,6 +226,19 @@
                 </t>
                 <t t-if="state.phase === 'equipment'">
                     <EquipmentManager onBack.bind="backFromEquipment" />
+                </t>
+                <t t-if="state.phase === 'arena'">
+                    <ArenaPanel onBack.bind="backFromArena" onFight.bind="startBattle" />
+                </t>
+                <t t-if="state.phase === 'leaderboard'">
+                    <LeaderboardPanel onBack.bind="backFromLeaderboard" />
+                </t>
+                <t t-if="state.phase === 'battle' and state.battleReplay">
+                    <BattleArena
+                        replay="state.battleReplay"
+                        onDone.bind="onBattleDone"
+                        onOpenChest.bind="onBattleReward"
+                    />
                 </t>
             </div>
         </div>

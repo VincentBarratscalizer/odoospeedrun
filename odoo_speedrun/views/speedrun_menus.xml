@@ -27,6 +27,27 @@
         action="speedrun_leaderboard_action"
         sequence="5"/>
 
+    <!-- Arena ranking -->
+    <menuitem id="menu_speedrun_arena_ranking"
+        name="Arena Ranking"
+        parent="menu_speedrun_root"
+        action="speedrun_arena_ranking_action"
+        sequence="6"/>
+
+    <!-- Per-task ELO rankings -->
+    <menuitem id="menu_speedrun_task_rankings"
+        name="Task Rankings"
+        parent="menu_speedrun_root"
+        action="speedrun_task_score_action"
+        sequence="6"/>
+
+    <!-- Arena battle history -->
+    <menuitem id="menu_speedrun_arena_battles"
+        name="Arena Battles"
+        parent="menu_speedrun_root"
+        action="speedrun_battle_action"
+        sequence="11"/>
+
     <!-- Personal stats -->
     <menuitem id="menu_speedrun_my_stats_root"
         name="My Stats"
@@ -71,6 +92,12 @@
         parent="menu_speedrun_root"
         sequence="90"
         groups="group_speedrun_manager,base.group_system"/>
+
+    <menuitem id="menu_speedrun_settings"
+        name="Settings"
+        parent="menu_speedrun_config"
+        action="speedrun_config_settings_action"
+        sequence="0"/>
 
     <menuitem id="menu_speedrun_tasks"
         name="Tasks"

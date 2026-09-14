@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="speedrun_battle_view_tree" model="ir.ui.view">
+        <field name="name">speedrun.battle.list</field>
+        <field name="model">speedrun.battle</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false" delete="false">
+                <field name="create_date" string="Date"/>
+                <field name="challenger_user_id"/>
+                <field name="opponent_user_id"/>
+                <field name="winner_id"/>
+                <field name="challenger_won" widget="boolean_toggle"/>
+                <field name="rating_change_challenger" decoration-success="rating_change_challenger &gt; 0" decoration-danger="rating_change_challenger &lt; 0"/>
+                <field name="reward_chest_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_battle_view_form" model="ir.ui.view">
+        <field name="name">speedrun.battle.form</field>
+        <field name="model">speedrun.battle</field>
+        <field name="arch" type="xml">
+            <form create="false" edit="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="challenger_user_id"/>
+                            <field name="opponent_user_id"/>
+                            <field name="winner_id"/>
+                            <field name="challenger_won"/>
+                        </group>
+                        <group>
+                            <field name="rating_change_challenger"/>
+                            <field name="rating_change_opponent"/>
+                            <field name="reward_chest_id"/>
+                            <field name="create_date"/>
+                        </group>
+                    </group>
+                    <field name="log" widget="text"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="speedrun_battle_action" model="ir.actions.act_window">
+        <field name="name">Arena Battles</field>
+        <field name="res_model">speedrun.battle</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Arena leaderboard: reuse the profile model ordered by arena rating -->
+    <record id="speedrun_arena_ranking_view_tree" model="ir.ui.view">
+        <field name="name">speedrun.profile.arena.list</field>
+        <field name="model">speedrun.profile</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false" delete="false" default_order="arena_rating desc">
+                <field name="user_id"/>
+                <field name="arena_rating"/>
+                <field name="arena_wins" decoration-success="arena_wins &gt; 0"/>
+                <field name="arena_losses"/>
+                <field name="arena_win_rate" widget="progressbar"/>
+                <field name="power"/>
+                <field name="combat_hp" string="HP"/>
+                <field name="combat_atk" string="ATK"/>
+                <field name="combat_def" string="DEF"/>
+                <field name="combat_spd" string="SPD"/>
+                <field name="combat_crit" string="CRIT%"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_arena_ranking_action" model="ir.actions.act_window">
+        <field name="name">Arena Ranking</field>
+        <field name="res_model">speedrun.profile</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="speedrun_arena_ranking_view_tree"/>
+        <field name="domain">[('arena_battles', '&gt;', 0)]</field>
+    </record>
+</odoo>

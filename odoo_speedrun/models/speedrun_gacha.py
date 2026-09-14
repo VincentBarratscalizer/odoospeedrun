@@ -18,6 +18,29 @@ DEFAULT_CHEST = 'common'
 
 RARITY_SEL = [('common', 'Common'), ('rare', 'Rare'), ('epic', 'Epic'), ('legendary', 'Legendary')]
 
+# ---------------------------------------------------------------------------
+# Combat characteristics (Axie-like): equipment "body parts" grant stats.
+# Each item's raw stat budget = RARITY_STAT_BASE, split across the 5 stats
+# according to its category profile, then scaled into usable units.
+# ---------------------------------------------------------------------------
+COMBAT_STATS = ('hp', 'atk', 'def', 'spd', 'crit')
+
+RARITY_STAT_BASE = {'common': 12, 'rare': 30, 'epic': 70, 'legendary': 160}
+
+# How each category distributes its stat budget (weights sum ~1.0).
+CATEGORY_STAT_WEIGHTS = {
+    'peripheral': {'atk': 0.35, 'spd': 0.35, 'crit': 0.15, 'hp': 0.10, 'def': 0.05},
+    'display':    {'atk': 0.30, 'crit': 0.35, 'spd': 0.20, 'hp': 0.10, 'def': 0.05},
+    'tech':       {'hp': 0.40, 'def': 0.35, 'spd': 0.10, 'atk': 0.10, 'crit': 0.05},
+    'badge':      {'crit': 0.40, 'atk': 0.30, 'spd': 0.15, 'hp': 0.10, 'def': 0.05},
+    'module':     {'hp': 0.30, 'atk': 0.20, 'def': 0.20, 'spd': 0.15, 'crit': 0.15},
+    'desk':       {'def': 0.40, 'hp': 0.35, 'atk': 0.10, 'spd': 0.10, 'crit': 0.05},
+}
+
+# Convert weighted budget points into actual stat units (HP pools are bigger,
+# crit stays a modest percentage).
+STAT_SCALE = {'hp': 9.0, 'atk': 1.1, 'def': 1.0, 'spd': 0.7, 'crit': 0.35}
+
 
 class SpeedrunEquipment(models.Model):
     _name = 'speedrun.equipment'
@@ -41,6 +64,33 @@ class SpeedrunEquipment(models.Model):
         'speedrun_equipment_set_item_rel', 'equipment_id', 'set_id',
         string='Panoplies',
     )
+
+    # Combat stats granted by this item (computed from rarity + category)
+    stat_hp = fields.Integer(compute='_compute_combat_stats', string='HP')
+    stat_atk = fields.Integer(compute='_compute_combat_stats', string='ATK')
+    stat_def = fields.Integer(compute='_compute_combat_stats', string='DEF')
+    stat_spd = fields.Integer(compute='_compute_combat_stats', string='SPD')
+    stat_crit = fields.Integer(compute='_compute_combat_stats', string='CRIT %')
+
+    def _stat_vector(self):
+        """Return this item's raw stat contribution as a dict of ints."""
+        self.ensure_one()
+        base = RARITY_STAT_BASE.get(self.rarity, 12)
+        weights = CATEGORY_STAT_WEIGHTS.get(self.category, CATEGORY_STAT_WEIGHTS['desk'])
+        return {
+            s: int(round(base * weights.get(s, 0.0) * STAT_SCALE[s]))
+            for s in COMBAT_STATS
+        }
+
+    @api.depends('rarity', 'category')
+    def _compute_combat_stats(self):
+        for item in self:
+            vec = item._stat_vector()
+            item.stat_hp = vec['hp']
+            item.stat_atk = vec['atk']
+            item.stat_def = vec['def']
+            item.stat_spd = vec['spd']
+            item.stat_crit = vec['crit']
 
 
 class SpeedrunEquipmentSet(models.Model):
@@ -78,7 +128,11 @@ class SpeedrunPlayerChest(models.Model):
     state = fields.Selection([('pending', 'Pending'), ('opened', 'Opened')], default='pending', required=True)
     equipment_id = fields.Many2one('speedrun.equipment', readonly=True, ondelete='set null')
     game_id = fields.Many2one('speedrun.game', ondelete='set null')
-    source = fields.Selection([('game_win', 'Game Win'), ('daily', 'Daily Reward')], default='game_win', required=True)
+    source = fields.Selection([
+        ('game_win', 'Game Win'),
+        ('daily', 'Daily Reward'),
+        ('arena_win', 'Arena Win'),
+    ], default='game_win', required=True)
 
 
 class SpeedrunPlayerEquipment(models.Model):
@@ -107,3 +161,9 @@ class SpeedrunPlayerEquipment(models.Model):
             base = RARITY_SCORE.get(item.rarity, 0)
             multiplier = 1.0 + item.fusion_level * 0.5
             item.item_score = int(base * multiplier)
+
+    def _stat_contribution(self):
+        """Combat stats this owned item grants, scaled by its fusion level."""
+        self.ensure_one()
+        mult = 1.0 + self.fusion_level * 0.5
+        return {s: int(round(v * mult)) for s, v in self.equipment_id._stat_vector().items()}

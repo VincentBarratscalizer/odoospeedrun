@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.BattleArena">
+        <div class="o_battle_arena" t-att-class="state.shake ? 'o_arena_shake' : ''">
+
+            <!-- Intro VS banner -->
+            <t t-if="state.phase === 'intro'">
+                <div class="o_battle_intro">
+                    <div class="o_intro_fighter o_intro_left">
+                        <img t-att-src="replay.challenger.avatar_url" alt="me"/>
+                        <div class="o_intro_name"><t t-esc="replay.challenger.name"/></div>
+                        <div class="o_intro_power">⚔️ <t t-esc="replay.challenger.power"/></div>
+                        <t t-if="replay.challenger.element_meta">
+                            <div class="o_intro_element">
+                                <t t-esc="replay.challenger.element_meta.icon"/> <t t-esc="replay.challenger.element_meta.label"/>
+                            </div>
+                        </t>
+                    </div>
+                    <div class="o_intro_vs">VS</div>
+                    <div class="o_intro_fighter o_intro_right">
+                        <img t-att-src="replay.opponent.avatar_url" alt="opp"/>
+                        <div class="o_intro_name"><t t-esc="replay.opponent.name"/></div>
+                        <div class="o_intro_power">⚔️ <t t-esc="replay.opponent.power"/></div>
+                        <t t-if="replay.opponent.element_meta">
+                            <div class="o_intro_element">
+                                <t t-esc="replay.opponent.element_meta.icon"/> <t t-esc="replay.opponent.element_meta.label"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+
+            <!-- Fight stage -->
+            <t t-else="">
+                <div class="o_battle_stage">
+                    <!-- Turn counter / skip -->
+                    <div class="o_battle_topbar">
+                        <span class="o_turn_counter" t-if="state.phase === 'fighting'">
+                            Tour <t t-esc="state.turnIndex"/> / <t t-esc="replay.turns.length"/>
+                        </span>
+                        <button class="btn btn-sm btn-outline-light o_skip_btn"
+                                t-if="state.phase === 'fighting'" t-on-click="skip">Passer ⏭</button>
+                    </div>
+
+                    <div class="o_fighters_row">
+                        <!-- Challenger (left) -->
+                        <div class="o_fighter o_fighter_left"
+                             t-att-class="(state.attacking === 'challenger' ? 'o_attacking ' : '') + (state.hitSide === 'challenger' ? 'o_hit ' : '') + (state.challengerHp &lt;= 0 ? 'o_ko' : '')">
+                            <div class="o_fighter_floats">
+                                <t t-foreach="floatsFor('challenger')" t-as="f" t-key="f.id">
+                                    <span class="o_dmg_float" t-att-class="'o_float_' + f.kind">
+                                        <t t-esc="f.text"/>
+                                    </span>
+                                </t>
+                            </div>
+                            <div class="o_fighter_avatar">
+                                <img t-att-src="replay.challenger.avatar_url" alt="me"/>
+                            </div>
+                            <div class="o_fighter_name"><t t-esc="replay.challenger.name"/></div>
+                            <div class="o_hp_bar">
+                                <div class="o_hp_fill" t-att-class="hpClass('challenger')"
+                                     t-att-style="'width:' + hpPercent('challenger') + '%'"/>
+                            </div>
+                            <div class="o_hp_text">
+                                <t t-esc="Math.max(0, state.challengerHp)"/> / <t t-esc="maxC"/>
+                            </div>
+                            <t t-call="odoo_speedrun.FighterDetails">
+                                <t t-set="side" t-value="'challenger'"/>
+                            </t>
+                        </div>
+
+                        <div class="o_battle_center">⚡</div>
+
+                        <!-- Opponent (right) -->
+                        <div class="o_fighter o_fighter_right"
+                             t-att-class="(state.attacking === 'opponent' ? 'o_attacking ' : '') + (state.hitSide === 'opponent' ? 'o_hit ' : '') + (state.opponentHp &lt;= 0 ? 'o_ko' : '')">
+                            <div class="o_fighter_floats">
+                                <t t-foreach="floatsFor('opponent')" t-as="f" t-key="f.id">
+                                    <span class="o_dmg_float" t-att-class="'o_float_' + f.kind">
+                                        <t t-esc="f.text"/>
+                                    </span>
+                                </t>
+                            </div>
+                            <div class="o_fighter_avatar">
+                                <img t-att-src="replay.opponent.avatar_url" alt="opp"/>
+                            </div>
+                            <div class="o_fighter_name"><t t-esc="replay.opponent.name"/></div>
+                            <div class="o_hp_bar">
+                                <div class="o_hp_fill" t-att-class="hpClass('opponent')"
+                                     t-att-style="'width:' + hpPercent('opponent') + '%'"/>
+                            </div>
+                            <div class="o_hp_text">
+                                <t t-esc="Math.max(0, state.opponentHp)"/> / <t t-esc="maxO"/>
+                            </div>
+                            <t t-call="odoo_speedrun.FighterDetails">
+                                <t t-set="side" t-value="'opponent'"/>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result overlay -->
+                <t t-if="state.phase === 'result'">
+                    <div class="o_battle_result" t-att-class="iWon ? 'o_result_win' : 'o_result_lose'">
+                        <div class="o_result_banner">
+                            <t t-if="iWon">🏆 VICTOIRE !</t>
+                            <t t-else="">💀 DÉFAITE</t>
+                        </div>
+                        <div class="o_result_rating">
+                            <span class="o_rating_delta" t-att-class="replay.rating_change &gt;= 0 ? 'text-success' : 'text-danger'">
+                                <t t-if="replay.rating_change &gt;= 0">+</t><t t-esc="replay.rating_change"/> 🏆
+                            </span>
+                            <span class="o_rating_new">Nouveau classement : <t t-esc="replay.new_rating"/></span>
+                        </div>
+
+                        <t t-if="iWon and replay.reward_chest">
+                            <div class="o_result_reward" t-att-class="'o_reward_' + replay.reward_chest.rarity">
+                                <div class="o_reward_chest_icon">🎁</div>
+                                <div class="o_reward_text">
+                                    Coffre <t t-esc="replay.reward_chest.rarity"/> gagné !
+                                </div>
+                                <button class="btn btn-warning" t-on-click="openReward">Ouvrir maintenant</button>
+                            </div>
+                        </t>
+                        <t t-elif="iWon">
+                            <div class="text-muted small mb-2">Limite de coffres quotidiens atteinte.</div>
+                        </t>
+
+                        <button class="btn btn-lg btn-light mt-2" t-on-click="props.onDone">
+                            ← Retour à l'arène
+                        </button>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </t>
+
+    <!-- Reusable stats + equipment panel shown under each fighter during combat -->
+    <t t-name="odoo_speedrun.FighterDetails">
+        <div class="o_fighter_details">
+            <t t-set="meta" t-value="card(side).element_meta"/>
+            <t t-if="meta">
+                <div class="o_fighter_element" t-att-title="meta.passive_desc">
+                    <span class="o_el_badge"><t t-esc="meta.icon"/> <t t-esc="meta.label"/></span>
+                    <span class="o_el_passive">✨ <t t-esc="meta.passive"/></span>
+                </div>
+            </t>
+            <div class="o_fighter_stats">
+                <t t-foreach="statChips(side)" t-as="st" t-key="st.key">
+                    <span class="o_fstat" t-att-title="st.label">
+                        <span class="o_fstat_icon"><t t-esc="st.icon"/></span>
+                        <span class="o_fstat_val"><t t-esc="st.value"/><t t-esc="st.suffix"/></span>
+                    </span>
+                </t>
+            </div>
+            <div class="o_fighter_gear">
+                <t t-foreach="equippedList(side)" t-as="slot" t-key="slot.slot">
+                    <t t-if="slot.item">
+                        <span class="o_gear_item" t-att-class="'o_rarity_' + slot.item.rarity"
+                              t-att-title="slot.item.name">
+                            <t t-esc="slot.item.icon or slot.slotIcon"/>
+                            <t t-if="slot.item.fusion_level > 0">
+                                <span class="o_gear_fusion">+<t t-esc="slot.item.fusion_level"/></span>
+                            </t>
+                        </span>
+                    </t>
+                    <t t-else="">
+                        <span class="o_gear_item o_gear_empty" t-att-title="slot.slot">
+                            <t t-esc="slot.slotIcon"/>
+                        </span>
+                    </t>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,100 @@
+.o_leaderboard_panel {
+    max-width: 720px;
+    margin: 0 auto;
+
+    .o_lb_tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        .o_lb_tab {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid var(--border-color, #dee2e6);
+            background: var(--o-view-background-color, #fff);
+            border-radius: 999px;
+            padding: 6px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .15s ease;
+
+            &:hover {
+                border-color: var(--primary, #714b67);
+            }
+
+            &.active {
+                background: var(--primary, #714b67);
+                border-color: var(--primary, #714b67);
+                color: #fff;
+            }
+
+            .o_lb_tab_icon { font-size: 1.1em; }
+        }
+    }
+
+    .o_lb_table {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .o_lb_row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 14px;
+        border-radius: 10px;
+        background: var(--o-view-background-color, #fff);
+        border: 1px solid var(--border-color, #e9ecef);
+
+        &.o_lb_me {
+            border-color: var(--primary, #714b67);
+            box-shadow: 0 0 0 1px var(--primary, #714b67) inset;
+        }
+
+        .o_lb_rank {
+            width: 34px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-muted, #6c757d);
+
+            &.o_lb_top { font-size: 1.35rem; }
+        }
+
+        .o_lb_avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex: 0 0 auto;
+        }
+
+        .o_lb_name {
+            flex: 1 1 auto;
+            min-width: 0;
+
+            .o_lb_sub { line-height: 1.2; }
+        }
+
+        .o_lb_value {
+            text-align: right;
+            flex: 0 0 auto;
+
+            .o_lb_value_num {
+                font-weight: 700;
+                font-size: 1.15rem;
+                color: var(--primary, #714b67);
+            }
+
+            .o_lb_value_unit {
+                display: block;
+                font-size: .7rem;
+                text-transform: uppercase;
+                color: var(--text-muted, #6c757d);
+            }
+        }
+    }
+}

@@ -12,6 +12,7 @@
                 <field name="level"/>
                 <field name="level_title"/>
                 <field name="xp"/>
+                <field name="coins" optional="show"/>
                 <field name="games_played"/>
                 <field name="games_won"/>
                 <field name="win_rate" widget="progressbar"/>
@@ -37,6 +38,7 @@
                             <field name="peak_elo"/>
                             <field name="level"/>
                             <field name="xp"/>
+                            <field name="coins"/>
                         </group>
                         <group string="Statistics">
                             <field name="games_played"/>
@@ -109,6 +111,43 @@
         <field name="res_model">speedrun.personal.best</field>
         <field name="view_mode">list</field>
         <field name="domain">[('user_id', '=', uid)]</field>
+    </record>
+
+    <!-- ==================== Per-Task ELO ==================== -->
+    <record id="speedrun_task_score_view_list" model="ir.ui.view">
+        <field name="name">speedrun.task.score.list</field>
+        <field name="model">speedrun.task.score</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false" delete="false" default_order="task_id, elo desc">
+                <field name="task_id"/>
+                <field name="user_id"/>
+                <field name="elo" decoration-bf="1"/>
+                <field name="peak_elo" optional="show"/>
+                <field name="rounds_played"/>
+                <field name="rounds_won"/>
+                <field name="best_time_ms"/>
+                <field name="last_played"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_task_score_action" model="ir.actions.act_window">
+        <field name="name">Task Rankings</field>
+        <field name="res_model">speedrun.task.score</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_group_task': 1}</field>
+    </record>
+
+    <record id="speedrun_task_score_view_search" model="ir.ui.view">
+        <field name="name">speedrun.task.score.search</field>
+        <field name="model">speedrun.task.score</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="task_id"/>
+                <field name="user_id"/>
+                <filter name="group_task" string="Task" context="{'group_by': 'task_id'}"/>
+            </search>
+        </field>
     </record>
 
     <!-- ==================== ELO History ==================== -->

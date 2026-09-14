@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.ArenaPanel">
+        <div class="o_arena_panel">
+            <!-- Header -->
+            <div class="o_arena_header d-flex justify-content-between align-items-center mb-4">
+                <button class="btn btn-outline-secondary" t-on-click="props.onBack">← Retour</button>
+                <h3 class="mb-0 o_arena_title">🥊 Arène de Combat</h3>
+                <button class="btn btn-outline-secondary" t-on-click="loadArena">
+                    <i class="fa fa-refresh"/>
+                </button>
+            </div>
+
+            <t t-if="state.loading">
+                <div class="text-center py-5 text-muted"><i class="fa fa-spinner fa-spin fa-2x"/></div>
+            </t>
+
+            <t t-else="">
+                <!-- My fighter card -->
+                <div class="o_my_fighter_card mb-4" t-if="state.me">
+                    <div class="o_my_fighter_avatar">
+                        <img t-att-src="state.me.avatar_url" alt="avatar"/>
+                        <div class="o_my_fighter_level">Nv <t t-esc="state.me.level"/></div>
+                    </div>
+                    <div class="o_my_fighter_info">
+                        <div class="o_my_fighter_name">
+                            <t t-esc="state.me.name"/>
+                            <t t-if="state.me.element_meta">
+                                <span class="o_el_badge ms-2" t-att-title="state.me.element_meta.passive_desc">
+                                    <t t-esc="state.me.element_meta.icon"/> <t t-esc="state.me.element_meta.label"/>
+                                    · ✨ <t t-esc="state.me.element_meta.passive"/>
+                                </span>
+                            </t>
+                        </div>
+                        <div class="o_my_fighter_sub">
+                            <span class="o_power_badge">⚔️ <t t-esc="state.me.power"/> Puissance</span>
+                            <span class="o_rating_badge">🏆 <t t-esc="state.me.arena_rating"/></span>
+                            <span class="text-muted small">
+                                <t t-esc="state.me.arena_wins"/>V / <t t-esc="state.me.arena_losses"/>D
+                                (<t t-esc="state.me.arena_win_rate"/>%)
+                            </span>
+                            <span class="o_quota_badge" t-att-class="quota.remaining &lt;= 0 ? 'o_quota_empty' : ''">
+                                🗡️ <t t-esc="quota.remaining"/> / <t t-esc="quota.quota"/> combats
+                            </span>
+                        </div>
+                        <div class="o_stat_bars">
+                            <t t-foreach="statOrder" t-as="k" t-key="k">
+                                <div class="o_stat_row">
+                                    <span class="o_stat_icon"><t t-esc="STAT_META[k].icon"/></span>
+                                    <span class="o_stat_label"><t t-esc="STAT_META[k].label"/></span>
+                                    <div class="o_stat_track">
+                                        <div class="o_stat_fill"
+                                             t-att-style="'width:' + statPercent(state.me.stats[k], k) + '%;background:' + STAT_META[k].color"/>
+                                    </div>
+                                    <span class="o_stat_value"><t t-esc="state.me.stats[k]"/><t t-if="k === 'crit'">%</t></span>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="o_arena_tabs mb-3">
+                    <button class="o_arena_tab" t-att-class="state.tab === 'opponents' ? 'active' : ''"
+                            t-on-click="() => this.state.tab = 'opponents'">⚔️ Adversaires</button>
+                    <button class="o_arena_tab" t-att-class="state.tab === 'ranking' ? 'active' : ''"
+                            t-on-click="openRanking">🏆 Classement</button>
+                    <button class="o_arena_tab" t-att-class="state.tab === 'rules' ? 'active' : ''"
+                            t-on-click="() => this.state.tab = 'rules'">📖 Règles</button>
+                </div>
+
+                <!-- Opponents -->
+                <t t-if="state.tab === 'opponents'">
+                    <t t-if="quota.remaining &lt;= 0">
+                        <div class="alert alert-warning text-center py-2 mb-3">
+                            ⏳ Quota de combats journalier atteint (<t t-esc="quota.quota"/>/jour). Revenez demain !
+                        </div>
+                    </t>
+                    <t t-if="!state.opponents.length">
+                        <div class="text-center text-muted py-4">Aucun adversaire disponible pour le moment.</div>
+                    </t>
+                    <div class="o_opponents_grid">
+                        <t t-foreach="state.opponents" t-as="opp" t-key="opp.profile_id">
+                            <div class="o_opponent_card" t-att-class="'o_verdict_' + powerVerdict(opp)">
+                                <div class="o_opponent_avatar">
+                                    <img t-att-src="opp.avatar_url" alt="avatar"/>
+                                </div>
+                                <div class="o_opponent_name"><t t-esc="opp.name"/></div>
+                                <t t-if="opp.element_meta">
+                                    <div class="o_opponent_element" t-att-title="opp.element_meta.passive_desc">
+                                        <t t-esc="opp.element_meta.icon"/> <t t-esc="opp.element_meta.label"/>
+                                        <span t-att-class="'o_type_' + typeVerdict(opp)"><t t-esc="typeIcon(typeVerdict(opp))"/></span>
+                                    </div>
+                                </t>
+                                <div class="o_opponent_meta">
+                                    <span class="badge text-bg-light">Nv <t t-esc="opp.level"/></span>
+                                    <span class="badge text-bg-warning">🏆 <t t-esc="opp.arena_rating"/></span>
+                                </div>
+                                <div class="o_opponent_power">⚔️ <t t-esc="opp.power"/></div>
+                                <div class="o_opponent_verdict"><t t-esc="verdictLabel(powerVerdict(opp))"/></div>
+                                <button class="btn btn-sm btn-danger o_fight_btn"
+                                        t-att-disabled="state.fightingId === opp.profile_id or quota.remaining &lt;= 0"
+                                        t-on-click="() => this.fight(opp)">
+                                    <t t-if="state.fightingId === opp.profile_id"><i class="fa fa-spinner fa-spin"/></t>
+                                    <t t-else="">⚔️ Combattre</t>
+                                </button>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+
+                <!-- Ranking -->
+                <t t-if="state.tab === 'ranking'">
+                    <t t-if="!state.leaderboard.length">
+                        <div class="text-center text-muted py-4">Aucun combat classé pour l'instant. Soyez le premier !</div>
+                    </t>
+                    <div class="o_arena_ranking" t-else="">
+                        <t t-foreach="state.leaderboard" t-as="row" t-key="row.user_id">
+                            <div class="o_rank_row" t-att-class="(row.is_me ? 'o_rank_me ' : '') + (row_index &lt; 3 ? 'o_rank_top' : '')">
+                                <div class="o_rank_pos">
+                                    <t t-if="row_index === 0">🥇</t>
+                                    <t t-elif="row_index === 1">🥈</t>
+                                    <t t-elif="row_index === 2">🥉</t>
+                                    <t t-else="">#<t t-esc="row_index + 1"/></t>
+                                </div>
+                                <img class="o_rank_avatar" t-att-src="row.avatar_url" alt="avatar"/>
+                                <div class="o_rank_name"><t t-esc="row.name"/></div>
+                                <div class="o_rank_rating">🏆 <t t-esc="row.arena_rating"/></div>
+                                <div class="o_rank_wl text-muted small">
+                                    <t t-esc="row.arena_wins"/>V/<t t-esc="row.arena_losses"/>D
+                                </div>
+                                <div class="o_rank_power">⚔️ <t t-esc="row.power"/></div>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+
+                <!-- Rules / how to play -->
+                <t t-if="state.tab === 'rules'">
+                    <div class="o_arena_rules">
+                        <div class="o_rule_intro">
+                            Équipe ton avatar, affronte les autres joueurs en combats automatiques,
+                            grimpe au classement 🏆 et gagne des coffres 🎁. Ton équipement définit
+                            tes statistiques, ton <b>élément</b> et ton <b>passif</b>.
+                        </div>
+
+                        <!-- Characteristics -->
+                        <div class="o_rule_card">
+                            <div class="o_rule_title">📊 Caractéristiques</div>
+                            <div class="o_rule_stats">
+                                <t t-foreach="STAT_GUIDE" t-as="s" t-key="s.label">
+                                    <div class="o_rule_stat">
+                                        <span class="o_rule_stat_head"><t t-esc="s.icon"/> <b><t t-esc="s.label"/></b></span>
+                                        <span class="o_rule_stat_desc"><t t-esc="s.desc"/></span>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- Elements / type chart -->
+                        <div class="o_rule_card">
+                            <div class="o_rule_title">🌀 Éléments &amp; avantages de type</div>
+                            <p class="o_rule_p">
+                                Ton élément = la catégorie de ton équipement le plus fort.
+                                Chaque élément est <span class="o_type_advantage">fort 🔺</span> contre 2 autres
+                                (dégâts ×1.35) et <span class="o_type_disadvantage">faible 🔻</span> contre 2 autres
+                                (×0.70). Choisis tes adversaires selon les affinités !
+                            </p>
+                            <div class="o_elements_grid">
+                                <t t-foreach="elementGuide" t-as="el" t-key="el.key">
+                                    <div class="o_element_card">
+                                        <div class="o_element_head"><t t-esc="el.icon"/> <b><t t-esc="el.label"/></b></div>
+                                        <div class="o_element_passive">✨ <t t-esc="el.passive"/> — <t t-esc="el.desc"/></div>
+                                        <div class="o_element_matchup">
+                                            <span class="o_type_advantage">🔺 <t t-esc="el.strongVs[0].icon"/> <t t-esc="el.strongVs[1].icon"/></span>
+                                            <span class="o_type_disadvantage">🔻 <t t-esc="el.weakVs[0].icon"/> <t t-esc="el.weakVs[1].icon"/></span>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- Combat / rewards -->
+                        <div class="o_rule_card">
+                            <div class="o_rule_title">⚔️ Déroulement &amp; récompenses</div>
+                            <ul class="o_rule_list">
+                                <li>Le combat est <b>automatique</b> : le plus rapide (VIT) agit en premier et plus souvent.</li>
+                                <li>Chaque coup applique la défense, l'élément, les critiques et les passifs.</li>
+                                <li>Tu disposes d'un <b>quota quotidien</b> de combats (<t t-esc="quota.quota"/>/jour).</li>
+                                <li>Une <b>victoire</b> rapporte un coffre 🎁 (meilleur si l'adversaire est plus fort) et des points de classement 🏆.</li>
+                                <li>Une <b>défaite</b> fait perdre des points de classement.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </t>
+</templates>

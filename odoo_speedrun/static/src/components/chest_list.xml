@@ -35,6 +35,43 @@
                 </div>
             </div>
 
+            <!-- Pity progress -->
+            <t t-if="legendaryPity or epicPity">
+                <div class="o_gacha_pity card mb-4">
+                    <div class="card-body p-3">
+                        <div class="fw-bold mb-2">🎯 Garanties (pity)</div>
+                        <t t-if="legendaryPity">
+                            <div class="o_pity_row">
+                                <div class="o_pity_label">
+                                    ✨ Légendaire
+                                    <span class="text-muted small">
+                                        <t t-if="legendaryPity.remaining === 0">garanti à la prochaine ouverture !</t>
+                                        <t t-else="">dans <t t-esc="legendaryPity.remaining"/> ouverture(s)<t t-if="legendaryPity.soft"> · chances boostées 🔥</t></t>
+                                    </span>
+                                </div>
+                                <div class="o_pity_bar">
+                                    <div class="o_pity_fill o_pity_legendary" t-att-style="'width:' + legendaryPity.percent + '%'"/>
+                                </div>
+                            </div>
+                        </t>
+                        <t t-if="epicPity">
+                            <div class="o_pity_row mt-2">
+                                <div class="o_pity_label">
+                                    🔮 Épique+
+                                    <span class="text-muted small">
+                                        <t t-if="epicPity.remaining === 0">garanti à la prochaine ouverture !</t>
+                                        <t t-else="">dans <t t-esc="epicPity.remaining"/> ouverture(s)</t>
+                                    </span>
+                                </div>
+                                <div class="o_pity_bar">
+                                    <div class="o_pity_fill o_pity_epic" t-att-style="'width:' + epicPity.percent + '%'"/>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+
             <!-- Pending chests grid -->
             <t t-if="state.loading">
                 <div class="text-center text-muted py-5">

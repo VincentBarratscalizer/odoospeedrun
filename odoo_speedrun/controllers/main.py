@@ -572,6 +572,8 @@ class SpeedrunController(http.Controller):
             'sets': sets_data,
             'gear_score': profile.gear_score,
             'coins': profile.coins,
+            'combat': profile._gear_stats_payload(),
+            'classes': profile._class_info_payload()['classes'],
             'active_title': profile.active_title or '',
             'equipped': {
                 'peripheral': profile._slot_payload(profile.equipped_peripheral_id),
@@ -653,7 +655,7 @@ class SpeedrunController(http.Controller):
     # Unified leaderboards (ELO / Equipment / Arena / Tasks)
     # ------------------------------------------------------------------
     @http.route('/odoo_speedrun/leaderboard_data', type='jsonrpc', auth='user')
-    def leaderboard_data(self, kind='elo', task_id=None, limit=25):
+    def leaderboard_data(self, kind='elo', task_id=None, category_id=None, limit=25):
         uid = request.env.uid
         Profile = request.env['speedrun.profile'].sudo()
         limit = int(limit)
@@ -681,6 +683,73 @@ class SpeedrunController(http.Controller):
                      'losses': p.arena_losses, 'win_rate': round(p.arena_win_rate, 1),
                      'power': p.power} for p in profiles]
             return {'kind': kind, 'rows': rows}
+
+        if kind == 'clans':
+            rows = request.env['speedrun.clan'].sudo()._leaderboard_rows(limit=limit)
+            return {'kind': kind, 'rows': rows}
+
+        if kind == 'perf':
+            # Per-task ranking by best-time percentile (100 = record). No confrontation.
+            Score = request.env['speedrun.task.score'].sudo()
+            tasks = [{'id': t.id, 'name': t.name}
+                     for t in Score.search([]).task_id.sorted('name')]
+            selected = int(task_id) if task_id else (tasks[0]['id'] if tasks else None)
+            rows = []
+            if selected:
+                all_scores = Score.search(
+                    [('task_id', '=', selected), ('best_time_ms', '>', 0)],
+                    order='best_time_ms asc')
+                total = len(all_scores)
+                for i, s in enumerate(all_scores[:limit]):
+                    rating = round(100.0 * (total - i) / total) if total else 0
+                    rows.append({
+                        'user_id': s.user_id.id,
+                        'name': s.user_id.name,
+                        'avatar_url': f'/web/image/res.users/{s.user_id.id}/avatar_128',
+                        'value': rating,
+                        'best_time_ms': s.best_time_ms,
+                        'rounds': s.rounds_played,
+                        'wins': s.rounds_won,
+                        'is_me': s.user_id.id == uid,
+                    })
+            return {'kind': kind, 'rows': rows, 'tasks': tasks, 'selected_task_id': selected}
+
+        if kind == 'domains':
+            # Per-category ranking: average per-task percentile over the category.
+            Group = request.env['speedrun.task.group'].sudo()
+            groups = Group.search([]).filtered(lambda g: g.task_ids)
+            cats = [{'id': g.id, 'name': g.name} for g in groups.sorted('name')]
+            selected = int(category_id) if category_id else (cats[0]['id'] if cats else None)
+            rows = []
+            if selected:
+                grp = Group.browse(selected)
+                Score = request.env['speedrun.task.score'].sudo()
+                scores = Score.search([
+                    ('task_id', 'in', grp.task_ids.ids), ('best_time_ms', '>', 0)])
+                by_task = {}
+                for s in scores:
+                    by_task.setdefault(s.task_id.id, []).append((s.user_id.id, s.best_time_ms))
+                user_vals = {}
+                for _tid, lst in by_task.items():
+                    lst.sort(key=lambda x: x[1])  # fastest first
+                    n = len(lst)
+                    for idx, (u, _t) in enumerate(lst):
+                        user_vals.setdefault(u, []).append(100.0 * (n - idx) / n)
+                ranked = sorted(
+                    ((u, sum(v) / len(v), len(v)) for u, v in user_vals.items()),
+                    key=lambda r: -r[1])[:limit]
+                users = request.env['res.users'].sudo().browse([u for u, _, _ in ranked])
+                name_by_id = {u.id: u.name for u in users}
+                for u, rating, cnt in ranked:
+                    rows.append({
+                        'user_id': u,
+                        'name': name_by_id.get(u, ''),
+                        'avatar_url': f'/web/image/res.users/{u}/avatar_128',
+                        'value': round(rating),
+                        'tasks': cnt,
+                        'is_me': u == uid,
+                    })
+            return {'kind': kind, 'rows': rows, 'categories': cats, 'selected_category_id': selected}
 
         if kind == 'tasks':
             Score = request.env['speedrun.task.score'].sudo()
@@ -711,6 +780,189 @@ class SpeedrunController(http.Controller):
                  'games': p.games_played, 'wins': p.games_won,
                  'win_rate': round(p.win_rate, 1)} for p in profiles]
         return {'kind': 'elo', 'rows': rows}
+
+    # ------------------------------------------------------------------
+    # Clans
+    # ------------------------------------------------------------------
+    @http.route('/odoo_speedrun/clan/my', type='jsonrpc', auth='user')
+    def clan_my(self):
+        """Return the current user's clan info + the list of clans to browse."""
+        Clan = request.env['speedrun.clan'].sudo()
+        my_clan = Clan._my_clan()
+        return {
+            'clan': my_clan._info() if my_clan else None,
+            'clans': Clan._browse_list() if not my_clan else [],
+        }
+
+    @http.route('/odoo_speedrun/clan/list', type='jsonrpc', auth='user')
+    def clan_list(self):
+        return request.env['speedrun.clan'].sudo()._browse_list()
+
+    @http.route('/odoo_speedrun/clan/create', type='jsonrpc', auth='user')
+    def clan_create(self, name, tag, emblem=None, description=None, motto=None):
+        try:
+            clan = request.env['speedrun.clan'].sudo()._create_clan(
+                name, tag, emblem=emblem, description=description, motto=motto)
+        except Exception as e:
+            return {'error': str(e)}
+        return {'clan': clan._info()}
+
+    @http.route('/odoo_speedrun/clan/join', type='jsonrpc', auth='user')
+    def clan_join(self, clan_id):
+        clan = request.env['speedrun.clan'].sudo().browse(int(clan_id)).exists()
+        if not clan:
+            return {'error': 'Clan introuvable.'}
+        try:
+            clan._join()
+        except Exception as e:
+            return {'error': str(e)}
+        return {'clan': clan._info()}
+
+    @http.route('/odoo_speedrun/clan/leave', type='jsonrpc', auth='user')
+    def clan_leave(self):
+        clan = request.env['speedrun.clan'].sudo()._my_clan()
+        if not clan:
+            return {'error': "Vous n'appartenez à aucun clan."}
+        try:
+            clan._leave()
+        except Exception as e:
+            return {'error': str(e)}
+        return {'success': True}
+
+    @http.route('/odoo_speedrun/clan/kick', type='jsonrpc', auth='user')
+    def clan_kick(self, profile_id):
+        clan = request.env['speedrun.clan'].sudo()._my_clan()
+        if not clan:
+            return {'error': "Vous n'appartenez à aucun clan."}
+        try:
+            clan._kick(profile_id)
+        except Exception as e:
+            return {'error': str(e)}
+        return {'clan': clan._info()}
+
+    @http.route('/odoo_speedrun/clan/transfer_lead', type='jsonrpc', auth='user')
+    def clan_transfer_lead(self, profile_id):
+        clan = request.env['speedrun.clan'].sudo()._my_clan()
+        if not clan:
+            return {'error': "Vous n'appartenez à aucun clan."}
+        try:
+            clan._transfer_lead(profile_id)
+        except Exception as e:
+            return {'error': str(e)}
+        return {'clan': clan._info()}
+
+    @http.route('/odoo_speedrun/clan/disband', type='jsonrpc', auth='user')
+    def clan_disband(self):
+        clan = request.env['speedrun.clan'].sudo()._my_clan()
+        if not clan:
+            return {'error': "Vous n'appartenez à aucun clan."}
+        try:
+            clan._disband()
+        except Exception as e:
+            return {'error': str(e)}
+        return {'success': True}
+
+    # --- Wars ---
+    @http.route('/odoo_speedrun/clan/declare_war', type='jsonrpc', auth='user')
+    def clan_declare_war(self, target_clan_id):
+        try:
+            request.env['speedrun.clan.war'].sudo()._declare(target_clan_id)
+        except Exception as e:
+            return {'error': str(e)}
+        clan = request.env['speedrun.clan'].sudo()._my_clan()
+        return {'clan': clan._info() if clan else None}
+
+    def _my_war_action(self, war_id, method):
+        war = request.env['speedrun.clan.war'].sudo().browse(int(war_id)).exists()
+        if not war:
+            return {'error': 'Guerre introuvable.'}
+        try:
+            getattr(war, method)()
+        except Exception as e:
+            return {'error': str(e)}
+        clan = request.env['speedrun.clan'].sudo()._my_clan()
+        return {'clan': clan._info() if clan else None}
+
+    @http.route('/odoo_speedrun/clan/accept_war', type='jsonrpc', auth='user')
+    def clan_accept_war(self, war_id):
+        return self._my_war_action(war_id, '_accept')
+
+    @http.route('/odoo_speedrun/clan/decline_war', type='jsonrpc', auth='user')
+    def clan_decline_war(self, war_id):
+        return self._my_war_action(war_id, '_decline')
+
+    @http.route('/odoo_speedrun/clan/cancel_war', type='jsonrpc', auth='user')
+    def clan_cancel_war(self, war_id):
+        return self._my_war_action(war_id, '_cancel')
+
+    @http.route('/odoo_speedrun/clan/war_task/start', type='jsonrpc', auth='user')
+    def clan_war_task_start(self, war_id, kind='raid'):
+        war = request.env['speedrun.clan.war'].sudo().browse(int(war_id)).exists()
+        if not war:
+            return {'error': 'Guerre introuvable.'}
+        if kind != 'raid':
+            return {'error': 'Épreuve invalide.'}
+        return war._task_start('raid')
+
+    @http.route('/odoo_speedrun/clan/war_task/check', type='jsonrpc', auth='user')
+    def clan_war_task_check(self, war_id, kind='raid'):
+        war = request.env['speedrun.clan.war'].sudo().browse(int(war_id)).exists()
+        if not war:
+            return {'error': 'Guerre introuvable.'}
+        if kind != 'raid':
+            return {'error': 'Épreuve invalide.'}
+        return war._task_check('raid')
+
+    @http.route('/odoo_speedrun/clan/active_raid', type='jsonrpc', auth='user')
+    def clan_active_raid(self):
+        """Return the current user's in-progress clan-war raid, for the systray."""
+        clan = request.env['speedrun.clan'].sudo()._my_clan()
+        if not clan:
+            return {}
+        war = clan._active_war()
+        if not war or war.state != 'running':
+            return {}
+        return war._raid_systray_payload(request.env.user)
+
+    @http.route('/odoo_speedrun/clan/war/fight', type='jsonrpc', auth='user')
+    def clan_war_fight(self, war_id):
+        """Trigger the current user's single arena attack; returns a battle replay."""
+        war = request.env['speedrun.clan.war'].sudo().browse(int(war_id)).exists()
+        if not war:
+            return {'error': 'Guerre introuvable.'}
+        return war._arena_fight()
+
+    # ------------------------------------------------------------------
+    # Classes (upgrade the element passive with coins)
+    # ------------------------------------------------------------------
+    @http.route('/odoo_speedrun/class/info', type='jsonrpc', auth='user')
+    def class_info(self):
+        profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
+        return profile._class_info_payload()
+
+    @http.route('/odoo_speedrun/class/upgrade', type='jsonrpc', auth='user')
+    def class_upgrade(self, element):
+        profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
+        result = profile._upgrade_class(element)
+        if result.get('success'):
+            result['classes'] = profile._class_info_payload(recompute=False)['classes']
+        return result
+
+    # ------------------------------------------------------------------
+    # Daily Shop
+    # ------------------------------------------------------------------
+    @http.route('/odoo_speedrun/shop/today', type='jsonrpc', auth='user')
+    def shop_today(self):
+        shop = request.env['speedrun.shop.day'].sudo()._get_or_create_today()
+        return shop._get_info(request.env.user)
+
+    @http.route('/odoo_speedrun/shop/buy', type='jsonrpc', auth='user')
+    def shop_buy(self, equipment_id):
+        shop = request.env['speedrun.shop.day'].sudo()._get_or_create_today()
+        result = shop._buy(equipment_id)
+        if result.get('success'):
+            result['shop'] = shop._get_info(request.env.user)
+        return result
 
     @http.route('/odoo_speedrun/arena_leaderboard', type='jsonrpc', auth='user')
     def arena_leaderboard(self, limit=20):

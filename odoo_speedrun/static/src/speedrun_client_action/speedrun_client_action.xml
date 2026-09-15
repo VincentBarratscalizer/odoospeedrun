@@ -93,11 +93,17 @@
                     <button class="o_nav_item" t-att-class="navActive('leaderboard') ? 'active' : ''" t-on-click="() => this.navTo('leaderboard')">
                         <span class="o_nav_icon">🏅</span><span class="o_nav_label">Classement</span>
                     </button>
+                    <button class="o_nav_item" t-att-class="navActive('clans') ? 'active' : ''" t-on-click="() => this.navTo('clans')">
+                        <span class="o_nav_icon">🛡️</span><span class="o_nav_label">Clans</span>
+                    </button>
                     <button class="o_nav_item" t-att-class="navActive('arena') ? 'active' : ''" t-on-click="() => this.navTo('arena')">
                         <span class="o_nav_icon">🥊</span><span class="o_nav_label">Arène</span>
                     </button>
                     <button class="o_nav_item" t-att-class="navActive('equipment') ? 'active' : ''" t-on-click="() => this.navTo('equipment')">
                         <span class="o_nav_icon">⚔️</span><span class="o_nav_label">Équipements</span>
+                    </button>
+                    <button class="o_nav_item" t-att-class="navActive('shop') ? 'active' : ''" t-on-click="() => this.navTo('shop')">
+                        <span class="o_nav_icon">🛒</span><span class="o_nav_label">Boutique</span>
                     </button>
                     <button class="o_nav_item position-relative" t-att-class="navActive('chests') ? 'active' : ''" t-on-click="() => this.navTo('chests')">
                         <span class="o_nav_icon">📦</span><span class="o_nav_label">Coffres</span>
@@ -277,6 +283,12 @@
                 </t>
                 <t t-if="state.phase === 'leaderboard'">
                     <LeaderboardPanel onBack.bind="backFromLeaderboard" />
+                </t>
+                <t t-if="state.phase === 'clans'">
+                    <ClanPanel onBack.bind="backFromClans" />
+                </t>
+                <t t-if="state.phase === 'shop'">
+                    <ShopPanel onBack.bind="backFromShop" />
                 </t>
                 <t t-if="state.phase === 'battle' and state.battleReplay">
                     <BattleArena

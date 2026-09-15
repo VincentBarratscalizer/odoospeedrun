@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="cron_clan_process_wars" model="ir.cron">
+        <field name="name">Speedrun: process clan wars</field>
+        <field name="model_id" ref="model_speedrun_clan_war"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_process_wars()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

@@ -32,6 +32,86 @@
             </t>
 
             <t t-else="">
+                <!-- Live combat stats (aggregated from equipped gear, like the arena) -->
+                <t t-if="state.combat">
+                    <div class="card mb-4 o_equip_stats_card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                                <span class="fw-bold">📊 Statistiques de combat</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <t t-if="state.combat.element_meta">
+                                        <span class="badge text-bg-dark" t-att-title="state.combat.element_meta.passive_desc">
+                                            <t t-esc="state.combat.element_meta.icon"/> <t t-esc="state.combat.element_meta.label"/>
+                                            · <t t-esc="state.combat.element_meta.passive"/>
+                                        </span>
+                                    </t>
+                                    <span class="o_power_pill">💥 <strong><t t-esc="state.combat.power"/></strong> Puissance</span>
+                                </div>
+                            </div>
+                            <div class="o_equip_stat_row d-flex flex-wrap gap-2">
+                                <t t-foreach="statOrder" t-as="k" t-key="k">
+                                    <div class="o_equip_stat_box text-center">
+                                        <div class="o_equip_stat_icon"><t t-esc="STAT_META[k].icon"/></div>
+                                        <div class="o_equip_stat_val fw-bold">
+                                            <t t-esc="state.combat.stats[k]"/><t t-if="k === 'crit'">%</t>
+                                        </div>
+                                        <div class="o_equip_stat_lbl small text-muted"><t t-esc="STAT_META[k].label"/></div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Classes (upgrade the element passive with coins) -->
+                <t t-if="state.classes.length">
+                    <div class="card mb-4">
+                        <div class="card-header fw-bold">🎭 Classes &amp; passifs</div>
+                        <div class="card-body">
+                            <div class="o_classes_grid">
+                                <t t-foreach="state.classes" t-as="cls" t-key="cls.element">
+                                    <div class="o_class_card" t-att-class="cls.is_active ? 'o_class_active' : ''">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <span class="o_class_icon"><t t-esc="cls.icon"/></span>
+                                                <span class="fw-bold ms-1"><t t-esc="cls.label"/></span>
+                                                <t t-if="cls.is_active"><span class="badge text-bg-success ms-1">Active</span></t>
+                                            </div>
+                                            <span class="badge text-bg-secondary">Niv. <t t-esc="cls.level"/>/<t t-esc="cls.max_level"/></span>
+                                        </div>
+                                        <div class="small text-muted mb-1">
+                                            <strong><t t-esc="cls.passive"/></strong> — <t t-esc="cls.passive_desc"/>
+                                        </div>
+                                        <div class="small mb-1">
+                                            🎯 Domaines : <t t-esc="cls.categories.join(', ')"/>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center small mb-2">
+                                            <span>Classement domaine :
+                                                <strong><t t-esc="cls.rating"/></strong>/100</span>
+                                            <span class="badge text-bg-dark">×<t t-esc="cls.passive_power"/> passif</span>
+                                        </div>
+                                        <div class="o_class_rating_bar mb-2">
+                                            <div class="o_class_rating_fill" t-att-style="'width:' + cls.rating + '%'"/>
+                                        </div>
+                                        <t t-if="cls.next_cost !== null">
+                                            <button class="btn btn-sm w-100"
+                                                    t-att-class="state.coins >= cls.next_cost ? 'btn-primary' : 'btn-outline-secondary'"
+                                                    t-att-disabled="state.coins &lt; cls.next_cost or state.upgradingClass === cls.element"
+                                                    t-on-click="() => this.upgradeClass(cls)">
+                                                <t t-if="state.upgradingClass === cls.element"><i class="fa fa-spinner fa-spin"/></t>
+                                                <t t-else="">⬆️ Améliorer · 💰<t t-esc="cls.next_cost"/></t>
+                                            </button>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="badge text-bg-warning w-100">★ Niveau max</div>
+                                        </t>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
                 <!-- Panoplies -->
                 <div class="card mb-4">
                     <div class="card-header fw-bold">🧩 Panoplies</div>

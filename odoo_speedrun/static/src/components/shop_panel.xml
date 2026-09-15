@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.ShopPanel">
+        <div class="o_shop_panel">
+
+            <!-- Header -->
+            <div class="o_shop_header d-flex justify-content-between align-items-center mb-3">
+                <button class="btn btn-outline-secondary" t-on-click="props.onBack">← Retour</button>
+                <h3 class="mb-0">🛒 Boutique du jour</h3>
+                <div style="width: 80px;"/>
+            </div>
+
+            <t t-if="state.loading">
+                <div class="text-center py-5 text-muted"><i class="fa fa-spinner fa-spin fa-2x"/></div>
+            </t>
+
+            <t t-elif="!state.shop">
+                <div class="text-center py-5 text-muted">Boutique indisponible.</div>
+            </t>
+
+            <t t-else="">
+                <!-- Wallet + daily status -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="o_coins_pill">💰 <t t-esc="state.shop.coins"/> <span class="o_coins_label">pièces</span></span>
+                    <t t-if="state.shop.purchased_today">
+                        <span class="badge text-bg-success">✔ Achat du jour effectué — revenez demain</span>
+                    </t>
+                    <t t-else="">
+                        <span class="badge text-bg-info">1 achat par jour</span>
+                    </t>
+                </div>
+
+                <!-- Items grid -->
+                <div class="o_shop_grid">
+                    <t t-foreach="state.shop.items" t-as="item" t-key="item.id">
+                        <div class="o_shop_card card" t-att-class="rarity(item.rarity).cls">
+                            <div class="card-body text-center">
+                                <div class="o_shop_icon"><t t-esc="item.icon || catIcon(item.category)"/></div>
+                                <div class="o_shop_name fw-bold"><t t-esc="item.name"/></div>
+                                <div class="o_shop_rarity small mb-1"><t t-esc="rarity(item.rarity).label"/></div>
+                                <div class="o_shop_stats small text-muted mb-2">
+                                    ❤️<t t-esc="item.stats.hp"/> ⚔️<t t-esc="item.stats.atk"/>
+                                    🛡️<t t-esc="item.stats.def"/> ⚡<t t-esc="item.stats.spd"/> 🎯<t t-esc="item.stats.crit"/>%
+                                </div>
+                                <t t-if="item.owned">
+                                    <span class="badge text-bg-secondary mb-2">Déjà possédé (copie pour fusion)</span>
+                                </t>
+                                <div class="o_shop_price mb-2">💰 <strong><t t-esc="item.price"/></strong></div>
+                                <button class="btn btn-sm w-100"
+                                        t-att-class="canBuy(item) ? 'btn-primary' : 'btn-outline-secondary'"
+                                        t-att-disabled="!canBuy(item) or state.buyingId === item.id"
+                                        t-on-click="() => this.buy(item)">
+                                    <t t-if="state.buyingId === item.id"><i class="fa fa-spinner fa-spin"/></t>
+                                    <t t-elif="state.shop.purchased_today">Indisponible</t>
+                                    <t t-elif="state.shop.coins &lt; item.price">Trop cher</t>
+                                    <t t-else="">Acheter</t>
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

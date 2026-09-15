@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="speedrun_loot_sequence_list" model="ir.ui.view">
+        <field name="name">speedrun.loot.sequence.list</field>
+        <field name="model">speedrun.loot.sequence</field>
+        <field name="arch" type="xml">
+            <list string="Reward Cycles">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="day_count" string="Days defined"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_loot_sequence_form" model="ir.ui.view">
+        <field name="name">speedrun.loot.sequence.form</field>
+        <field name="model">speedrun.loot.sequence</field>
+        <field name="arch" type="xml">
+            <form string="Reward Cycle">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Cycle name…"/></h1>
+                    </div>
+                    <group>
+                        <field name="sequence"/>
+                        <field name="active"/>
+                        <field name="day_count"/>
+                    </group>
+                    <separator string="7-day reward track"/>
+                    <field name="day_ids">
+                        <list editable="bottom" default_order="day">
+                            <field name="day"/>
+                            <field name="reward_type"/>
+                            <field name="chest_rarity" invisible="reward_type != 'chest'"/>
+                            <field name="equipment_id" invisible="reward_type != 'equipment'"/>
+                            <field name="equipment_rarity" invisible="reward_type != 'equipment'"/>
+                            <field name="coins"/>
+                        </list>
+                    </field>
+                    <p class="text-muted">
+                        Chaque cycle devrait définir 7 jours. Les nouveaux cycles des joueurs
+                        sont tirés au hasard parmi les cycles actifs.
+                    </p>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="speedrun_loot_sequence_action" model="ir.actions.act_window">
+        <field name="name">Reward Cycles</field>
+        <field name="res_model">speedrun.loot.sequence</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

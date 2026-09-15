@@ -7,7 +7,10 @@ const TABS = [
     { key: "elo", icon: "📊", label: "ELO", unit: "ELO" },
     { key: "gear", icon: "⚔️", label: "Équipement", unit: "GS" },
     { key: "arena", icon: "🥊", label: "Arène", unit: "Rating" },
+    { key: "clans", icon: "🛡️", label: "Clans", unit: "ELO" },
     { key: "tasks", icon: "⏱️", label: "Tâches", unit: "ELO" },
+    { key: "perf", icon: "⏲️", label: "Perf tâche", unit: "/100" },
+    { key: "domains", icon: "🎯", label: "Domaines", unit: "/100" },
 ];
 
 export class LeaderboardPanel extends Component {
@@ -25,6 +28,8 @@ export class LeaderboardPanel extends Component {
             rows: [],
             tasks: [],
             selectedTaskId: null,
+            categories: [],
+            selectedCategoryId: null,
         });
         onWillStart(() => this.load("elo"));
     }
@@ -33,18 +38,25 @@ export class LeaderboardPanel extends Component {
         return (this.tabs.find((t) => t.key === this.state.kind) || {}).unit || "";
     }
 
-    async load(kind, taskId = null) {
+    async load(kind, id = null) {
         this.state.loading = true;
         this.state.kind = kind;
         try {
-            const data = await rpc("/odoo_speedrun/leaderboard_data", {
-                kind,
-                task_id: taskId,
-            });
+            const params = { kind };
+            if (kind === "domains") {
+                params.category_id = id;
+            } else {
+                params.task_id = id;
+            }
+            const data = await rpc("/odoo_speedrun/leaderboard_data", params);
             this.state.rows = data.rows || [];
-            if (kind === "tasks") {
+            if (kind === "tasks" || kind === "perf") {
                 this.state.tasks = data.tasks || [];
                 this.state.selectedTaskId = data.selected_task_id || null;
+            }
+            if (kind === "domains") {
+                this.state.categories = data.categories || [];
+                this.state.selectedCategoryId = data.selected_category_id || null;
             }
         } catch {
             this.notification.add("Impossible de charger le classement.", { type: "danger" });
@@ -61,7 +73,11 @@ export class LeaderboardPanel extends Component {
     }
 
     onSelectTask(ev) {
-        this.load("tasks", parseInt(ev.target.value, 10));
+        this.load(this.state.kind, parseInt(ev.target.value, 10));
+    }
+
+    onSelectCategory(ev) {
+        this.load("domains", parseInt(ev.target.value, 10));
     }
 
     medal(index) {

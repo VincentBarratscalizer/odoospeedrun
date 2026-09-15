@@ -24,8 +24,8 @@
                 </t>
             </div>
 
-            <!-- Task selector (tasks tab only) -->
-            <t t-if="state.kind === 'tasks' and state.tasks.length">
+            <!-- Task selector (tasks / perf tabs) -->
+            <t t-if="(state.kind === 'tasks' or state.kind === 'perf') and state.tasks.length">
                 <div class="o_lb_task_picker mb-3">
                     <label class="me-2 text-muted small">Tâche :</label>
                     <select class="form-select form-select-sm d-inline-block" style="width: auto;"
@@ -34,6 +34,22 @@
                             <option t-att-value="task.id"
                                     t-att-selected="task.id === state.selectedTaskId">
                                 <t t-esc="task.name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+            </t>
+
+            <!-- Category selector (domains tab) -->
+            <t t-if="state.kind === 'domains' and state.categories.length">
+                <div class="o_lb_task_picker mb-3">
+                    <label class="me-2 text-muted small">Domaine :</label>
+                    <select class="form-select form-select-sm d-inline-block" style="width: auto;"
+                            t-on-change="onSelectCategory">
+                        <t t-foreach="state.categories" t-as="cat" t-key="cat.id">
+                            <option t-att-value="cat.id"
+                                    t-att-selected="cat.id === state.selectedCategoryId">
+                                <t t-esc="cat.name"/>
                             </option>
                         </t>
                     </select>
@@ -55,14 +71,21 @@
 
             <t t-else="">
                 <div class="o_lb_table">
-                    <t t-foreach="state.rows" t-as="row" t-key="row.user_id">
+                    <t t-foreach="state.rows" t-as="row" t-key="row.clan_id || row.user_id">
                         <div class="o_lb_row" t-att-class="row.is_me ? 'o_lb_me' : ''">
                             <div class="o_lb_rank" t-att-class="row_index &lt; 3 ? 'o_lb_top' : ''">
                                 <t t-esc="medal(row_index)"/>
                             </div>
-                            <img class="o_lb_avatar" t-att-src="row.avatar_url" alt=""/>
+                            <t t-if="state.kind === 'clans'">
+                                <span class="o_lb_avatar d-inline-flex align-items-center justify-content-center" style="font-size:1.6rem;"><t t-esc="row.emblem"/></span>
+                            </t>
+                            <t t-else="">
+                                <img class="o_lb_avatar" t-att-src="row.avatar_url" alt=""/>
+                            </t>
                             <div class="o_lb_name">
-                                <span class="fw-bold"><t t-esc="row.name"/></span>
+                                <span class="fw-bold">
+                                    <t t-if="state.kind === 'clans'">[<t t-esc="row.tag"/>] </t><t t-esc="row.name"/>
+                                </span>
                                 <t t-if="row.is_me"><span class="badge text-bg-primary ms-1">Vous</span></t>
                                 <div class="o_lb_sub text-muted small">
                                     <t t-if="state.kind === 'elo'">
@@ -74,8 +97,17 @@
                                     <t t-elif="state.kind === 'arena'">
                                         <t t-esc="row.wins"/>V / <t t-esc="row.losses"/>D · <t t-esc="row.win_rate"/>% · Puiss. <t t-esc="row.power"/>
                                     </t>
+                                    <t t-elif="state.kind === 'clans'">
+                                        Niv. <t t-esc="row.level"/> · <t t-esc="row.members"/> membres · <t t-esc="row.trophies"/> 🏆 · <t t-esc="row.wars_won"/> V
+                                    </t>
                                     <t t-elif="state.kind === 'tasks'">
                                         Best <t t-esc="formatTime(row.best_time_ms)"/> · <t t-esc="row.rounds"/> manches · <t t-esc="row.wins"/> 🥇
+                                    </t>
+                                    <t t-elif="state.kind === 'perf'">
+                                        Best <t t-esc="formatTime(row.best_time_ms)"/> · <t t-esc="row.rounds"/> manches
+                                    </t>
+                                    <t t-elif="state.kind === 'domains'">
+                                        <t t-esc="row.tasks"/> tâches classées
                                     </t>
                                 </div>
                             </div>

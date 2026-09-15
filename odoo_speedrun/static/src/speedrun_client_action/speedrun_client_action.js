@@ -15,13 +15,15 @@ import { EquipmentManager } from "../components/equipment_manager";
 import { ArenaPanel } from "../components/arena_panel";
 import { BattleArena } from "../components/battle_arena";
 import { LeaderboardPanel } from "../components/leaderboard_panel";
+import { ClanPanel } from "../components/clan_panel";
+import { ShopPanel } from "../components/shop_panel";
 import { DailyChallenge } from "../components/daily_challenge";
 import { GameTimeAttack } from "../components/game_time_attack";
 import { playSound, playCountdownBeep } from "../services/sound_service";
 
 export class SpeedrunClientAction extends Component {
     static template = "odoo_speedrun.SpeedrunClientAction";
-    static components = { GameLobby, GameTimer, GameResults, TournamentPanel, ChestOpening, ChestList, EquipmentManager, ArenaPanel, BattleArena, LeaderboardPanel, DailyChallenge, GameTimeAttack };
+    static components = { GameLobby, GameTimer, GameResults, TournamentPanel, ChestOpening, ChestList, EquipmentManager, ArenaPanel, BattleArena, LeaderboardPanel, ClanPanel, ShopPanel, DailyChallenge, GameTimeAttack };
     static props = ["*"];
 
     setup() {
@@ -305,6 +307,9 @@ export class SpeedrunClientAction extends Component {
                     break;
                 case "speedrun/coins_changed":
                     this.state.coins = payload.coins;
+                    break;
+                case "speedrun/clan_update":
+                    this.onClanUpdate(payload);
                     break;
                 case "speedrun/arena_attacked":
                     this.notification.add(
@@ -1009,11 +1014,55 @@ export class SpeedrunClientAction extends Component {
     }
 
     // ------------------------------------------------------------------
+    // Clans
+    // ------------------------------------------------------------------
+    openClans() {
+        this.state.phase = "clans";
+    }
+
+    backFromClans() {
+        this.state.phase = "lobby";
+    }
+
+    // ------------------------------------------------------------------
+    // Shop
+    // ------------------------------------------------------------------
+    openShop() {
+        this.state.phase = "shop";
+    }
+
+    backFromShop() {
+        this.state.phase = "lobby";
+        this._loadStats();
+    }
+
+    onClanUpdate(payload) {
+        const messages = {
+            war_declared: `⚔️ ${payload.challenger_name || "Un clan"} a déclaré la guerre à votre clan !`,
+            war_started: "⚔️ La guerre de clan a commencé !",
+            war_declined: "🚫 Votre déclaration de guerre a été refusée.",
+            war_finished: payload.winner_name
+                ? `🏁 Guerre de clan terminée — vainqueur : ${payload.winner_name}`
+                : "🏁 Guerre de clan terminée.",
+            member_joined: `👥 ${payload.user_name || "Un joueur"} a rejoint le clan.`,
+            promoted_leader: "👑 Vous êtes désormais chef de clan !",
+            kicked: "Vous avez été exclu du clan.",
+            disbanded: "Votre clan a été dissous.",
+        };
+        const msg = messages[payload.event];
+        if (msg) {
+            const type = payload.event === "war_finished" || payload.event === "war_started"
+                ? "info" : (payload.event === "kicked" || payload.event === "war_declined" ? "warning" : "success");
+            this.notification.add(msg, { type, sticky: false });
+        }
+    }
+
+    // ------------------------------------------------------------------
     // Unified hub navigation (Play / Tournaments / Arena / Equipment / Chests)
     // ------------------------------------------------------------------
     get isHub() {
         return !this.state.game && [
-            "lobby", "tournaments", "tournament", "arena", "equipment", "chests", "leaderboard",
+            "lobby", "tournaments", "tournament", "arena", "equipment", "chests", "leaderboard", "clans", "shop",
         ].includes(this.state.phase);
     }
 
@@ -1026,6 +1075,8 @@ export class SpeedrunClientAction extends Component {
             equipment: p === "equipment",
             chests: p === "chests" || p === "chest_opening",
             leaderboard: p === "leaderboard",
+            clans: p === "clans",
+            shop: p === "shop",
         }[target] || false;
     }
 
@@ -1038,6 +1089,8 @@ export class SpeedrunClientAction extends Component {
             case "equipment": this.openEquipment(); break;
             case "chests": this.openChests(); break;
             case "leaderboard": this.openLeaderboards(); break;
+            case "clans": this.openClans(); break;
+            case "shop": this.openShop(); break;
         }
     }
 

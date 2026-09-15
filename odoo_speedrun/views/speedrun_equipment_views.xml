@@ -17,6 +17,7 @@
                 <field name="stat_def"/>
                 <field name="stat_spd"/>
                 <field name="stat_crit"/>
+                <field name="price" string="Prix 💰"/>
                 <field name="set_ids" widget="many2many_tags"/>
                 <field name="description" optional="hide"/>
             </list>
@@ -40,6 +41,8 @@
                         <group>
                             <field name="rarity"/>
                             <field name="category"/>
+                            <field name="price" string="Prix boutique 💰"
+                                   help="Laisser à 0 pour un prix par défaut basé sur la rareté."/>
                         </group>
                         <group>
                             <field name="description"/>
@@ -128,6 +131,57 @@
     <record id="speedrun_equipment_set_action" model="ir.actions.act_window">
         <field name="name">Panoplies</field>
         <field name="res_model">speedrun.equipment.set</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ============================================================
+         speedrun.shop.day — Daily shop
+         ============================================================ -->
+    <record id="speedrun_shop_day_list" model="ir.ui.view">
+        <field name="name">speedrun.shop.day.list</field>
+        <field name="model">speedrun.shop.day</field>
+        <field name="arch" type="xml">
+            <list string="Daily Shops">
+                <field name="date"/>
+                <field name="item_ids" widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_shop_day_form" model="ir.ui.view">
+        <field name="name">speedrun.shop.day.form</field>
+        <field name="model">speedrun.shop.day</field>
+        <field name="arch" type="xml">
+            <form string="Daily Shop">
+                <sheet>
+                    <div class="oe_title"><h1><field name="date"/></h1></div>
+                    <separator string="Articles proposés"/>
+                    <field name="item_ids">
+                        <list>
+                            <field name="icon" string=""/>
+                            <field name="name"/>
+                            <field name="rarity"/>
+                            <field name="category"/>
+                            <field name="price"/>
+                        </list>
+                    </field>
+                    <separator string="Achats"/>
+                    <field name="purchase_ids">
+                        <list>
+                            <field name="user_id"/>
+                            <field name="equipment_id"/>
+                            <field name="price_paid"/>
+                            <field name="create_date"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="speedrun_shop_day_action" model="ir.actions.act_window">
+        <field name="name">Daily Shops</field>
+        <field name="res_model">speedrun.shop.day</field>
         <field name="view_mode">list,form</field>
     </record>
 </odoo>

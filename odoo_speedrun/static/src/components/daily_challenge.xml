@@ -100,6 +100,32 @@
                     </div>
                 </t>
 
+                <!-- Weekly reward track (7-day login streak) -->
+                <t t-if="state.daily and state.daily.weekly_reward">
+                    <hr class="my-3"/>
+                    <div class="small fw-bold text-muted mb-2 text-uppercase">
+                        🎁 Récompenses de la semaine
+                        <t t-if="state.daily.weekly_reward.known and state.daily.weekly_reward.sequence_name">
+                            <span class="text-warning">· <t t-esc="state.daily.weekly_reward.sequence_name"/></span>
+                        </t>
+                    </div>
+                    <div class="o_daily_reward_track d-flex gap-1">
+                        <t t-foreach="state.daily.weekly_reward.days" t-as="d" t-key="d.day">
+                            <div class="o_reward_slot flex-fill text-center"
+                                 t-att-class="(d.claimed ? 'o_claimed ' : '') + (d.is_next ? 'o_next' : '')">
+                                <div class="o_reward_day small text-muted">J<t t-esc="d.day"/></div>
+                                <div class="o_reward_icon"><t t-esc="d.icon"/></div>
+                                <div class="o_reward_label small text-truncate" t-att-title="d.label"><t t-esc="d.label"/></div>
+                                <div t-if="d.coins" class="o_reward_coins small text-muted">+<t t-esc="d.coins"/>💰</div>
+                                <div t-if="d.claimed" class="o_reward_check">✔</div>
+                            </div>
+                        </t>
+                    </div>
+                    <p class="text-muted small mt-2 mb-0">
+                        Complétez la Daily chaque jour pour avancer dans ce cycle. Manquer un jour relance un nouveau cycle (affiché ci-dessus).
+                    </p>
+                </t>
+
                 <!-- Leaderboard (collapsible) -->
                 <t t-if="state.showLeaderboard and state.daily and state.daily.leaderboard.length">
                     <hr class="my-3"/>

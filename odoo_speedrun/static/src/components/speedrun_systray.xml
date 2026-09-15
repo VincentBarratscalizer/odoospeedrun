@@ -5,9 +5,17 @@
             <div class="o_speedrun_systray d-flex align-items-center gap-2 px-2 cursor-pointer"
                  t-on-click="onClickSystray">
 
-                <!-- Round indicator -->
-                <span class="badge text-bg-secondary">
+                <!-- Round indicator (normal game) -->
+                <span class="badge text-bg-secondary" t-if="state.mode !== 'raid'">
                     R<t t-esc="state.currentRound"/>/<t t-esc="state.totalRounds"/>
+                </span>
+                <!-- Clan war raid indicator -->
+                <span class="badge text-bg-danger" t-if="state.mode === 'raid'">
+                    ⚔️ Raid
+                </span>
+                <!-- Daily challenge indicator -->
+                <span class="badge text-bg-warning" t-if="state.mode === 'daily'">
+                    🗓️ Daily
                 </span>
 
                 <!-- Countdown state: show task name -->
@@ -47,7 +55,8 @@
                                 Done!
                             </t>
                         </button>
-                        <button class="btn btn-sm btn-outline-danger py-0 px-2"
+                        <button t-if="state.mode === 'game'"
+                            class="btn btn-sm btn-outline-danger py-0 px-2"
                             title="Surrender this round — score no points (Alt+Shift+S)"
                             t-att-disabled="state.checking"
                             t-on-click.stop="onClickSurrender">

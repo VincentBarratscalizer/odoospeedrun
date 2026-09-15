@@ -39,6 +39,68 @@
                             <span class="text-muted ms-2">openings</span>
                         </setting>
                     </block>
+                    <block title="Clan Wars" name="speedrun_clan_war_block"
+                           help="Tune the collective Blitz épreuve of clan wars: a fixed daily hour window during which every normal-game task completion by a clan's members counts toward the tie-breaker.">
+                        <setting id="speedrun_blitz_hour_setting"
+                                 string="Blitz Window"
+                                 help="Daily hour (server/UTC) and duration of the collective Blitz.">
+                            <span class="text-muted me-2">Starts at</span>
+                            <field name="speedrun_blitz_hour" class="oe_inline"/>
+                            <span class="text-muted mx-2">h, for</span>
+                            <field name="speedrun_blitz_duration_minutes" class="oe_inline"/>
+                            <span class="text-muted ms-1">min</span>
+                        </setting>
+                        <setting id="speedrun_clan_war_loot_setting"
+                                 string="Victory Loot (per winning member)"
+                                 help="Chests and coins each member of the winning clan receives when a clan war ends. The losing clan's members get the consolation coins.">
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <label for="speedrun_clan_war_loot_common" class="col-lg-4" string="Common chests"/>
+                                    <field name="speedrun_clan_war_loot_common" class="col-lg-2"/>
+                                </div>
+                                <div class="row">
+                                    <label for="speedrun_clan_war_loot_rare" class="col-lg-4" string="Rare chests"/>
+                                    <field name="speedrun_clan_war_loot_rare" class="col-lg-2"/>
+                                </div>
+                                <div class="row">
+                                    <label for="speedrun_clan_war_loot_epic" class="col-lg-4" string="Epic chests"/>
+                                    <field name="speedrun_clan_war_loot_epic" class="col-lg-2"/>
+                                </div>
+                                <div class="row">
+                                    <label for="speedrun_clan_war_loot_legendary" class="col-lg-4" string="Legendary chests"/>
+                                    <field name="speedrun_clan_war_loot_legendary" class="col-lg-2"/>
+                                </div>
+                                <div class="row">
+                                    <label for="speedrun_clan_war_win_coins" class="col-lg-4" string="Victory coins"/>
+                                    <field name="speedrun_clan_war_win_coins" class="col-lg-2"/>
+                                </div>
+                                <div class="row">
+                                    <label for="speedrun_clan_war_loss_coins" class="col-lg-4" string="Consolation coins"/>
+                                    <field name="speedrun_clan_war_loss_coins" class="col-lg-2"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                    <block title="Data Cleanup / Demo Reset" name="speedrun_cleanup_block"
+                           help="Automatically wipe everything players create during rounds and restore the demo data to its pristine state. The game's own data (scores, profiles, chests, history) is always preserved.">
+                        <setting id="speedrun_cleanup_enabled_setting"
+                                 title="Enable the scheduled demo reset."
+                                 help="When on, a scheduled action periodically deletes player-created records and (optionally) reloads the demo data.">
+                            <field name="speedrun_cleanup_enabled"/>
+                        </setting>
+                        <setting id="speedrun_cleanup_reload_demo_setting"
+                                 invisible="not speedrun_cleanup_enabled"
+                                 title="Reload demo data on reset."
+                                 help="Also reload every module's demo data to revert modifications and deletions of demo records. Slower — turn off to only delete created records.">
+                            <field name="speedrun_cleanup_reload_demo"/>
+                        </setting>
+                        <setting id="speedrun_cleanup_run_now_setting"
+                                 string="Run now"
+                                 help="Trigger a full reset immediately (deletes player creations and, if enabled, reloads demo data).">
+                            <button name="action_speedrun_reset_now" type="object"
+                                    string="Reset demo data now" class="btn-primary"/>
+                        </setting>
+                    </block>
                 </app>
             </xpath>
         </field>

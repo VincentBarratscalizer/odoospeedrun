@@ -168,6 +168,8 @@ class SpeedrunBattle(models.Model):
                 'crit': profile.combat_crit,
                 'element': element,
                 'passive': ELEMENT_PASSIVE.get(element),
+                # Class level + domain rating strengthen the element's passive.
+                'passive_power': profile._passive_power(element),
                 'gauge': 0.0,
             }
 
@@ -194,7 +196,8 @@ class SpeedrunBattle(models.Model):
             # Combo passive (peripheral): a chance at an immediate second strike.
             if (attacker['passive'] == 'combo' and defender['hp'] > 0 and attacker['hp'] > 0
                     and actions < MAX_ACTIONS
-                    and random.random() < min(0.28, attacker['spd'] / 420.0)):
+                    and random.random() < min(0.40, (attacker['spd'] / 420.0)
+                                              * attacker.get('passive_power', 1.0))):
                 turns.append(self._strike(attacker, defender, state, combo=True))
                 actions += 1
 
@@ -235,12 +238,15 @@ class SpeedrunBattle(models.Model):
             event['challenger_hp'], event['opponent_hp'] = c['hp'], o['hp']
             return event
 
+        pp_att = attacker.get('passive_power', 1.0)
+        pp_def = defender.get('passive_power', 1.0)
+
         # Block passive (tech, defender)
-        blocked = defender['passive'] == 'block' and random.random() < BLOCK_CHANCE
+        blocked = defender['passive'] == 'block' and random.random() < min(0.55, BLOCK_CHANCE * pp_def)
         event['blocked'] = blocked
 
         # Focus passive (display, attacker): more crit chance & damage
-        crit_chance = attacker['crit'] + (FOCUS_CRIT_BONUS if attacker['passive'] == 'focus' else 0)
+        crit_chance = attacker['crit'] + (FOCUS_CRIT_BONUS * pp_att if attacker['passive'] == 'focus' else 0)
         crit = random.random() * 100 < crit_chance
         event['crit'] = crit
 
@@ -258,7 +264,7 @@ class SpeedrunBattle(models.Model):
         # Execute passive (badge, attacker): bonus vs low-HP targets
         if attacker['passive'] == 'execute':
             missing = 1.0 - defender['hp'] / defender['max_hp']
-            raw *= 1.0 + EXECUTE_BONUS * missing
+            raw *= 1.0 + EXECUTE_BONUS * pp_att * missing
 
         if blocked:
             raw *= BLOCK_REDUCTION
@@ -269,14 +275,14 @@ class SpeedrunBattle(models.Model):
 
         # Lifesteal passive (module, attacker)
         if attacker['passive'] == 'lifesteal' and damage > 0:
-            heal = int(round(damage * LIFESTEAL_RATIO))
+            heal = int(round(damage * min(0.6, LIFESTEAL_RATIO * pp_att)))
             if heal > 0:
                 attacker['hp'] = min(attacker['max_hp'], attacker['hp'] + heal)
                 event['lifesteal'] = heal
 
         # Thorns passive (desk, defender): reflect part of the damage taken
         if defender['passive'] == 'thorns' and damage > 0 and not blocked:
-            reflect = int(round(damage * THORNS_RATIO))
+            reflect = int(round(damage * min(0.5, THORNS_RATIO * pp_def)))
             if reflect > 0:
                 attacker['hp'] = max(0, attacker['hp'] - reflect)
                 event['thorns'] = reflect

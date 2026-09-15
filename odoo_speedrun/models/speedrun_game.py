@@ -51,6 +51,10 @@ class SpeedrunGame(models.Model):
     max_players = fields.Integer(default=8)
     is_ranked = fields.Boolean(string='Ranked Match', readonly=True,
                                help="Game created through matchmaking.")
+    cleanup_done = fields.Boolean(
+        string='Data Cleaned', default=False, readonly=True, copy=False,
+        help="Set once the demo-reset job has deleted the records players "
+             "created during this game.")
     task_group_ids = fields.Many2many(
         'speedrun.task.group',
         'speedrun_game_task_group_rel', 'game_id', 'group_id',

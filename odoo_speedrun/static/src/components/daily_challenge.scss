@@ -1,0 +1,36 @@
+.o_daily_reward_track {
+    .o_reward_slot {
+        position: relative;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 8px;
+        padding: 6px 2px;
+        min-width: 0;
+        background: var(--bs-body-bg);
+
+        .o_reward_icon {
+            font-size: 1.4rem;
+            line-height: 1.2;
+        }
+        .o_reward_label {
+            max-width: 100%;
+        }
+        .o_reward_check {
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            color: var(--bs-success);
+            font-weight: bold;
+        }
+
+        &.o_claimed {
+            opacity: 0.55;
+            background: var(--bs-success-bg-subtle);
+            border-color: var(--bs-success);
+        }
+        &.o_next {
+            border-color: var(--bs-warning);
+            box-shadow: 0 0 0 2px var(--bs-warning-border-subtle);
+            opacity: 1;
+        }
+    }
+}

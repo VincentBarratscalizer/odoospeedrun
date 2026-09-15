@@ -28,10 +28,13 @@ export class EquipmentManager extends Component {
             gearScore: 0,
             coins: 0,
             activeTitle: '',
+            combat: null,
+            classes: [],
             equipped: { peripheral: null, display: null, tech: null, badge: null, module: null, desk: null },
             filter: 'all',  // all | common | rare | epic | legendary
             categoryFilter: 'all',  // all | peripheral | badge | module | cosmetic
             fusingId: null,
+            upgradingClass: null,
         });
         onWillStart(() => this.loadEquipment());
     }
@@ -45,6 +48,8 @@ export class EquipmentManager extends Component {
             this.state.gearScore = data.gear_score || 0;
             this.state.coins = data.coins || 0;
             this.state.activeTitle = data.active_title || '';
+            this.state.combat = data.combat || null;
+            this.state.classes = data.classes || [];
             this.state.equipped = data.equipped || { peripheral: null, display: null, tech: null, badge: null, module: null, desk: null };
         } catch {
             this.notification.add('Failed to load equipment.', { type: 'danger' });
@@ -126,6 +131,28 @@ export class EquipmentManager extends Component {
             this.notification.add(`⚗️ Fusion réussie ! ${item.icon} ${item.name} ${stars}`, { type: 'success' });
         } finally {
             this.state.fusingId = null;
+        }
+    }
+
+    async upgradeClass(cls) {
+        if (this.state.upgradingClass) return;
+        if (cls.next_cost === null || this.state.coins < cls.next_cost) {
+            this.notification.add("Pas assez de pièces pour améliorer cette classe.", { type: "warning" });
+            return;
+        }
+        this.state.upgradingClass = cls.element;
+        try {
+            const result = await rpc("/odoo_speedrun/class/upgrade", { element: cls.element });
+            if (result.error) {
+                this.notification.add(result.error, { type: "warning" });
+                if (result.coins !== undefined) this.state.coins = result.coins;
+                return;
+            }
+            if (result.coins !== undefined) this.state.coins = result.coins;
+            if (result.classes) this.state.classes = result.classes;
+            this.notification.add(`${cls.icon} ${cls.label} amélioré au niveau ${result.level} !`, { type: "success" });
+        } finally {
+            this.state.upgradingClass = null;
         }
     }
 

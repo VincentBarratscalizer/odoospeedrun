@@ -367,3 +367,54 @@ $rarity-legendary-bg: rgba(255, 215, 0, 0.12);
     font-weight: 700;
     margin-left: 2px;
 }
+
+// Live combat stats card (mirrors the arena stat display)
+.o_equip_stats_card {
+    .o_equip_stat_row {
+        justify-content: space-between;
+    }
+    .o_equip_stat_box {
+        flex: 1 1 0;
+        min-width: 64px;
+        padding: 8px 4px;
+        border-radius: 8px;
+        background: var(--bs-tertiary-bg, rgba(0, 0, 0, 0.03));
+    }
+    .o_equip_stat_icon { font-size: 1.2rem; }
+    .o_equip_stat_val { font-size: 1.15rem; }
+    .o_power_pill {
+        padding: 2px 10px;
+        border-radius: 999px;
+        background: var(--bs-warning-bg-subtle, #fff3cd);
+        white-space: nowrap;
+    }
+}
+
+// Classes & passives
+.o_classes_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+}
+.o_class_card {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: var(--bs-body-bg);
+
+    &.o_class_active {
+        border-color: var(--bs-success);
+        box-shadow: 0 0 0 2px var(--bs-success-border-subtle);
+    }
+    .o_class_icon { font-size: 1.3rem; }
+    .o_class_rating_bar {
+        height: 6px;
+        border-radius: 4px;
+        background: var(--bs-tertiary-bg, rgba(0,0,0,0.08));
+        overflow: hidden;
+    }
+    .o_class_rating_fill {
+        height: 100%;
+        background: linear-gradient(90deg, #3b82f6, #a855f7);
+    }
+}

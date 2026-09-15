@@ -48,6 +48,19 @@
         action="speedrun_battle_action"
         sequence="11"/>
 
+    <!-- Clans -->
+    <menuitem id="menu_speedrun_clans"
+        name="Clans"
+        parent="menu_speedrun_root"
+        action="speedrun_clan_action"
+        sequence="4"/>
+
+    <menuitem id="menu_speedrun_clan_wars"
+        name="Clan Wars"
+        parent="menu_speedrun_root"
+        action="speedrun_clan_war_action"
+        sequence="9"/>
+
     <!-- Personal stats -->
     <menuitem id="menu_speedrun_my_stats_root"
         name="My Stats"
@@ -141,9 +154,21 @@
         action="speedrun_equipment_set_action"
         sequence="6"/>
 
+    <menuitem id="menu_speedrun_shop_days"
+        name="Daily Shops"
+        parent="menu_speedrun_config"
+        action="speedrun_shop_day_action"
+        sequence="8"/>
+
     <menuitem id="menu_speedrun_daily"
         name="Daily Challenges"
         parent="menu_speedrun_config"
         action="speedrun_daily_task_action"
         sequence="7"/>
+
+    <menuitem id="menu_speedrun_loot_sequences"
+        name="Weekly Reward Cycles"
+        parent="menu_speedrun_config"
+        action="speedrun_loot_sequence_action"
+        sequence="9"/>
 </odoo>

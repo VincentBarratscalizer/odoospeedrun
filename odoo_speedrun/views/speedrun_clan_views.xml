@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ CLAN ============ -->
+    <record id="speedrun_clan_view_list" model="ir.ui.view">
+        <field name="name">speedrun.clan.list</field>
+        <field name="model">speedrun.clan</field>
+        <field name="arch" type="xml">
+            <list string="Clans">
+                <field name="emblem"/>
+                <field name="tag"/>
+                <field name="name"/>
+                <field name="leader_id"/>
+                <field name="member_count"/>
+                <field name="clan_level"/>
+                <field name="clan_elo"/>
+                <field name="trophies"/>
+                <field name="wars_won"/>
+                <field name="wars_played"/>
+                <field name="win_rate" widget="percentage" optional="show"/>
+                <field name="total_power" optional="hide"/>
+                <field name="treasury" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_clan_view_form" model="ir.ui.view">
+        <field name="name">speedrun.clan.form</field>
+        <field name="model">speedrun.clan</field>
+        <field name="arch" type="xml">
+            <form string="Clan">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="emblem" class="oe_inline"/>
+                            <field name="tag" class="oe_inline" placeholder="TAG"/>
+                            <field name="name" class="oe_inline" placeholder="Nom du clan"/>
+                        </h1>
+                        <field name="motto" placeholder="Devise..."/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="leader_id"/>
+                            <field name="member_count"/>
+                            <field name="max_members"/>
+                            <field name="total_power"/>
+                            <field name="avg_gear_score"/>
+                        </group>
+                        <group>
+                            <field name="clan_elo"/>
+                            <field name="clan_peak_elo"/>
+                            <field name="clan_level"/>
+                            <field name="clan_xp"/>
+                            <field name="trophies"/>
+                            <field name="war_streak"/>
+                            <field name="wars_won"/>
+                            <field name="wars_played"/>
+                            <field name="win_rate" widget="percentage"/>
+                            <field name="treasury"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Members">
+                            <field name="member_profile_ids">
+                                <list>
+                                    <field name="user_id"/>
+                                    <field name="clan_role"/>
+                                    <field name="level"/>
+                                    <field name="power"/>
+                                    <field name="gear_score"/>
+                                    <field name="arena_rating"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="speedrun_clan_view_search" model="ir.ui.view">
+        <field name="name">speedrun.clan.search</field>
+        <field name="model">speedrun.clan</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="tag"/>
+                <field name="leader_id"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="speedrun_clan_action" model="ir.actions.act_window">
+        <field name="name">Clans</field>
+        <field name="res_model">speedrun.clan</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ============ CLAN WAR ============ -->
+    <record id="speedrun_clan_war_view_list" model="ir.ui.view">
+        <field name="name">speedrun.clan.war.list</field>
+        <field name="model">speedrun.clan.war</field>
+        <field name="arch" type="xml">
+            <list string="Clan Wars">
+                <field name="display_name"/>
+                <field name="challenger_clan_id"/>
+                <field name="defender_clan_id"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'finished'"
+                       decoration-info="state == 'running'"
+                       decoration-warning="state == 'declared'"/>
+                <field name="start_at"/>
+                <field name="end_at"/>
+                <field name="winner_clan_id"/>
+                <field name="score_challenger"/>
+                <field name="score_defender"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_clan_war_view_form" model="ir.ui.view">
+        <field name="name">speedrun.clan.war.form</field>
+        <field name="model">speedrun.clan.war</field>
+        <field name="arch" type="xml">
+            <form string="Clan War">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="display_name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="challenger_clan_id"/>
+                            <field name="defender_clan_id"/>
+                            <field name="declared_by"/>
+                            <field name="state"/>
+                        </group>
+                        <group>
+                            <field name="declared_at"/>
+                            <field name="accept_deadline"/>
+                            <field name="start_at"/>
+                            <field name="end_at"/>
+                        </group>
+                    </group>
+                    <group string="Épreuves">
+                        <group>
+                            <field name="raid_task_id"/>
+                            <field name="blitz_task_id"/>
+                        </group>
+                        <group>
+                            <field name="raid_winner_id"/>
+                            <field name="arena_winner_id"/>
+                            <field name="blitz_winner_id"/>
+                            <field name="blitz_decisive"/>
+                        </group>
+                    </group>
+                    <group string="Résultat">
+                        <group>
+                            <field name="winner_clan_id"/>
+                            <field name="score_challenger"/>
+                            <field name="score_defender"/>
+                        </group>
+                        <group>
+                            <field name="challenger_arena_wins"/>
+                            <field name="defender_arena_wins"/>
+                            <field name="rating_change_challenger"/>
+                            <field name="rating_change_defender"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Duels (Arène)">
+                            <field name="duel_ids">
+                                <list>
+                                    <field name="seed"/>
+                                    <field name="challenger_profile_id"/>
+                                    <field name="opponent_profile_id"/>
+                                    <field name="winner_side"/>
+                                    <field name="winner_profile_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Raid / Blitz">
+                            <field name="result_ids">
+                                <list>
+                                    <field name="kind"/>
+                                    <field name="clan_id"/>
+                                    <field name="user_id"/>
+                                    <field name="completed"/>
+                                    <field name="duration_ms"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="speedrun_clan_war_action" model="ir.actions.act_window">
+        <field name="name">Clan Wars</field>
+        <field name="res_model">speedrun.clan.war</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

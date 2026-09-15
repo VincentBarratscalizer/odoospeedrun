@@ -13,7 +13,13 @@ from . import speedrun_task_score
 from . import speedrun_gacha
 from . import speedrun_battle
 from . import speedrun_daily_task
+from . import speedrun_clan
+from . import speedrun_clan_war
+from . import speedrun_shop
+from . import speedrun_loot_sequence
+from . import speedrun_class
 from . import speedrun_game_task_seq
+from . import speedrun_cleanup
 from . import ir_websocket
 from . import res_users
 from . import res_config_settings

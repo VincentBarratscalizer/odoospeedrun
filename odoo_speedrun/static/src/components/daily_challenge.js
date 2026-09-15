@@ -75,6 +75,17 @@ export class DailyChallenge extends Component {
             }
             this.state.daily = data;
             this._applyStatus(data);
+            // Show the floating systray widget (like a standard game task).
+            window.dispatchEvent(new CustomEvent("speedrun-update", {
+                detail: {
+                    type: "daily_started",
+                    data: {
+                        task_name: data.task_name,
+                        task_description: data.task_description,
+                        start_time: data.my_start_time,
+                    },
+                },
+            }));
             // Navigate to Odoo home so the user can do the task
             this.actionService.doAction("menu");
         } catch (e) {
@@ -97,6 +108,22 @@ export class DailyChallenge extends Component {
                 this.state.phase = "completed";
                 if (data.success) {
                     this.notification.add("🏆 Daily challenge completed!", { type: "success", sticky: false });
+                    if (data.streak_reward) {
+                        const r = data.streak_reward;
+                        let label;
+                        if (r.type === "equipment") {
+                            label = `${r.icon} ${r.name} (${r.rarity})`;
+                        } else {
+                            label = `${r.icon} Coffre ${r.rarity}`;
+                        }
+                        if (r.coins) {
+                            label += ` + ${r.coins} 💰`;
+                        }
+                        const prefix = r.is_new_cycle ? "🎁 Nouveau cycle ! Jour" : "🎁 Jour";
+                        this.notification.add(`${prefix} ${r.day} : ${label}`, {
+                            type: "success", sticky: true,
+                        });
+                    }
                 }
             } else {
                 this.notification.add(data.error || "Task not completed yet. Keep going!", { type: "warning" });

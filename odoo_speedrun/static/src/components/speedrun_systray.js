@@ -20,7 +20,9 @@ export class SpeedrunSystray extends Component {
 
         this.state = useState({
             visible: false,
+            mode: "game", // "game" | "raid" (clan war raid)
             gameId: null,
+            warId: null,
             taskName: "",
             taskDescription: "",
             startTime: null,
@@ -104,10 +106,75 @@ export class SpeedrunSystray extends Component {
                     // Start polling for state changes
                     this._startSystrayPoll(result.id);
                 }
+            } else {
+                // No active game — resume a clan war raid or a daily challenge.
+                const shown = await this._checkActiveRaid();
+                if (!shown) {
+                    await this._checkActiveDaily();
+                }
             }
         } catch {
             // Ignore errors silently
         }
+    }
+
+    async _checkActiveRaid() {
+        try {
+            const raid = await rpc("/odoo_speedrun/clan/active_raid", {});
+            if (raid && raid.war_id) {
+                this._showRaid(raid);
+                return true;
+            }
+        } catch {
+            // Ignore
+        }
+        return false;
+    }
+
+    async _checkActiveDaily() {
+        try {
+            const daily = await rpc("/odoo_speedrun/daily/today", {});
+            if (daily && !daily.error && daily.my_status === "in_progress") {
+                this._showDaily({
+                    task_name: daily.task_name,
+                    task_description: daily.task_description,
+                    start_time: daily.my_start_time,
+                });
+                return true;
+            }
+        } catch {
+            // Ignore
+        }
+        return false;
+    }
+
+    _showDaily(data) {
+        this.state.visible = true;
+        this.state.mode = "daily";
+        this.state.phase = "playing";
+        this.state.taskName = data.task_name || "";
+        this.state.taskDescription = data.task_description || "";
+        this.state.startTime = data.start_time;
+        this.state.currentRound = 0;
+        this.state.totalRounds = 0;
+        this.state.myFinished = false;
+        this.state.checking = false;
+        this._startTimer();
+    }
+
+    _showRaid(data) {
+        this.state.visible = true;
+        this.state.mode = "raid";
+        this.state.phase = "playing";
+        this.state.warId = data.war_id;
+        this.state.taskName = data.task_name || "";
+        this.state.taskDescription = data.task_description || "";
+        this.state.startTime = data.start_time;
+        this.state.currentRound = 0;
+        this.state.totalRounds = 0;
+        this.state.myFinished = false;
+        this.state.checking = false;
+        this._startTimer();
     }
 
     onSpeedrunUpdate(ev) {
@@ -123,8 +190,15 @@ export class SpeedrunSystray extends Component {
                 this.state.gameId = data.game_id || this.state.gameId;
                 break;
             case "game_started":
+                this.state.mode = "game";
                 this.state.gameId = data.id || this.state.gameId;
                 this._showPlaying(data);
+                break;
+            case "clan_raid_started":
+                this._showRaid(data);
+                break;
+            case "daily_started":
+                this._showDaily(data);
                 break;
             case "round_over":
                 if (this._interval) clearInterval(this._interval);
@@ -142,6 +216,7 @@ export class SpeedrunSystray extends Component {
 
     _showPlaying(data) {
         this.state.visible = true;
+        this.state.mode = "game";
         this.state.phase = "playing";
         this.state.taskName = data.task_name || "";
         this.state.taskDescription = data.task_description || "";
@@ -261,7 +336,14 @@ export class SpeedrunSystray extends Component {
     }
 
     async onClickCheck() {
-        if (this.state.checking || !this.state.gameId) return;
+        if (this.state.checking) return;
+        if (this.state.mode === "raid") {
+            return this._checkRaid();
+        }
+        if (this.state.mode === "daily") {
+            return this._checkDaily();
+        }
+        if (!this.state.gameId) return;
         this.state.checking = true;
         try {
             const result = await rpc("/odoo_speedrun/check_completion", {
@@ -282,7 +364,76 @@ export class SpeedrunSystray extends Component {
         }
     }
 
+    async _checkRaid() {
+        if (!this.state.warId) return;
+        this.state.checking = true;
+        try {
+            const result = await rpc("/odoo_speedrun/clan/war_task/check", {
+                war_id: this.state.warId,
+                kind: "raid",
+            });
+            if (result.success) {
+                playSound("taskComplete");
+                this.state.myFinished = true;
+                if (this._interval) clearInterval(this._interval);
+                this.notification.add("🛠️ Raid de guerre de clan terminé !", {
+                    type: "success",
+                });
+                // Auto-hide the widget shortly after completion.
+                setTimeout(() => {
+                    if (this.state.mode === "raid") {
+                        this.state.visible = false;
+                        this.state.phase = null;
+                    }
+                }, 4000);
+            } else if (result.error) {
+                playSound("error");
+                this.notification.add(result.error, { type: "warning" });
+            }
+        } finally {
+            this.state.checking = false;
+        }
+    }
+
+    async _checkDaily() {
+        this.state.checking = true;
+        try {
+            const result = await rpc("/odoo_speedrun/daily/check", {});
+            if (result.success) {
+                playSound("taskComplete");
+                this.state.myFinished = true;
+                if (this._interval) clearInterval(this._interval);
+                this.notification.add("🗓️ Daily challenge terminé !", { type: "success" });
+                if (result.streak_reward) {
+                    const r = result.streak_reward;
+                    let label = r.type === "equipment"
+                        ? `${r.icon} ${r.name} (${r.rarity})`
+                        : `${r.icon} Coffre ${r.rarity}`;
+                    if (r.coins) {
+                        label += ` + ${r.coins} 💰`;
+                    }
+                    const prefix = r.is_new_cycle ? "🎁 Nouveau cycle ! Jour" : "🎁 Jour";
+                    this.notification.add(`${prefix} ${r.day} : ${label}`, {
+                        type: "success", sticky: true,
+                    });
+                }
+                setTimeout(() => {
+                    if (this.state.mode === "daily") {
+                        this.state.visible = false;
+                        this.state.phase = null;
+                    }
+                }, 4000);
+            } else if (result.error) {
+                playSound("error");
+                this.notification.add(result.error, { type: "warning" });
+            }
+        } finally {
+            this.state.checking = false;
+        }
+    }
+
     async onClickSurrender() {
+        if (this.state.mode !== "game") return; // no surrender for raids / daily
         if (this.state.checking || !this.state.gameId) return;
         if (!window.confirm("Surrender this round? You will score no points.")) {
             return;

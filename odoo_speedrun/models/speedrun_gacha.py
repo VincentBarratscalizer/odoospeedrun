@@ -18,6 +18,9 @@ DEFAULT_CHEST = 'common'
 
 RARITY_SEL = [('common', 'Common'), ('rare', 'Rare'), ('epic', 'Epic'), ('legendary', 'Legendary')]
 
+# Default shop price (in coins 💰) by rarity, used when an item has no explicit price.
+SHOP_PRICE_BY_RARITY = {'common': 150, 'rare': 400, 'epic': 1200, 'legendary': 3500}
+
 # ---------------------------------------------------------------------------
 # Combat characteristics (Axie-like): equipment "body parts" grant stats.
 # Each item's raw stat budget = RARITY_STAT_BASE, split across the 5 stats
@@ -64,6 +67,16 @@ class SpeedrunEquipment(models.Model):
         'speedrun_equipment_set_item_rel', 'equipment_id', 'set_id',
         string='Panoplies',
     )
+    price = fields.Integer(
+        string='Shop Price 💰',
+        help="Price in coins in the daily shop. When 0, a default price based on "
+             "the item's rarity is used.",
+    )
+
+    def _shop_price(self):
+        """Effective shop price: the explicit price, or a rarity-based default."""
+        self.ensure_one()
+        return self.price or SHOP_PRICE_BY_RARITY.get(self.rarity, 150)
 
     # Combat stats granted by this item (computed from rarity + category)
     stat_hp = fields.Integer(compute='_compute_combat_stats', string='HP')
@@ -132,6 +145,8 @@ class SpeedrunPlayerChest(models.Model):
         ('game_win', 'Game Win'),
         ('daily', 'Daily Reward'),
         ('arena_win', 'Arena Win'),
+        ('clan_war', 'Clan War'),
+        ('daily_streak', 'Daily Streak'),
     ], default='game_win', required=True)
 
 

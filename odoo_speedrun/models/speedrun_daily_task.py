@@ -79,6 +79,8 @@ class SpeedrunDailyTask(models.Model):
         else:
             my_status = 'not_started'
 
+        profile = self.env['speedrun.profile'].sudo()._get_or_create(
+            self.env['res.users'].browse(uid))
         return {
             'date': fields.Date.to_string(self.date),
             'task_name': self.task_id.name,
@@ -89,6 +91,7 @@ class SpeedrunDailyTask(models.Model):
             'my_rank': self._get_my_rank(uid),
             'completion_count': self.completion_count,
             'leaderboard': self._get_leaderboard_data(),
+            'weekly_reward': profile._weekly_reward_payload(),
         }
 
     def _start_for_user(self, uid):
@@ -132,8 +135,15 @@ class SpeedrunDailyTask(models.Model):
         # Recompute completion_count
         self.sudo()._compute_completion_count()
 
+        # Weekly login-reward streak: advance the cycle and grant today's reward.
+        profile = self.env['speedrun.profile'].sudo()._get_or_create(
+            self.env['res.users'].browse(uid))
+        streak_reward = profile._advance_weekly_reward()
+
         info = self._get_info(uid)
         info['success'] = True
+        if streak_reward:
+            info['streak_reward'] = streak_reward
         return info
 
 

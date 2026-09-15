@@ -1,0 +1,31 @@
+.o_shop_panel {
+    max-width: 860px;
+    margin: 0 auto;
+
+    .o_shop_grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+    }
+
+    .o_shop_card {
+        border-width: 2px;
+
+        .o_shop_icon {
+            font-size: 2.4rem;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        .o_shop_price {
+            font-size: 1.1rem;
+        }
+
+        &.o_rar_common { border-color: #9e9e9e; }
+        &.o_rar_rare { border-color: #3b82f6; }
+        &.o_rar_epic { border-color: #a855f7; }
+        &.o_rar_legendary {
+            border-color: #f59e0b;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+        }
+    }
+}

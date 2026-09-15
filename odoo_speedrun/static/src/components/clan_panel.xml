@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.ClanPanel">
+        <div class="o_clan_panel">
+
+          <t t-if="state.battleReplay">
+              <BattleArena replay="state.battleReplay" onDone.bind="onBattleDone" onOpenChest="() => {}"/>
+          </t>
+          <t t-else="">
+
+            <!-- Header -->
+            <div class="o_clan_header d-flex justify-content-between align-items-center mb-3">
+                <button class="btn btn-outline-secondary" t-on-click="props.onBack">← Retour</button>
+                <h3 class="mb-0">🛡️ Clans</h3>
+                <div style="width: 80px;"/>
+            </div>
+
+            <t t-if="state.loading">
+                <div class="text-center py-5 text-muted"><i class="fa fa-spinner fa-spin fa-2x"/></div>
+            </t>
+
+            <!-- =============== NO CLAN =============== -->
+            <t t-elif="!state.clan">
+                <div class="o_clan_create card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Créer un clan</h5>
+                        <div class="row g-2">
+                            <div class="col-2">
+                                <input type="text" class="form-control text-center" maxlength="4"
+                                       t-model="state.form.emblem" placeholder="🛡️"/>
+                            </div>
+                            <div class="col-3">
+                                <input type="text" class="form-control text-uppercase" maxlength="5"
+                                       t-model="state.form.tag" placeholder="TAG"/>
+                            </div>
+                            <div class="col-7">
+                                <input type="text" class="form-control"
+                                       t-model="state.form.name" placeholder="Nom du clan"/>
+                            </div>
+                            <div class="col-12">
+                                <input type="text" class="form-control"
+                                       t-model="state.form.motto" placeholder="Devise (optionnel)"/>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary mt-3" t-on-click="createClan">
+                            Créer mon clan
+                        </button>
+                    </div>
+                </div>
+
+                <h5 class="mb-2">Rejoindre un clan</h5>
+                <t t-if="!state.clans.length">
+                    <div class="text-muted text-center py-4">Aucun clan pour l'instant. Soyez le premier !</div>
+                </t>
+                <div class="o_clan_list">
+                    <t t-foreach="state.clans" t-as="c" t-key="c.id">
+                        <div class="o_clan_row card mb-2">
+                            <div class="card-body d-flex align-items-center justify-content-between py-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fs-4"><t t-esc="c.emblem"/></span>
+                                    <div>
+                                        <div class="fw-bold">[<t t-esc="c.tag"/>] <t t-esc="c.name"/></div>
+                                        <div class="small text-muted">
+                                            Niv. <t t-esc="c.clan_level"/> · <t t-esc="c.member_count"/>/<t t-esc="c.max_members"/> membres · <t t-esc="c.trophies"/> 🏆
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary" t-on-click="() => this.joinClan(c.id)">
+                                    Rejoindre
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+
+            <!-- =============== MY CLAN =============== -->
+            <t t-else="">
+                <!-- Clan banner -->
+                <div class="o_clan_banner card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="display-5"><t t-esc="state.clan.emblem"/></span>
+                                <div>
+                                    <h4 class="mb-0">[<t t-esc="state.clan.tag"/>] <t t-esc="state.clan.name"/></h4>
+                                    <div class="text-muted small" t-if="state.clan.motto"><em><t t-esc="state.clan.motto"/></em></div>
+                                    <div class="small text-muted">Chef : <t t-esc="state.clan.leader_name"/></div>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="badge text-bg-primary mb-1">Niv. <t t-esc="state.clan.clan_level"/></div>
+                                <div class="small"><t t-esc="state.clan.clan_elo"/> ELO</div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <span class="badge text-bg-light">🏆 <t t-esc="state.clan.trophies"/> trophées</span>
+                            <span class="badge text-bg-light">⚔️ <t t-esc="state.clan.wars_won"/>/<t t-esc="state.clan.wars_played"/> guerres</span>
+                            <span class="badge text-bg-light">🔥 <t t-esc="state.clan.war_streak"/> série</span>
+                            <span class="badge text-bg-light">💪 <t t-esc="state.clan.total_power"/> puissance</span>
+                            <span class="badge text-bg-light">💰 <t t-esc="state.clan.treasury"/> trésor</span>
+                            <span class="badge text-bg-light">👥 <t t-esc="state.clan.member_count"/>/<t t-esc="state.clan.max_members"/></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ======= WAR SECTION ======= -->
+                <t t-if="war">
+                    <!-- Declared: waiting for acceptance -->
+                    <t t-if="war.state === 'declared'">
+                        <div class="o_clan_war card mb-3 border-warning">
+                            <div class="card-body text-center">
+                                <h5 class="mb-2">⚔️ Guerre — <t t-esc="war.challenger.name"/> vs <t t-esc="war.defender.name"/></h5>
+                                <t t-if="war.my_side === 'defender' and war.is_defender_leader">
+                                    <p class="mb-3"><strong><t t-esc="war.challenger.name"/></strong> vous a déclaré la guerre !</p>
+                                    <button class="btn btn-success me-2" t-on-click="acceptWar">Accepter (24h)</button>
+                                    <button class="btn btn-outline-danger" t-on-click="declineWar">Refuser</button>
+                                </t>
+                                <t t-elif="war.my_side === 'challenger' and war.is_challenger_leader">
+                                    <p class="mb-3">En attente de la réponse de <strong><t t-esc="war.defender.name"/></strong>...</p>
+                                    <button class="btn btn-outline-danger" t-on-click="cancelWar">Annuler la déclaration</button>
+                                </t>
+                                <t t-else="">
+                                    <p class="mb-0 text-muted">Guerre en attente de validation par les chefs de clan.</p>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+
+                    <!-- Running -->
+                    <t t-elif="war.state === 'running'">
+                        <div class="o_clan_war card mb-3 border-info">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">⚔️ Guerre en cours</h5>
+                                    <span class="badge text-bg-info">⏳ <t t-esc="state.warRemaining"/></span>
+                                </div>
+                                <div class="row text-center mb-3">
+                                    <div class="col-5">
+                                        <div class="fs-3"><t t-esc="war.challenger.emblem"/></div>
+                                        <div class="fw-bold small">[<t t-esc="war.challenger.tag"/>]</div>
+                                    </div>
+                                    <div class="col-2 fw-bold text-muted d-flex align-items-center justify-content-center">VS</div>
+                                    <div class="col-5">
+                                        <div class="fs-3"><t t-esc="war.defender.emblem"/></div>
+                                        <div class="fw-bold small">[<t t-esc="war.defender.tag"/>]</div>
+                                    </div>
+                                </div>
+
+                                <!-- Who is currently winning -->
+                                <div class="text-center mb-3">
+                                    <t t-if="war.standings.leader === 'challenger'">
+                                        <span class="badge text-bg-success fs-6">🏆 [<t t-esc="war.challenger.tag"/>] mène <t t-esc="war.standings.challenger_points"/>–<t t-esc="war.standings.defender_points"/></span>
+                                    </t>
+                                    <t t-elif="war.standings.leader === 'defender'">
+                                        <span class="badge text-bg-success fs-6">🏆 [<t t-esc="war.defender.tag"/>] mène <t t-esc="war.standings.defender_points"/>–<t t-esc="war.standings.challenger_points"/></span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="badge text-bg-secondary fs-6">⚖️ Égalité <t t-esc="war.standings.challenger_points"/>–<t t-esc="war.standings.defender_points"/></span>
+                                    </t>
+                                </div>
+
+                                <!-- Épreuve tallies (col headers = the two clans) -->
+                                <div class="o_clan_epreuves mb-3">
+                                    <div class="d-flex justify-content-between align-items-center text-muted small pb-1 border-bottom">
+                                        <span>Épreuve</span>
+                                        <span class="font-monospace">[<t t-esc="war.challenger.tag"/>] — [<t t-esc="war.defender.tag"/>]</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center py-1 border-bottom"
+                                         t-att-class="war.standings.raid_lead === 'challenger' ? 'o_clan_lead_a' : (war.standings.raid_lead === 'defender' ? 'o_clan_lead_b' : '')">
+                                        <span>🛠️ Raid <span class="text-muted small">(tâches complétées)</span></span>
+                                        <span class="font-monospace">
+                                            <t t-esc="war.tally.raid.challenger"/>/<t t-esc="war.challenger.member_count"/> — <t t-esc="war.tally.raid.defender"/>/<t t-esc="war.defender.member_count"/>
+                                        </span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center py-1"
+                                         t-att-class="(war.blitz_visible ? 'border-bottom ' : '') + (war.standings.arena_lead === 'challenger' ? 'o_clan_lead_a' : (war.standings.arena_lead === 'defender' ? 'o_clan_lead_b' : ''))">
+                                        <span>🥊 Arène <span class="text-muted small">(gagnés / perdus)</span></span>
+                                        <span class="font-monospace">
+                                            <t t-esc="war.tally.arena.challenger.w"/>V–<t t-esc="war.tally.arena.challenger.l"/>D — <t t-esc="war.tally.arena.defender.w"/>V–<t t-esc="war.tally.arena.defender.l"/>D
+                                        </span>
+                                    </div>
+                                    <!-- Blitz revealed only in the final hour -->
+                                    <div t-if="war.blitz_visible"
+                                         class="d-flex justify-content-between align-items-center py-1"
+                                         t-att-class="war.standings.blitz_lead === 'challenger' ? 'o_clan_lead_a' : (war.standings.blitz_lead === 'defender' ? 'o_clan_lead_b' : '')">
+                                        <span>⚡ Blitz <span class="text-muted small">(complétions totales)</span></span>
+                                        <span class="font-monospace">
+                                            <t t-esc="war.tally.blitz.challenger"/> — <t t-esc="war.tally.blitz.defender"/>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- My action cards (only for participants) -->
+                                <t t-if="war.my_side">
+                                    <div class="row g-2">
+                                        <!-- Raid -->
+                                        <div class="col-md-6">
+                                            <div class="card h-100">
+                                                <div class="card-body">
+                                                    <h6 class="mb-1">🛠️ Raid</h6>
+                                                    <div class="small text-muted mb-2" t-if="war.raid_task">
+                                                        <strong><t t-esc="war.raid_task.name"/></strong>
+                                                        <div><t t-esc="war.raid_task.description"/></div>
+                                                    </div>
+                                                    <t t-if="war.my_raid.status === 'completed'">
+                                                        <span class="badge text-bg-success">✔ Terminé — <t t-esc="formatTime(war.my_raid.duration_ms)"/></span>
+                                                    </t>
+                                                    <t t-elif="war.my_raid.status === 'in_progress'">
+                                                        <div class="font-monospace mb-2"><t t-esc="state.raidElapsed"/></div>
+                                                        <button class="btn btn-sm btn-success" t-on-click="() => this.checkTask('raid')" t-att-disabled="state.checking">
+                                                            Vérifier
+                                                        </button>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <button class="btn btn-sm btn-primary" t-on-click="() => this.startTask('raid')">Démarrer</button>
+                                                    </t>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Arena: trigger my attack -->
+                                        <div class="col-md-6">
+                                            <div class="card h-100">
+                                                <div class="card-body">
+                                                    <h6 class="mb-1">🥊 Arène</h6>
+                                                    <t t-if="war.my_arena.done">
+                                                        <span t-att-class="war.my_arena.won ? 'badge text-bg-success' : 'badge text-bg-secondary'">
+                                                            <t t-if="war.my_arena.won">✔ Attaque gagnée</t>
+                                                            <t t-else="">✖ Attaque perdue</t>
+                                                        </span>
+                                                        <div class="small text-muted mt-1">vs <t t-esc="war.my_arena.opponent_name"/></div>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <div class="small text-muted mb-2">Affrontez <strong><t t-esc="war.my_arena.opponent_name"/></strong> (1 attaque par guerre).</div>
+                                                        <button class="btn btn-sm btn-danger" t-on-click="fightArena" t-att-disabled="state.fighting">
+                                                            ⚔️ Combattre
+                                                        </button>
+                                                    </t>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Blitz: only surfaced in the war's final hour -->
+                                    <t t-if="war.blitz_visible">
+                                        <div class="card mt-2 border-warning">
+                                            <div class="card-body">
+                                                <h6 class="mb-1">⚡ Blitz — dernière heure !</h6>
+                                                <t t-if="war.blitz_state === 'live'">
+                                                    <span class="badge text-bg-warning mb-2">🔥 EN COURS</span>
+                                                    <div class="small">Jouez des parties normales : chaque tâche complétée compte pour le clan !</div>
+                                                    <div class="small text-muted mt-1"><t t-esc="state.blitzCountdown"/></div>
+                                                </t>
+                                                <t t-elif="war.blitz_state === 'upcoming'">
+                                                    <div class="small text-muted">Blitz collectif <strong><t t-esc="state.blitzCountdown"/></strong>. Toutes les complétions de parties normales compteront.</div>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="badge text-bg-secondary">Blitz terminé</span>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+
+                <!-- No active war: declare (leader) + last result -->
+                <t t-else="">
+                    <t t-if="state.clan.is_leader">
+                        <t t-if="!state.showDeclare">
+                            <button class="btn btn-danger mb-3" t-on-click="openDeclare">⚔️ Déclarer une guerre</button>
+                        </t>
+                        <t t-else="">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0">Choisir un clan à défier</h6>
+                                        <button class="btn btn-sm btn-outline-secondary" t-on-click="closeDeclare">Fermer</button>
+                                    </div>
+                                    <t t-if="!state.targets.length">
+                                        <div class="text-muted text-center py-3">Aucun clan adverse disponible.</div>
+                                    </t>
+                                    <t t-foreach="state.targets" t-as="target" t-key="target.id">
+                                        <div class="d-flex align-items-center justify-content-between py-1 border-bottom">
+                                            <span><t t-esc="target.emblem"/> [<t t-esc="target.tag"/>] <t t-esc="target.name"/>
+                                                <span class="small text-muted ms-1"><t t-esc="target.member_count"/> membres · <t t-esc="target.total_power"/> 💪</span>
+                                            </span>
+                                            <button class="btn btn-sm btn-outline-danger" t-on-click="() => this.declareWar(target.id)">Défier</button>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                    </t>
+
+                    <!-- Last war result -->
+                    <t t-if="lastWar">
+                        <div class="o_clan_war card mb-3"
+                             t-att-class="lastWar.winner_clan_id === state.clan.id ? 'border-success' : 'border-danger'">
+                            <div class="card-body text-center">
+                                <h5 class="mb-2">
+                                    <t t-if="lastWar.winner_clan_id === state.clan.id">🏆 Victoire !</t>
+                                    <t t-else="">💀 Défaite</t>
+                                </h5>
+                                <p class="mb-2">
+                                    <t t-esc="lastWar.challenger.name"/> <strong><t t-esc="lastWar.score_challenger"/> — <t t-esc="lastWar.score_defender"/></strong> <t t-esc="lastWar.defender.name"/>
+                                </p>
+                                <div class="small text-muted">
+                                    🛠️ Raid : <t t-esc="lastWar.raid_winner_id === lastWar.challenger.id ? lastWar.challenger.tag : lastWar.defender.tag"/>
+                                    · 🥊 Arène : <t t-esc="lastWar.challenger_arena_wins"/>–<t t-esc="lastWar.defender_arena_wins"/>
+                                    <t t-if="lastWar.blitz_decisive"> · ⚡ Blitz décisif</t>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+
+                <!-- ======= MEMBERS ======= -->
+                <div class="card mb-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>👥 Membres</span>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <t t-foreach="state.clan.members" t-as="m" t-key="m.profile_id">
+                            <div class="list-group-item d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                    <img class="o_clan_avatar rounded-circle" t-att-src="m.avatar_url" alt="" style="width:32px;height:32px;"/>
+                                    <div>
+                                        <span class="fw-bold"><t t-esc="m.name"/></span>
+                                        <span class="badge text-bg-light ms-1"><t t-esc="roleLabel(m.role)"/></span>
+                                        <div class="small text-muted">Niv. <t t-esc="m.level"/> · 💪 <t t-esc="m.power"/> · GS <t t-esc="m.gear_score"/></div>
+                                    </div>
+                                </div>
+                                <t t-if="state.clan.is_leader and !m.is_leader">
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-secondary" t-on-click="() => this.transferLead(m.profile_id)" title="Transmettre le commandement">👑</button>
+                                        <button class="btn btn-outline-danger" t-on-click="() => this.kickMember(m.profile_id)" title="Exclure">✖</button>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- ======= FOOTER ACTIONS ======= -->
+                <div class="d-flex gap-2">
+                    <t t-if="state.clan.is_leader">
+                        <button class="btn btn-outline-danger btn-sm" t-on-click="disbandClan">Dissoudre le clan</button>
+                    </t>
+                    <t t-else="">
+                        <button class="btn btn-outline-secondary btn-sm" t-on-click="leaveClan">Quitter le clan</button>
+                    </t>
+                </div>
+            </t>
+          </t>
+        </div>
+    </t>
+</templates>

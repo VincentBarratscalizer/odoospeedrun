@@ -326,6 +326,22 @@ class SpeedrunProfile(models.Model):
         data['arena_quota'] = self._arena_quota()
         return data
 
+    def _gear_stats_payload(self):
+        """Compact aggregated combat stats for the equipment screen (live)."""
+        self.ensure_one()
+        return {
+            'stats': {
+                'hp': self.combat_hp,
+                'atk': self.combat_atk,
+                'def': self.combat_def,
+                'spd': self.combat_spd,
+                'crit': self.combat_crit,
+            },
+            'power': self.power,
+            'element': self.combat_element or '',
+            'element_meta': ELEMENT_META.get(self.combat_element) or None,
+        }
+
     def _add_coins(self, amount):
         """Credit (or debit) the wallet and notify the frontend."""
         self.ensure_one()
@@ -452,6 +468,8 @@ class SpeedrunProfile(models.Model):
         profiles._check_badges(game=game)
         # --- Per-task daily ELO ranking ---
         self.env['speedrun.task.score']._update_from_game(game)
+        # --- Refresh class domain ratings (percentile of best times) ---
+        profiles._recompute_class_ratings()
         for profile in profiles:
             uid = profile.user_id.id
             if profile.level > old_levels[uid]:
@@ -565,6 +583,22 @@ class SpeedrunProfile(models.Model):
                 'coins': coin_gain,
             }
         return None
+
+    def _grant_equipment(self, equipment):
+        """Add one copy of an equipment item to this player's collection."""
+        self.ensure_one()
+        existing = self.env['speedrun.player.equipment'].search([
+            ('profile_id', '=', self.id),
+            ('equipment_id', '=', equipment.id),
+        ], limit=1)
+        if existing:
+            existing.count += 1
+        else:
+            self.env['speedrun.player.equipment'].create({
+                'profile_id': self.id,
+                'equipment_id': equipment.id,
+            })
+        return existing
 
     def _pity_config(self):
         """Read the (manager-configurable) pity settings from system params."""

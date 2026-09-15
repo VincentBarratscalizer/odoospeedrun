@@ -20,13 +20,18 @@ export class SpeedrunSystray extends Component {
 
         this.state = useState({
             visible: false,
-            mode: "game", // "game" | "raid" (clan war raid)
+            mode: "game", // "game" | "raid" | "daily" | "boss"
             gameId: null,
             warId: null,
+            bossId: null,
             taskName: "",
             taskDescription: "",
             startTime: null,
             elapsed: "00:00",
+            countdown: "",       // boss épreuve countdown (mm:ss)
+            deadlineMs: 0,
+            attempts: 0,
+            maxAttempts: 0,
             currentRound: 0,
             totalRounds: 0,
             myFinished: false,
@@ -107,11 +112,10 @@ export class SpeedrunSystray extends Component {
                     this._startSystrayPoll(result.id);
                 }
             } else {
-                // No active game — resume a clan war raid or a daily challenge.
-                const shown = await this._checkActiveRaid();
-                if (!shown) {
-                    await this._checkActiveDaily();
-                }
+                // No active game — resume a raid, daily challenge or boss épreuve.
+                let shown = await this._checkActiveRaid();
+                if (!shown) shown = await this._checkActiveDaily();
+                if (!shown) await this._checkActiveBoss();
             }
         } catch {
             // Ignore errors silently
@@ -162,6 +166,147 @@ export class SpeedrunSystray extends Component {
         this._startTimer();
     }
 
+    // ------------------------------------------------------------------
+    // Boss épreuve (countdown + limited attempts)
+    // ------------------------------------------------------------------
+    async _checkActiveBoss() {
+        try {
+            const lad = await rpc("/odoo_speedrun/boss/ladder", {});
+            const c = lad && lad.current;
+            if (c && c.in_progress && c.epreuve_deadline) {
+                this._showBoss({
+                    boss_id: c.id,
+                    task_name: c.task_name,
+                    task_description: c.task_description,
+                    attempts: c.attempts,
+                    max_attempts: c.max_attempts,
+                    epreuve_deadline: c.epreuve_deadline,
+                });
+                return true;
+            }
+        } catch {
+            // ignore
+        }
+        return false;
+    }
+
+    _showBoss(data) {
+        this.state.visible = true;
+        this.state.mode = "boss";
+        this.state.phase = "playing";
+        this.state.bossId = data.boss_id;
+        this.state.taskName = data.task_name || "";
+        this.state.taskDescription = data.task_description || "";
+        this.state.attempts = data.attempts || 0;
+        this.state.maxAttempts = data.max_attempts || 0;
+        this.state.myFinished = false;
+        this.state.checking = false;
+        const dl = data.epreuve_deadline;
+        this.state.deadlineMs = dl
+            ? new Date(dl + (dl.endsWith("Z") ? "" : "Z")).getTime() : 0;
+        this._startBossCountdown();
+    }
+
+    _startBossCountdown() {
+        if (this._interval) clearInterval(this._interval);
+        const tick = () => {
+            const left = this.state.deadlineMs - Date.now();
+            if (left <= 0) {
+                this.state.countdown = "00:00";
+                clearInterval(this._interval);
+                this._interval = null;
+                this._bossTimeout();
+                return;
+            }
+            const s = Math.floor(left / 1000);
+            this.state.countdown = `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+        };
+        tick();
+        this._interval = setInterval(tick, 250);
+    }
+
+    async _checkBoss() {
+        this.state.checking = true;
+        try {
+            const r = await rpc("/odoo_speedrun/boss/epreuve/check", { boss_id: this.state.bossId });
+            await this._applyBossResult(r);
+        } finally {
+            this.state.checking = false;
+        }
+    }
+
+    async _bossTimeout() {
+        try {
+            const r = await rpc("/odoo_speedrun/boss/epreuve/timeout", { boss_id: this.state.bossId });
+            await this._applyBossResult(r);
+        } catch {
+            // ignore
+        }
+    }
+
+    async _applyBossResult(r) {
+        if (!r) return;
+        if (r.attempts !== undefined) this.state.attempts = r.attempts;
+        if (r.boss_won) {
+            playSound("error");
+            this.notification.add(
+                "💀 Le boss a gagné ! Attendez le cooldown avant de le redéfier.",
+                { type: "warning", sticky: true });
+            this._hideBoss();
+            return;
+        }
+        if (r.success) {
+            if (r.defeated) {
+                playSound("gameOver");
+                this.notification.add("☠️ Boss vaincu !", { type: "success", sticky: true });
+                this._hideBoss();
+            } else if (r.epreuve_done) {
+                playSound("taskComplete");
+                this.notification.add("🏁 Épreuve validée !", { type: "success" });
+                this._hideBoss();
+            } else {
+                // A count rep succeeded — start the next one.
+                playSound("taskComplete");
+                this.notification.add(`✅ Réussi ! (${r.epreuve_count}/${r.target_count})`, { type: "success" });
+                await this._restartBoss();
+            }
+            return;
+        }
+        if (r.attempt_failed) {
+            playSound("error");
+            this.notification.add(`⏱️ Temps écoulé ! Tentatives restantes : ${r.attempts}`, { type: "warning" });
+            await this._restartBoss();
+            return;
+        }
+        // Not completed yet (manual check within the countdown).
+        this.notification.add(r.error || "Pas encore terminé, continuez !", { type: "warning" });
+    }
+
+    async _restartBoss() {
+        const r = await rpc("/odoo_speedrun/boss/epreuve/start", { boss_id: this.state.bossId });
+        if (r.error) {
+            this.notification.add(r.error, { type: "warning" });
+            this._hideBoss();
+            return;
+        }
+        this._showBoss({
+            boss_id: this.state.bossId,
+            task_name: this.state.taskName,
+            task_description: this.state.taskDescription,
+            attempts: r.attempts,
+            max_attempts: r.max_attempts,
+            epreuve_deadline: r.epreuve_deadline,
+        });
+    }
+
+    _hideBoss() {
+        if (this._interval) clearInterval(this._interval);
+        this._interval = null;
+        this.state.visible = false;
+        this.state.phase = null;
+        this.state.mode = "game";
+    }
+
     _showRaid(data) {
         this.state.visible = true;
         this.state.mode = "raid";
@@ -199,6 +344,9 @@ export class SpeedrunSystray extends Component {
                 break;
             case "daily_started":
                 this._showDaily(data);
+                break;
+            case "boss_epreuve_started":
+                this._showBoss(data);
                 break;
             case "round_over":
                 if (this._interval) clearInterval(this._interval);
@@ -342,6 +490,9 @@ export class SpeedrunSystray extends Component {
         }
         if (this.state.mode === "daily") {
             return this._checkDaily();
+        }
+        if (this.state.mode === "boss") {
+            return this._checkBoss();
         }
         if (!this.state.gameId) return;
         this.state.checking = true;

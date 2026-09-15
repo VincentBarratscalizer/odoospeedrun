@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Individual PvE boss ladder. Each boss mixes a combat objective and a
+         speedrun épreuve. Managers can edit stats, assign a task and rewards. -->
+
+    <record id="boss_1" model="speedrun.boss">
+        <field name="name">Gluon le Gluant</field>
+        <field name="icon">🟢</field>
+        <field name="description">Un blob mou pour s'échauffer.</field>
+        <field name="sequence">10</field>
+        <field name="element">desk</field>
+        <field name="stat_atk">28</field><field name="stat_def">14</field>
+        <field name="stat_spd">18</field><field name="stat_crit">8</field>
+        <field name="encounter_hp">650</field>
+        <field name="challenge_type">time</field>
+        <field name="time_limit_ms">240000</field>
+        <field name="epreuve_attempts">4</field>
+        <field name="epreuve_cooldown_min">10</field>
+        <field name="reward_chest_rarity">common</field>
+        <field name="reward_coins">120</field>
+    </record>
+
+    <record id="boss_2" model="speedrun.boss">
+        <field name="name">Bitflip le Fourbe</field>
+        <field name="icon">🦇</field>
+        <field name="description">Rapide et sournois.</field>
+        <field name="sequence">20</field>
+        <field name="element">peripheral</field>
+        <field name="stat_atk">34</field><field name="stat_def">18</field>
+        <field name="stat_spd">26</field><field name="stat_crit">12</field>
+        <field name="encounter_hp">900</field>
+        <field name="challenge_type">time</field>
+        <field name="time_limit_ms">180000</field>
+        <field name="reward_chest_rarity">rare</field>
+        <field name="reward_coins">200</field>
+    </record>
+
+    <record id="boss_3" model="speedrun.boss">
+        <field name="name">Le Golem d'Inventaire</field>
+        <field name="icon">🗿</field>
+        <field name="description">Un mur de PV. Frappez fort.</field>
+        <field name="sequence">30</field>
+        <field name="element">tech</field>
+        <field name="stat_atk">40</field><field name="stat_def">30</field>
+        <field name="stat_spd">18</field><field name="stat_crit">10</field>
+        <field name="encounter_hp">1300</field>
+        <field name="challenge_type">count</field>
+        <field name="target_count">3</field>
+        <field name="reward_chest_rarity">rare</field>
+        <field name="reward_coins">280</field>
+    </record>
+
+    <record id="boss_4" model="speedrun.boss">
+        <field name="name">Spectre du Grand Livre</field>
+        <field name="icon">👻</field>
+        <field name="description">Précis et impitoyable.</field>
+        <field name="sequence">40</field>
+        <field name="element">display</field>
+        <field name="stat_atk">50</field><field name="stat_def">26</field>
+        <field name="stat_spd">28</field><field name="stat_crit">18</field>
+        <field name="encounter_hp">1600</field>
+        <field name="challenge_type">time</field>
+        <field name="time_limit_ms">150000</field>
+        <field name="reward_chest_rarity">epic</field>
+        <field name="reward_coins">400</field>
+    </record>
+
+    <record id="boss_5" model="speedrun.boss">
+        <field name="name">Hydre du Pipeline</field>
+        <field name="icon">🐉</field>
+        <field name="description">Chaque tête vaut une tâche.</field>
+        <field name="sequence">50</field>
+        <field name="element">module</field>
+        <field name="stat_atk">58</field><field name="stat_def">32</field>
+        <field name="stat_spd">30</field><field name="stat_crit">16</field>
+        <field name="encounter_hp">2100</field>
+        <field name="challenge_type">count</field>
+        <field name="target_count">5</field>
+        <field name="reward_chest_rarity">epic</field>
+        <field name="reward_coins">550</field>
+    </record>
+
+    <record id="boss_6" model="speedrun.boss">
+        <field name="name">Krash, Seigneur du Rollback</field>
+        <field name="icon">🐲</field>
+        <field name="description">Le boss final. Bonne chance.</field>
+        <field name="sequence">60</field>
+        <field name="element">badge</field>
+        <field name="stat_atk">70</field><field name="stat_def">40</field>
+        <field name="stat_spd">34</field><field name="stat_crit">22</field>
+        <field name="encounter_hp">3000</field>
+        <field name="challenge_type">time</field>
+        <field name="time_limit_ms">120000</field>
+        <field name="reward_chest_rarity">legendary</field>
+        <field name="reward_coins">900</field>
+    </record>
+</odoo>

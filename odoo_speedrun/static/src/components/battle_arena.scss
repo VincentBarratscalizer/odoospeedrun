@@ -339,3 +339,21 @@
     .o_battle_intro .o_intro_fighter img { width: 100px; height: 100px; }
     .o_battle_intro .o_intro_vs { font-size: 3rem; }
 }
+
+// PvE boss: emoji avatar + result box
+.o_boss_emoji {
+    font-size: 3.4rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+.o_boss_result_box {
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    padding: 10px 16px;
+    margin: 8px 0;
+    text-align: center;
+}

@@ -18,7 +18,12 @@
                     </div>
                     <div class="o_intro_vs">VS</div>
                     <div class="o_intro_fighter o_intro_right">
-                        <img t-att-src="replay.opponent.avatar_url" alt="opp"/>
+                        <t t-if="replay.opponent.avatar_url">
+                            <img t-att-src="replay.opponent.avatar_url" alt="opp"/>
+                        </t>
+                        <t t-else="">
+                            <div class="o_boss_emoji"><t t-esc="replay.opponent.emoji || '🐲'"/></div>
+                        </t>
                         <div class="o_intro_name"><t t-esc="replay.opponent.name"/></div>
                         <div class="o_intro_power">⚔️ <t t-esc="replay.opponent.power"/></div>
                         <t t-if="replay.opponent.element_meta">
@@ -82,7 +87,12 @@
                                 </t>
                             </div>
                             <div class="o_fighter_avatar">
-                                <img t-att-src="replay.opponent.avatar_url" alt="opp"/>
+                                <t t-if="replay.opponent.avatar_url">
+                                    <img t-att-src="replay.opponent.avatar_url" alt="opp"/>
+                                </t>
+                                <t t-else="">
+                                    <div class="o_boss_emoji"><t t-esc="replay.opponent.emoji || '🐲'"/></div>
+                                </t>
                             </div>
                             <div class="o_fighter_name"><t t-esc="replay.opponent.name"/></div>
                             <div class="o_hp_bar">
@@ -106,6 +116,35 @@
                             <t t-if="iWon">🏆 VICTOIRE !</t>
                             <t t-else="">💀 DÉFAITE</t>
                         </div>
+
+                        <!-- Boss result (PvE ladder) -->
+                        <t t-if="replay.boss_result">
+                            <div class="o_boss_result_box">
+                                <t t-if="replay.boss_result.won">
+                                    <div class="fs-5 text-success">⚔️ Combat remporté !</div>
+                                </t>
+                                <t t-else="">
+                                    <div class="fs-5 text-danger">Combat perdu — renforcez votre stuff et réessayez.</div>
+                                </t>
+                                <div class="small mt-2">
+                                    <span t-att-class="replay.boss_result.combat_done ? 'text-success' : 'text-muted'">
+                                        <t t-if="replay.boss_result.combat_done">✅</t><t t-else="">⚔️</t> Objectif combat
+                                    </span>
+                                    <span class="mx-2">·</span>
+                                    <span t-att-class="replay.boss_result.epreuve_done ? 'text-success' : 'text-muted'">
+                                        <t t-if="replay.boss_result.epreuve_done">✅</t><t t-else="">🏁</t> Épreuve speedrun
+                                    </span>
+                                </div>
+                                <t t-if="replay.boss_result.defeated">
+                                    <div class="fw-bold text-warning mt-2">
+                                        ☠️ BOSS VAINCU ! Récompense : coffre <t t-esc="replay.boss_result.reward.chest_rarity"/> + <t t-esc="replay.boss_result.reward.coins"/> 💰
+                                    </div>
+                                </t>
+                            </div>
+                            <button class="btn btn-lg btn-light mt-2" t-on-click="props.onDone">← Retour</button>
+                        </t>
+
+                        <t t-else="">
                         <div class="o_result_rating">
                             <span class="o_rating_delta" t-att-class="replay.rating_change &gt;= 0 ? 'text-success' : 'text-danger'">
                                 <t t-if="replay.rating_change &gt;= 0">+</t><t t-esc="replay.rating_change"/> 🏆
@@ -129,6 +168,7 @@
                         <button class="btn btn-lg btn-light mt-2" t-on-click="props.onDone">
                             ← Retour à l'arène
                         </button>
+                        </t>
                     </div>
                 </t>
             </t>

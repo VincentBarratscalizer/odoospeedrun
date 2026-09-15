@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="speedrun_boss_view_list" model="ir.ui.view">
+        <field name="name">speedrun.boss.list</field>
+        <field name="model">speedrun.boss</field>
+        <field name="arch" type="xml">
+            <list string="PvE Bosses">
+                <field name="sequence" widget="handle"/>
+                <field name="icon" string=""/>
+                <field name="name"/>
+                <field name="element"/>
+                <field name="encounter_hp"/>
+                <field name="challenge_type"/>
+                <field name="reward_chest_rarity"/>
+                <field name="reward_coins"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="speedrun_boss_view_form" model="ir.ui.view">
+        <field name="name">speedrun.boss.form</field>
+        <field name="model">speedrun.boss</field>
+        <field name="arch" type="xml">
+            <form string="PvE Boss">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="icon" class="oe_inline"/>
+                            <field name="name" class="oe_inline" placeholder="Boss name…"/>
+                        </h1>
+                        <field name="description"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="element"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Combat stats">
+                            <field name="encounter_hp"/>
+                            <field name="stat_atk"/>
+                            <field name="stat_def"/>
+                            <field name="stat_spd"/>
+                            <field name="stat_crit"/>
+                        </group>
+                    </group>
+                    <group string="Épreuve speedrun">
+                        <group>
+                            <field name="task_id"/>
+                            <field name="challenge_type"/>
+                            <field name="target_count" invisible="challenge_type != 'count'"/>
+                        </group>
+                        <group>
+                            <field name="time_limit_ms"/>
+                            <field name="epreuve_attempts"/>
+                            <field name="epreuve_cooldown_min"/>
+                        </group>
+                    </group>
+                    <group string="Reward">
+                        <field name="reward_chest_rarity"/>
+                        <field name="reward_coins"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="speedrun_boss_action" model="ir.actions.act_window">
+        <field name="name">PvE Bosses</field>
+        <field name="res_model">speedrun.boss</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

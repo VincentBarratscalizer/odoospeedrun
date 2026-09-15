@@ -63,3 +63,17 @@ access_speedrun_loot_sequence_admin,speedrun.loot.sequence.admin,model_speedrun_
 access_speedrun_loot_sequence_day_user,speedrun.loot.sequence.day.user,model_speedrun_loot_sequence_day,base.group_user,1,0,0,0
 access_speedrun_loot_sequence_day_manager,speedrun.loot.sequence.day.manager,model_speedrun_loot_sequence_day,group_speedrun_manager,1,1,1,1
 access_speedrun_loot_sequence_day_admin,speedrun.loot.sequence.day.admin,model_speedrun_loot_sequence_day,base.group_system,1,1,1,1
+access_speedrun_boss_user,speedrun.boss.user,model_speedrun_boss,base.group_user,1,0,0,0
+access_speedrun_boss_manager,speedrun.boss.manager,model_speedrun_boss,group_speedrun_manager,1,1,1,1
+access_speedrun_boss_admin,speedrun.boss.admin,model_speedrun_boss,base.group_system,1,1,1,1
+access_speedrun_boss_progress_user,speedrun.boss.progress.user,model_speedrun_boss_progress,base.group_user,1,0,0,0
+access_speedrun_boss_progress_admin,speedrun.boss.progress.admin,model_speedrun_boss_progress,base.group_system,1,1,1,1
+access_speedrun_boss_progress_manager,speedrun.boss.progress.manager,model_speedrun_boss_progress,group_speedrun_manager,1,1,1,1
+access_speedrun_profile_manager,speedrun.profile.manager,model_speedrun_profile,group_speedrun_manager,1,1,1,1
+access_speedrun_player_equipment_manager,speedrun.player.equipment.manager,model_speedrun_player_equipment,group_speedrun_manager,1,1,1,1
+access_speedrun_player_chest_manager,speedrun.player.chest.manager,model_speedrun_player_chest,group_speedrun_manager,1,1,1,1
+access_speedrun_shop_purchase_manager,speedrun.shop.purchase.manager,model_speedrun_shop_purchase,group_speedrun_manager,1,1,1,1
+access_speedrun_equipment_manager2,speedrun.equipment.manager2,model_speedrun_equipment,group_speedrun_manager,1,1,1,1
+access_speedrun_task_score_manager,speedrun.task.score.manager,model_speedrun_task_score,group_speedrun_manager,1,1,1,1
+access_speedrun_elo_history_manager,speedrun.elo.history.manager,model_speedrun_elo_history,group_speedrun_manager,1,1,1,1
+access_speedrun_badge_award_manager,speedrun.badge.award.manager,model_speedrun_badge_award,group_speedrun_manager,1,1,1,1

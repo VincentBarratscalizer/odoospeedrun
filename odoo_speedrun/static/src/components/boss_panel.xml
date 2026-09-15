@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="odoo_speedrun.BossPanel">
+        <div class="o_boss_panel">
+
+          <t t-if="state.battleReplay">
+              <BattleArena replay="state.battleReplay" onDone.bind="onBattleDone" onOpenChest="() => {}"/>
+          </t>
+          <t t-else="">
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <button class="btn btn-outline-secondary" t-on-click="props.onBack">← Retour</button>
+                <h3 class="mb-0">👹 Boss PvE</h3>
+                <div style="width: 80px;"/>
+            </div>
+
+            <t t-if="state.loading">
+                <div class="text-center py-5 text-muted"><i class="fa fa-spinner fa-spin fa-2x"/></div>
+            </t>
+
+            <t t-elif="!state.ladder or !state.ladder.total">
+                <div class="text-center py-5 text-muted">Aucun boss configuré.</div>
+            </t>
+
+            <t t-else="">
+                <!-- Ladder progress -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small text-muted mb-1">
+                        <span>Progression</span>
+                        <span><t t-esc="state.ladder.defeated_count"/> / <t t-esc="state.ladder.total"/> vaincus</span>
+                    </div>
+                    <div class="o_boss_ladder_bar">
+                        <div class="o_boss_ladder_fill" t-att-style="'width:' + progressPercent + '%'"/>
+                    </div>
+                    <div class="o_boss_ladder_chips mt-2">
+                        <t t-foreach="state.ladder.bosses" t-as="b" t-key="b.id">
+                            <span class="o_boss_chip"
+                                  t-att-class="b.status === 'defeated' ? 'o_chip_done' : (b.status === 'current' ? 'o_chip_current' : 'o_chip_locked')"
+                                  t-att-title="b.name">
+                                <t t-if="b.status === 'defeated'">✔</t>
+                                <t t-elif="b.status === 'locked'">🔒</t>
+                                <t t-else=""><t t-esc="b.icon"/></t>
+                            </span>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- All cleared -->
+                <t t-if="state.ladder.all_cleared">
+                    <div class="card text-center">
+                        <div class="card-body py-5">
+                            <div class="display-4 mb-2">🏆</div>
+                            <h4>Tous les boss sont vaincus !</h4>
+                            <p class="text-muted mb-0">Revenez quand de nouveaux boss seront ajoutés.</p>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Current boss -->
+                <t t-elif="current">
+                    <div class="o_boss_banner card mb-3">
+                        <div class="card-body">
+                            <div class="text-center">
+                                <div class="o_boss_big_icon"><t t-esc="current.icon"/></div>
+                                <h4 class="mb-1">Boss <t t-esc="state.ladder.defeated_count + 1"/> · <t t-esc="current.name"/></h4>
+                                <div class="d-flex justify-content-center gap-2 flex-wrap mb-2">
+                                    <t t-if="current.element_meta">
+                                        <span class="badge text-bg-secondary" t-att-title="current.element_meta.passive_desc">
+                                            <t t-esc="current.element_meta.icon"/> <t t-esc="current.element_meta.label"/>
+                                        </span>
+                                    </t>
+                                    <span class="badge text-bg-light">💥 <t t-esc="current.power"/> Puissance</span>
+                                </div>
+                                <div class="text-muted small mb-2" t-if="current.description"><t t-esc="current.description"/></div>
+                                <div class="d-flex justify-content-center gap-3 small mb-1">
+                                    <span>❤️ <t t-esc="current.stats.hp"/></span>
+                                    <span>⚔️ <t t-esc="current.stats.atk"/></span>
+                                    <span>🛡️ <t t-esc="current.stats.def"/></span>
+                                    <span>⚡ <t t-esc="current.stats.spd"/></span>
+                                    <span>🎯 <t t-esc="current.stats.crit"/>%</span>
+                                </div>
+                            </div>
+
+                            <hr/>
+                            <div class="row g-3">
+                                <!-- Objective 1: combat -->
+                                <div class="col-md-6">
+                                    <div class="o_boss_objective" t-att-class="current.combat_done ? 'o_obj_done' : ''">
+                                        <div class="fw-bold mb-1">
+                                            ⚔️ Combat
+                                            <t t-if="current.combat_done"><span class="badge text-bg-success ms-1">Validé ✔</span></t>
+                                        </div>
+                                        <div class="small text-muted mb-2">Battez le boss en duel (dépend de votre équipement &amp; classe).</div>
+                                        <t t-if="!current.combat_done">
+                                            <button class="btn btn-sm btn-danger" t-on-click="fight" t-att-disabled="state.fighting">
+                                                <t t-if="state.fighting"><i class="fa fa-spinner fa-spin"/></t>
+                                                <t t-else="">⚔️ Combattre</t>
+                                            </button>
+                                        </t>
+                                        <t t-else="">
+                                            <button class="btn btn-sm btn-outline-secondary" t-on-click="fight">Rejouer le combat</button>
+                                        </t>
+                                    </div>
+                                </div>
+
+                                <!-- Objective 2: épreuve (countdown + attempts via systray) -->
+                                <div class="col-md-6">
+                                    <div class="o_boss_objective" t-att-class="current.epreuve_done ? 'o_obj_done' : ''">
+                                        <div class="fw-bold mb-1">
+                                            🏁 Épreuve speedrun
+                                            <t t-if="current.epreuve_done"><span class="badge text-bg-success ms-1">Validée ✔</span></t>
+                                        </div>
+                                        <div class="small text-muted mb-2"><t t-esc="current.epreuve_desc"/></div>
+                                        <t t-if="current.challenge_type === 'count'">
+                                            <div class="small mb-1">Progression : <strong><t t-esc="current.epreuve_count"/></strong> / <t t-esc="current.target_count"/></div>
+                                        </t>
+                                        <t t-if="!current.epreuve_done">
+                                            <!-- Cooldown: the boss won this round -->
+                                            <t t-if="state.cooldownText">
+                                                <div class="text-danger small mb-1">💀 Le boss a gagné !</div>
+                                                <div class="small">Redéfiable dans <strong class="font-monospace"><t t-esc="state.cooldownText"/></strong></div>
+                                            </t>
+                                            <!-- In progress: handled by the systray countdown -->
+                                            <t t-elif="current.in_progress">
+                                                <div class="small text-info mb-2">⏳ Épreuve en cours — chrono en haut à droite.</div>
+                                                <button class="btn btn-sm btn-outline-primary" t-on-click="resumeEpreuve">Reprendre</button>
+                                            </t>
+                                            <!-- Ready to start -->
+                                            <t t-else="">
+                                                <div class="small mb-2">🎯 <strong><t t-esc="current.attempts"/></strong> / <t t-esc="current.max_attempts"/> tentatives</div>
+                                                <button class="btn btn-sm btn-primary" t-on-click="epreuveStart">Démarrer l'épreuve</button>
+                                            </t>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center small text-muted mt-3">
+                                Validez <strong>les deux objectifs</strong> pour vaincre le boss ·
+                                Récompense : coffre <strong><t t-esc="rarityLabel(current.reward.chest_rarity)"/></strong> + <t t-esc="current.reward.coins"/> 💰
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+          </t>
+        </div>
+    </t>
+</templates>

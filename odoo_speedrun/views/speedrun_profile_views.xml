@@ -26,30 +26,182 @@
         <field name="name">speedrun.profile.form</field>
         <field name="model">speedrun.profile</field>
         <field name="arch" type="xml">
-            <form create="false" delete="false" edit="false">
+            <form>
                 <sheet>
                     <div class="oe_title">
                         <h1><field name="user_id" readonly="1"/></h1>
                         <h3><field name="level_title" readonly="1"/></h3>
                     </div>
                     <group>
-                        <group string="Rating">
+                        <group string="Rating &amp; Wallet">
                             <field name="elo"/>
                             <field name="peak_elo"/>
-                            <field name="level"/>
                             <field name="xp"/>
+                            <field name="level" readonly="1"/>
                             <field name="coins"/>
                         </group>
-                        <group string="Statistics">
-                            <field name="games_played"/>
-                            <field name="games_won"/>
-                            <field name="win_rate" widget="progressbar"/>
-                            <field name="rounds_played"/>
-                            <field name="rounds_won"/>
-                            <field name="best_time_ms"/>
+                        <group string="Arena / Clan">
+                            <field name="arena_rating"/>
+                            <field name="arena_peak"/>
+                            <field name="power" readonly="1"/>
+                            <field name="gear_score" readonly="1"/>
+                            <field name="clan_id"/>
+                            <field name="clan_role"/>
                         </group>
                     </group>
                     <notebook>
+                        <page string="Equipment" name="equipment">
+                            <field name="equipment_collection_ids">
+                                <list editable="bottom">
+                                    <field name="equipment_id"/>
+                                    <field name="rarity" readonly="1"/>
+                                    <field name="count"/>
+                                    <field name="fusion_level"/>
+                                    <field name="item_score" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Chests" name="chests">
+                            <field name="chest_ids">
+                                <list editable="bottom">
+                                    <field name="rarity"/>
+                                    <field name="state"/>
+                                    <field name="source"/>
+                                    <field name="equipment_id"/>
+                                    <field name="create_date" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Classes" name="classes">
+                            <group>
+                                <group string="Class levels (coin-upgraded passive)">
+                                    <field name="class_level_peripheral"/>
+                                    <field name="class_level_display"/>
+                                    <field name="class_level_badge"/>
+                                    <field name="class_level_module"/>
+                                    <field name="class_level_tech"/>
+                                    <field name="class_level_desk"/>
+                                </group>
+                                <group string="Domain ratings (computed)">
+                                    <field name="class_rating_peripheral" readonly="1"/>
+                                    <field name="class_rating_display" readonly="1"/>
+                                    <field name="class_rating_badge" readonly="1"/>
+                                    <field name="class_rating_module" readonly="1"/>
+                                    <field name="class_rating_tech" readonly="1"/>
+                                    <field name="class_rating_desk" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Daily &amp; Gacha" name="daily">
+                            <group>
+                                <group string="Weekly reward streak">
+                                    <field name="loot_sequence_id"/>
+                                    <field name="loot_day"/>
+                                    <field name="loot_last_claim"/>
+                                </group>
+                                <group string="Gacha">
+                                    <field name="pity_epic_counter"/>
+                                    <field name="pity_legendary_counter"/>
+                                    <field name="last_daily_chest"/>
+                                    <field name="arena_fights_today"/>
+                                    <field name="arena_fights_date"/>
+                                </group>
+                            </group>
+                            <separator string="Daily challenge history"/>
+                            <field name="daily_result_ids" readonly="1">
+                                <list>
+                                    <field name="daily_id"/>
+                                    <field name="completed"/>
+                                    <field name="duration_ms"/>
+                                    <field name="finish_time"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="PvE Bosses" name="pve">
+                            <field name="boss_progress_ids" readonly="1">
+                                <list>
+                                    <field name="boss_id"/>
+                                    <field name="combat_done"/>
+                                    <field name="epreuve_done"/>
+                                    <field name="epreuve_count"/>
+                                    <field name="attempts_left"/>
+                                    <field name="cooldown_until"/>
+                                    <field name="defeated" decoration-success="defeated"/>
+                                    <field name="defeated_date"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Games" name="games">
+                            <field name="game_player_ids" readonly="1">
+                                <list decoration-info="state in ('waiting','playing')" decoration-muted="state == 'dnf'">
+                                    <field name="game_id"/>
+                                    <field name="state"/>
+                                    <field name="score"/>
+                                    <field name="round_wins"/>
+                                    <field name="duration_ms"/>
+                                    <field name="finish_time"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Task History" name="task_history">
+                            <field name="round_result_ids" readonly="1">
+                                <list>
+                                    <field name="create_date" string="Date"/>
+                                    <field name="game_id"/>
+                                    <field name="round_number"/>
+                                    <field name="task_id"/>
+                                    <field name="rank"/>
+                                    <field name="duration_ms"/>
+                                    <field name="points"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Best Times" name="best_times">
+                            <field name="personal_best_ids" readonly="1">
+                                <list>
+                                    <field name="task_id"/>
+                                    <field name="best_time_ms"/>
+                                    <field name="avg_time_ms"/>
+                                    <field name="attempts"/>
+                                    <field name="wins"/>
+                                    <field name="last_played"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Per-Task ELO" name="task_elo">
+                            <field name="task_score_ids" readonly="1">
+                                <list>
+                                    <field name="task_id"/>
+                                    <field name="elo"/>
+                                    <field name="peak_elo"/>
+                                    <field name="rounds_played"/>
+                                    <field name="rounds_won"/>
+                                    <field name="best_time_ms"/>
+                                    <field name="last_played"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Shop Purchases" name="shop">
+                            <field name="shop_purchase_ids" readonly="1">
+                                <list>
+                                    <field name="create_date" string="Date"/>
+                                    <field name="equipment_id"/>
+                                    <field name="price_paid"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Statistics" name="stats">
+                            <group>
+                                <field name="games_played"/>
+                                <field name="games_won"/>
+                                <field name="win_rate" widget="progressbar"/>
+                                <field name="rounds_played"/>
+                                <field name="rounds_won"/>
+                                <field name="best_time_ms"/>
+                                <field name="arena_wins"/>
+                                <field name="arena_losses"/>
+                            </group>
+                        </page>
                         <page string="Badges" name="badges">
                             <field name="badge_award_ids" readonly="1">
                                 <list>

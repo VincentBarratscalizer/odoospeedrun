@@ -153,30 +153,28 @@ class SpeedrunBattle(models.Model):
     # ------------------------------------------------------------------
     # Simulation
     # ------------------------------------------------------------------
-    def _simulate(self, challenger, opponent):
-        """Pure turn-based auto-battle with elements & passives. Returns a replay dict."""
-        def fighter(profile, side):
-            element = profile.combat_element or None
-            return {
-                'side': side,
-                'name': profile.user_id.name,
-                'hp': profile.combat_hp,
-                'max_hp': profile.combat_hp,
-                'atk': profile.combat_atk,
-                'def': profile.combat_def,
-                'spd': max(1, profile.combat_spd),
-                'crit': profile.combat_crit,
-                'element': element,
-                'passive': ELEMENT_PASSIVE.get(element),
-                # Class level + domain rating strengthen the element's passive.
-                'passive_power': profile._passive_power(element),
-                'gauge': 0.0,
-            }
+    def _fighter_from_profile(self, profile, side):
+        """Build a combat fighter dict from a player profile."""
+        element = profile.combat_element or None
+        return {
+            'side': side,
+            'name': profile.user_id.name,
+            'hp': profile.combat_hp,
+            'max_hp': profile.combat_hp,
+            'atk': profile.combat_atk,
+            'def': profile.combat_def,
+            'spd': max(1, profile.combat_spd),
+            'crit': profile.combat_crit,
+            'element': element,
+            'passive': ELEMENT_PASSIVE.get(element),
+            # Class level + domain rating strengthen the element's passive.
+            'passive_power': profile._passive_power(element),
+            'gauge': 0.0,
+        }
 
-        c = fighter(challenger, 'challenger')
-        o = fighter(opponent, 'opponent')
+    def _run_fight(self, c, o):
+        """Run the turn loop between two fighter dicts. Returns (turns, winner)."""
         state = {'c': c, 'o': o}
-
         turns = []
         actions = 0
         while c['hp'] > 0 and o['hp'] > 0 and actions < MAX_ACTIONS:
@@ -208,6 +206,13 @@ class SpeedrunBattle(models.Model):
         else:
             # timeout / double KO -> higher remaining HP ratio wins (challenger on tie)
             winner = 'challenger' if (c['hp'] / c['max_hp']) >= (o['hp'] / o['max_hp']) else 'opponent'
+        return turns, winner
+
+    def _simulate(self, challenger, opponent):
+        """Pure turn-based auto-battle with elements & passives. Returns a replay dict."""
+        c = self._fighter_from_profile(challenger, 'challenger')
+        o = self._fighter_from_profile(opponent, 'opponent')
+        turns, winner = self._run_fight(c, o)
 
         return {
             'challenger': self._card(challenger, 'challenger'),

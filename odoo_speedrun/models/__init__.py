@@ -18,6 +18,8 @@ from . import speedrun_clan_war
 from . import speedrun_shop
 from . import speedrun_loot_sequence
 from . import speedrun_class
+from . import speedrun_boss
+from . import speedrun_profile_activity
 from . import speedrun_game_task_seq
 from . import speedrun_cleanup
 from . import ir_websocket

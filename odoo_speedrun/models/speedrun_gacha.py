@@ -147,6 +147,7 @@ class SpeedrunPlayerChest(models.Model):
         ('arena_win', 'Arena Win'),
         ('clan_war', 'Clan War'),
         ('daily_streak', 'Daily Streak'),
+        ('boss', 'World Boss'),
     ], default='game_win', required=True)
 
 

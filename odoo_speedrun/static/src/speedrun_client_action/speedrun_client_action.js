@@ -17,13 +17,14 @@ import { BattleArena } from "../components/battle_arena";
 import { LeaderboardPanel } from "../components/leaderboard_panel";
 import { ClanPanel } from "../components/clan_panel";
 import { ShopPanel } from "../components/shop_panel";
+import { BossPanel } from "../components/boss_panel";
 import { DailyChallenge } from "../components/daily_challenge";
 import { GameTimeAttack } from "../components/game_time_attack";
 import { playSound, playCountdownBeep } from "../services/sound_service";
 
 export class SpeedrunClientAction extends Component {
     static template = "odoo_speedrun.SpeedrunClientAction";
-    static components = { GameLobby, GameTimer, GameResults, TournamentPanel, ChestOpening, ChestList, EquipmentManager, ArenaPanel, BattleArena, LeaderboardPanel, ClanPanel, ShopPanel, DailyChallenge, GameTimeAttack };
+    static components = { GameLobby, GameTimer, GameResults, TournamentPanel, ChestOpening, ChestList, EquipmentManager, ArenaPanel, BattleArena, LeaderboardPanel, ClanPanel, ShopPanel, BossPanel, DailyChallenge, GameTimeAttack };
     static props = ["*"];
 
     setup() {
@@ -310,6 +311,23 @@ export class SpeedrunClientAction extends Component {
                     break;
                 case "speedrun/clan_update":
                     this.onClanUpdate(payload);
+                    break;
+                case "speedrun/boss_failed":
+                    playSound("error");
+                    this.notification.add(
+                        `💀 ${payload.boss_name} vous a repoussé ! Redéfiable dans ${payload.cooldown_min} min.`,
+                        { type: "warning", sticky: false },
+                    );
+                    break;
+                case "speedrun/boss_defeated":
+                    playSound("gameOver");
+                    this.notification.add(
+                        `☠️ ${payload.boss_name} vaincu ! Coffre ${payload.rarity}` +
+                        (payload.coins ? ` + ${payload.coins} 💰` : ""),
+                        { type: "success", sticky: true },
+                    );
+                    this.state.chests.pendingCount++;
+                    this._loadStats();
                     break;
                 case "speedrun/arena_attacked":
                     this.notification.add(
@@ -1036,6 +1054,18 @@ export class SpeedrunClientAction extends Component {
         this._loadStats();
     }
 
+    // ------------------------------------------------------------------
+    // Boss (PvE)
+    // ------------------------------------------------------------------
+    openBoss() {
+        this.state.phase = "boss";
+    }
+
+    backFromBoss() {
+        this.state.phase = "lobby";
+        this._loadStats();
+    }
+
     onClanUpdate(payload) {
         const messages = {
             war_declared: `⚔️ ${payload.challenger_name || "Un clan"} a déclaré la guerre à votre clan !`,
@@ -1062,7 +1092,7 @@ export class SpeedrunClientAction extends Component {
     // ------------------------------------------------------------------
     get isHub() {
         return !this.state.game && [
-            "lobby", "tournaments", "tournament", "arena", "equipment", "chests", "leaderboard", "clans", "shop",
+            "lobby", "tournaments", "tournament", "arena", "equipment", "chests", "leaderboard", "clans", "shop", "boss",
         ].includes(this.state.phase);
     }
 
@@ -1077,6 +1107,7 @@ export class SpeedrunClientAction extends Component {
             leaderboard: p === "leaderboard",
             clans: p === "clans",
             shop: p === "shop",
+            boss: p === "boss",
         }[target] || false;
     }
 
@@ -1091,6 +1122,7 @@ export class SpeedrunClientAction extends Component {
             case "leaderboard": this.openLeaderboards(); break;
             case "clans": this.openClans(); break;
             case "shop": this.openShop(); break;
+            case "boss": this.openBoss(); break;
         }
     }
 

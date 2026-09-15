@@ -61,6 +61,12 @@
         action="speedrun_clan_war_action"
         sequence="9"/>
 
+    <menuitem id="menu_speedrun_bosses"
+        name="PvE Bosses"
+        parent="menu_speedrun_root"
+        action="speedrun_boss_action"
+        sequence="9"/>
+
     <!-- Personal stats -->
     <menuitem id="menu_speedrun_my_stats_root"
         name="My Stats"

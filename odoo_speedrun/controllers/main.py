@@ -933,6 +933,42 @@ class SpeedrunController(http.Controller):
         return war._arena_fight()
 
     # ------------------------------------------------------------------
+    # PvE Boss ladder (individual, mixes arena combat + speedrun épreuve)
+    # ------------------------------------------------------------------
+    @http.route('/odoo_speedrun/boss/ladder', type='jsonrpc', auth='user')
+    def boss_ladder(self):
+        return request.env['speedrun.boss'].sudo()._ladder_payload(request.env.user)
+
+    @http.route('/odoo_speedrun/boss/fight', type='jsonrpc', auth='user')
+    def boss_fight(self, boss_id):
+        boss = request.env['speedrun.boss'].sudo().browse(int(boss_id)).exists()
+        if not boss:
+            return {'error': 'Boss introuvable.'}
+        profile = request.env['speedrun.profile'].sudo()._get_or_create(request.env.user)
+        return boss._fight(profile)
+
+    @http.route('/odoo_speedrun/boss/epreuve/start', type='jsonrpc', auth='user')
+    def boss_epreuve_start(self, boss_id):
+        boss = request.env['speedrun.boss'].sudo().browse(int(boss_id)).exists()
+        if not boss:
+            return {'error': 'Boss introuvable.'}
+        return boss._epreuve_start(request.env.user)
+
+    @http.route('/odoo_speedrun/boss/epreuve/check', type='jsonrpc', auth='user')
+    def boss_epreuve_check(self, boss_id):
+        boss = request.env['speedrun.boss'].sudo().browse(int(boss_id)).exists()
+        if not boss:
+            return {'error': 'Boss introuvable.'}
+        return boss._epreuve_check(request.env.user)
+
+    @http.route('/odoo_speedrun/boss/epreuve/timeout', type='jsonrpc', auth='user')
+    def boss_epreuve_timeout(self, boss_id):
+        boss = request.env['speedrun.boss'].sudo().browse(int(boss_id)).exists()
+        if not boss:
+            return {'error': 'Boss introuvable.'}
+        return boss._epreuve_timeout(request.env.user)
+
+    # ------------------------------------------------------------------
     # Classes (upgrade the element passive with coins)
     # ------------------------------------------------------------------
     @http.route('/odoo_speedrun/class/info', type='jsonrpc', auth='user')

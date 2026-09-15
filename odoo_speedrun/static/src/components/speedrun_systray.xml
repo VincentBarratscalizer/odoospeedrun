@@ -6,7 +6,7 @@
                  t-on-click="onClickSystray">
 
                 <!-- Round indicator (normal game) -->
-                <span class="badge text-bg-secondary" t-if="state.mode !== 'raid'">
+                <span class="badge text-bg-secondary" t-if="state.mode === 'game'">
                     R<t t-esc="state.currentRound"/>/<t t-esc="state.totalRounds"/>
                 </span>
                 <!-- Clan war raid indicator -->
@@ -17,6 +17,13 @@
                 <span class="badge text-bg-warning" t-if="state.mode === 'daily'">
                     🗓️ Daily
                 </span>
+                <!-- Boss épreuve indicator -->
+                <t t-if="state.mode === 'boss'">
+                    <span class="badge text-bg-danger">👹 Boss</span>
+                    <span class="badge text-bg-dark" t-att-title="'Tentatives restantes'">
+                        🎯 <t t-esc="state.attempts"/>/<t t-esc="state.maxAttempts"/>
+                    </span>
+                </t>
 
                 <!-- Countdown state: show task name -->
                 <t t-if="state.phase === 'countdown'">
@@ -31,10 +38,17 @@
 
                 <!-- Playing state: timer + task + check button -->
                 <t t-if="state.phase === 'playing'">
-                    <!-- Timer -->
-                    <span class="badge text-bg-primary font-monospace">
-                        <i class="fa fa-clock-o me-1"/><t t-esc="state.elapsed"/>
-                    </span>
+                    <!-- Timer: countdown for boss épreuves, elapsed otherwise -->
+                    <t t-if="state.mode === 'boss'">
+                        <span class="badge text-bg-warning font-monospace">
+                            <i class="fa fa-hourglass-half me-1"/><t t-esc="state.countdown"/>
+                        </span>
+                    </t>
+                    <t t-else="">
+                        <span class="badge text-bg-primary font-monospace">
+                            <i class="fa fa-clock-o me-1"/><t t-esc="state.elapsed"/>
+                        </span>
+                    </t>
 
                     <!-- Task name (truncated) -->
                     <span class="text-truncate d-none d-lg-inline small" style="max-width: 200px;"

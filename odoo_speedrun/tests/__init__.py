@@ -3,3 +3,9 @@ from . import test_matchmaking
 from . import test_badges
 from . import test_personal_best
 from . import test_signup
+from . import test_clan
+from . import test_clan_war
+from . import test_shop
+from . import test_weekly_reward
+from . import test_class
+from . import test_boss

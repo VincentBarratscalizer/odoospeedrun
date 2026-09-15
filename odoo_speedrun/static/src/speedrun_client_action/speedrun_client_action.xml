@@ -99,6 +99,9 @@
                     <button class="o_nav_item" t-att-class="navActive('arena') ? 'active' : ''" t-on-click="() => this.navTo('arena')">
                         <span class="o_nav_icon">🥊</span><span class="o_nav_label">Arène</span>
                     </button>
+                    <button class="o_nav_item" t-att-class="navActive('boss') ? 'active' : ''" t-on-click="() => this.navTo('boss')">
+                        <span class="o_nav_icon">👹</span><span class="o_nav_label">Boss</span>
+                    </button>
                     <button class="o_nav_item" t-att-class="navActive('equipment') ? 'active' : ''" t-on-click="() => this.navTo('equipment')">
                         <span class="o_nav_icon">⚔️</span><span class="o_nav_label">Équipements</span>
                     </button>
@@ -289,6 +292,9 @@
                 </t>
                 <t t-if="state.phase === 'shop'">
                     <ShopPanel onBack.bind="backFromShop" />
+                </t>
+                <t t-if="state.phase === 'boss'">
+                    <BossPanel onBack.bind="backFromBoss" />
                 </t>
                 <t t-if="state.phase === 'battle' and state.battleReplay">
                     <BattleArena
